@@ -1,909 +1,1877 @@
-<!doctype html>
+Hier ist die vollständige HTML-Datei mit allen Scripts für das Weed Ankauf Panel im US Army Design:
+
+```html
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <title>KhusLand Management Suite</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    /* GEMEINSAME STYLES FÜR ALLE SYSTEME */
-    body { 
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      min-height: 100vh;
-    }
-    .card { 
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%); 
-      border: 1px solid rgba(168, 85, 247, 0.2); 
-      border-radius: 12px; 
-      backdrop-filter: blur(10px);
-    }
-    .shadow-soft { 
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 
-                  0 4px 8px rgba(0, 0, 0, 0.3),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.1); 
-    }
-    .small-muted { 
-      color: #94a3b8; 
-      font-size: 0.75rem; 
-    }
-    .btn { 
-      transition: all 0.2s ease; 
-      font-size: 0.8rem; 
-      font-weight: 500;
-    }
-    .btn:hover { 
-      transform: translateY(-1px); 
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-    .hidden { 
-      display: none !important; 
-    }
-    input { 
-      transition: all 0.2s ease; 
-      font-size: 0.85rem; 
-    }
-    input:focus { 
-      outline: none; 
-      border-color: #7e22ce; 
-      box-shadow: 0 0 0 2px rgba(126, 34, 206, 0.3); 
-    }
-    .active-link { 
-      background-color: #16a34a !important; 
-      color: #fff !important; 
-      font-weight: 600; 
-    }
-    .gradient-text {
-      background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .glass-effect {
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(74, 222, 128, 0.1);
-    }
-    .fade-in {
-      animation: fadeIn 0.3s ease-in-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .pulse-glow {
-      animation: pulseGlow 2s infinite;
-    }
-    @keyframes pulseGlow {
-      0% { box-shadow: 0 0 5px rgba(74, 222, 128, 0.5); }
-      50% { box-shadow: 0 0 15px rgba(74, 222, 128, 0.8); }
-      100% { box-shadow: 0 0 5px rgba(74, 222, 128, 0.5); }
-    }
-    .scrollbar-custom::-webkit-scrollbar {
-      width: 4px;
-    }
-    .scrollbar-custom::-webkit-scrollbar-track {
-      background: rgba(30, 41, 59, 0.5);
-      border-radius: 8px;
-    }
-    .scrollbar-custom::-webkit-scrollbar-thumb {
-      background: #4ade80;
-      border-radius: 8px;
-    }
-    .hamburger-container {
-      position: relative;
-      z-index: 1000;
-    }
-    .hamburger-menu {
-      z-index: 1001;
-    }
-    .notification {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      z-index: 10000;
-      padding: 10px 16px;
-      border-radius: 6px;
-      color: white;
-      font-weight: 500;
-      font-size: 0.8rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      transform: translateX(150%);
-      transition: transform 0.3s ease;
-    }
-    .notification.show {
-      transform: translateX(0);
-    }
-    .notification.success {
-      background-color: #10b981;
-    }
-    .notification.error {
-      background-color: #ef4444;
-    }
-    .notification.info {
-      background-color: #3b82f6;
-    }
-    .notification.warning {
-      background-color: #f59e0b;
-    }
-    .loading {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255,255,255,.3);
-      border-radius: 50%;
-      border-top-color: #fff;
-      animation: spin 1s ease-in-out infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 8px;
-      margin-bottom: 15px;
-    }
-    .stat-card {
-      background: rgba(30, 41, 59, 0.6);
-      border-radius: 8px;
-      padding: 12px;
-      text-align: center;
-      border: 1px solid rgba(74, 222, 128, 0.1);
-    }
-    .stat-value {
-      font-size: 1.1rem;
-      font-weight: bold;
-      margin: 4px 0;
-    }
-    .stat-label {
-      font-size: 0.7rem;
-      color: #94a3b8;
-    }
-    .search-box {
-      background: rgba(30, 41, 59, 0.6);
-      border: 1px solid rgba(74, 222, 128, 0.2);
-      border-radius: 8px;
-      padding: 8px 12px;
-      margin-bottom: 12px;
-    }
-    .search-box input {
-      background: transparent;
-      border: none;
-      width: 100%;
-      color: white;
-      font-size: 0.8rem;
-    }
-    .search-box input::placeholder {
-      color: #94a3b8;
-    }
-    .search-box input:focus {
-      outline: none;
-      box-shadow: none;
-    }
-    .export-options {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-    .export-btn {
-      flex: 1;
-      min-width: 100px;
-    }
-    .access-badge {
-      font-size: 0.65rem;
-      padding: 1px 6px;
-      border-radius: 10px;
-      margin-left: 6px;
-    }
-    .access-permanent {
-      background-color: #10b981;
-      color: white;
-    }
-    .access-temporary {
-      background-color: #f59e0b;
-      color: black;
-    }
-    .access-expired {
-      background-color: #ef4444;
-      color: white;
-    }
-    .force-check-btn {
-      position: fixed;
-      bottom: 15px;
-      right: 15px;
-      width: 35px;
-      height: 35px;
-      background: #ef4444;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      cursor: pointer;
-      z-index: 1000;
-      opacity: 0.5;
-      transition: opacity 0.3s;
-      font-size: 0.8rem;
-    }
-    .force-check-btn:hover {
-      opacity: 1;
-    }
-    .discount-badge {
-      font-size: 0.6rem;
-      padding: 1px 4px;
-      border-radius: 4px;
-      margin-left: 4px;
-      font-weight: 600;
-    }
-    .discount-btn {
-      transition: all 0.2s ease;
-      font-size: 0.7rem;
-      padding: 3px 6px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(30, 41, 59, 0.6);
-      border-radius: 6px;
-    }
-    .discount-btn.active {
-      transform: scale(1.02);
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
-    }
-    .price-change {
-      font-size: 0.65rem;
-      margin-top: 1px;
-    }
-    .price-increase {
-      color: #10b981;
-    }
-    .price-decrease {
-      color: #ef4444;
-    }
-    .discount-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-      gap: 4px;
-      margin-bottom: 6px;
-    }
-    .settings-section {
-      background: rgba(30, 41, 59, 0.4);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
-      border: 1px solid rgba(74, 222, 128, 0.1);
-    }
-    .compact-table {
-      font-size: 0.75rem;
-    }
-    .compact-table th,
-    .compact-table td {
-      padding: 6px 8px;
-    }
-
-    /* DASHBOARD STYLES */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-    .module-card {
-      transition: all 0.3s ease;
-      cursor: pointer;
-      border: 1px solid rgba(168, 85, 247, 0.2);
-    }
-    .module-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(168, 85, 247, 0.3);
-      border-color: rgba(168, 85, 247, 0.5);
-    }
-    .module-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
-    .module-stats {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.75rem;
-      color: #94a3b8;
-      margin-top: 0.5rem;
-    }
-  </style>
-</head>
-<body class="text-gray-100 antialiased min-h-screen">
-  
-  <!-- Notification System -->
-  <div id="notification" class="notification hidden"></div>
-  
-  <!-- Force Check Button -->
-  <div id="forceCheckBtn" class="force-check-btn hidden" title="Sofort-Überprüfung">
-    <i class="fas fa-shield-alt"></i>
-  </div>
-  
-  <!-- LOGIN SCREEN -->
-  <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
-    <div class="card p-6 shadow-soft max-w-md w-full text-center">
-      <div class="w-16 h-16 rounded-full bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center mx-auto mb-4">
-        <span class="text-white text-xl">🌿</span>
-      </div>
-      <h1 class="text-2xl font-bold gradient-text mb-2">KhusLand Management Suite</h1>
-      <p class="text-gray-400 text-sm mb-4">Bitte mit Discord einloggen um fortzufahren</p>
-      
-      <button id="discordLogin" class="w-full py-2.5 bg-[#5865F2] hover:bg-[#4752c4] rounded-lg btn font-medium flex items-center justify-center gap-2 transition-all duration-200">
-        <i class="fab fa-discord text-lg"></i>
-        Mit Discord anmelden
-      </button>
-      
-      <div id="loginError" class="mt-3 p-2 bg-red-900/20 border border-red-700 rounded-lg text-red-400 text-sm hidden">
-        <p id="errorMessage">Zugriff verweigert. Du bist nicht autorisiert.</p>
-      </div>
-
-      <div id="debugInfo" class="mt-3 p-2 bg-gray-800/50 border border-gray-700 rounded-lg text-gray-400 text-xs hidden">
-        <p id="debugMessage"></p>
-      </div>
-    </div>
-  </div>
-
-  <!-- MAIN CONTENT (Versteckt bis Login) -->
-  <div id="mainContent" class="hidden">
-    <div class="max-w-7xl mx-auto p-3 md:p-4">
-
-      <!-- HEADER -->
-      <header class="glass-effect rounded-xl shadow-soft mb-4 p-3 md:p-4 flex justify-between items-center relative z-10">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center">
-            <span class="text-white font-bold text-sm">🌿</span>
-          </div>
-          <div>
-            <h1 class="text-xl md:text-2xl font-bold gradient-text tracking-tight">KhusLand Management Suite</h1>
-            <p id="userInfo" class="text-xs text-gray-400">
-              Eingeloggt als: <span id="username">Unbekannt</span>
-              <span id="accessBadge" class="access-badge access-permanent hidden">PREMIUM</span>
-            </p>
-          </div>
-        </div>
-        <div class="flex items-center gap-1">
-          <button id="btnDashboard" class="btn px-2.5 py-1.5 bg-purple-600 hover:bg-purple-500 rounded-lg shadow-sm pulse-glow">
-            <i class="fas fa-home text-xs mr-1"></i> Dashboard
-          </button>
-          <button id="btnWeed" class="btn px-2.5 py-1.5 bg-green-600 hover:bg-green-500 rounded-lg shadow-sm">
-            <i class="fas fa-cannabis text-xs mr-1"></i> Weed
-          </button>
-          <button id="btnCocaine" class="btn px-2.5 py-1.5 bg-purple-600 hover:bg-purple-500 rounded-lg shadow-sm">
-            <i class="fas fa-pills text-xs mr-1"></i> Kokain
-          </button>
-          <button id="btnRecycler" class="btn px-2.5 py-1.5 bg-yellow-600 hover:bg-yellow-500 rounded-lg shadow-sm">
-            <i class="fas fa-recycle text-xs mr-1"></i> Recycler
-          </button>
-          <button id="btnWorkbench" class="btn px-2.5 py-1.5 bg-red-600 hover:bg-red-500 rounded-lg shadow-sm">
-            <i class="fas fa-tools text-xs mr-1"></i> Werkbank
-          </button>
-          <button id="btnRoutes" class="btn px-2.5 py-1.5 bg-green-600 hover:bg-green-500 rounded-lg shadow-sm">
-            <i class="fas fa-route text-xs mr-1"></i> Routen
-          </button>
-          <button id="btnTextManager" class="btn px-2.5 py-1.5 bg-pink-600 hover:bg-pink-500 rounded-lg shadow-sm">
-            <i class="fas fa-comment text-xs mr-1"></i> Texte
-          </button>
-          <button id="logoutBtn" class="btn px-2.5 py-1.5 bg-red-600 hover:bg-red-500 rounded-lg shadow-sm ml-1">
-            <i class="fas fa-sign-out-alt text-xs mr-1"></i> Logout
-          </button>
-        </div>
-      </header>
-
-      <div id="mainContainer" class="space-y-4 relative z-0">
-
-        <!-- DASHBOARD -->
-        <div id="dashboard" class="card p-4 shadow-soft fade-in">
-          <h2 class="text-lg font-semibold mb-3 text-purple-400 flex items-center gap-1">
-            <i class="fas fa-tachometer-alt text-sm"></i>
-            Dashboard - System Übersicht
-          </h2>
-          
-          <div class="dashboard-grid">
-            <!-- Weed Ankauf -->
-            <div class="module-card card p-4" data-module="weed">
-              <div class="module-icon bg-green-500/20 text-green-400">
-                <i class="fas fa-cannabis"></i>
-              </div>
-              <h3 class="font-semibold text-white">Weed Ankauf</h3>
-              <p class="text-gray-400 text-sm mt-1">Verwalte deine Weed-Einkäufe mit Rabattsystem</p>
-              <div class="module-stats">
-                <span>Letzter Eintrag: <span id="weedLastEntry">-</span></span>
-                <span>Gesamt: <span id="weedTotal">0</span></span>
-              </div>
-            </div>
-
-            <!-- Kokain Ankauf -->
-            <div class="module-card card p-4" data-module="cocaine">
-              <div class="module-icon bg-purple-500/20 text-purple-400">
-                <i class="fas fa-pills"></i>
-              </div>
-              <h3 class="font-semibold text-white">Kokain Ankauf</h3>
-              <p class="text-gray-400 text-sm mt-1">Kokain-Transaktionen mit Cash-Management</p>
-              <div class="module-stats">
-                <span>Letzter Eintrag: <span id="cocaineLastEntry">-</span></span>
-                <span>Gesamt: <span id="cocaineTotal">0</span></span>
-              </div>
-            </div>
-
-            <!-- Materialrecycler -->
-            <div class="module-card card p-4" data-module="recycler">
-              <div class="module-icon bg-yellow-500/20 text-yellow-400">
-                <i class="fas fa-recycle"></i>
-              </div>
-              <h3 class="font-semibold text-white">Materialrecycler</h3>
-              <p class="text-gray-400 text-sm mt-1">Produkte und Ressourcen verwalten</p>
-              <div class="module-stats">
-                <span>Produkte: <span id="recyclerTotal">0</span></span>
-                <span>Ressourcen: <span id="recyclerResources">0</span></span>
-              </div>
-            </div>
-
-            <!-- Werkbank Manager -->
-            <div class="module-card card p-4" data-module="workbench">
-              <div class="module-icon bg-red-500/20 text-red-400">
-                <i class="fas fa-tools"></i>
-              </div>
-              <h3 class="font-semibold text-white">Werkbank Manager</h3>
-              <p class="text-gray-400 text-sm mt-1">Herstellungsprozesse mit Zeit-Berechnung</p>
-              <div class="module-stats">
-                <span>Produkte: <span id="workbenchTotal">0</span></span>
-                <span>Kategorien: <span id="workbenchCategories">0</span></span>
-              </div>
-            </div>
-
-            <!-- Drogenrouten -->
-            <div class="module-card card p-4" data-module="routes">
-              <div class="module-icon bg-green-500/20 text-green-400">
-                <i class="fas fa-route"></i>
-              </div>
-              <h3 class="font-semibold text-white">Drogenrouten</h3>
-              <p class="text-gray-400 text-sm mt-1">Route-Management mit Beschreibungen</p>
-              <div class="module-stats">
-                <span>Routen: <span id="routesTotal">0</span></span>
-                <span>Kategorien: <span id="routesCategories">0</span></span>
-              </div>
-            </div>
-
-            <!-- Text Manager -->
-            <div class="module-card card p-4" data-module="textmanager">
-              <div class="module-icon bg-pink-500/20 text-pink-400">
-                <i class="fas fa-comment"></i>
-              </div>
-              <h3 class="font-semibold text-white">Text Manager</h3>
-              <p class="text-gray-400 text-sm mt-1">Discord Text-Templates mit Webhooks</p>
-              <div class="module-stats">
-                <span>Templates: <span id="textsTotal">0</span></span>
-                <span>Webhooks: <span id="textsWebhooks">0</span></span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- WEED ANKAUF (Original aus Script 1) -->
-        <div id="weedSystem" class="hidden">
-          <!-- Hier kommt der komplette Weed Ankauf Code aus Script 1 -->
-          <div class="card p-4 shadow-soft fade-in">
-            <h2 class="text-lg font-semibold mb-3 text-green-400 flex items-center gap-1">
-              <i class="fas fa-shopping-cart text-sm"></i>
-              Neuer Weed Ankauf
-            </h2>
-            <form id="weedEntryForm" class="space-y-3">
-              <!-- Rabatt-System -->
-              <div class="bg-gray-800/20 p-2 rounded-lg border border-gray-700">
-                <label class="block text-xs font-medium text-gray-300 mb-1 text-center">
-                  <i class="fas fa-percentage mr-1 text-xs"></i> Rabatt auswählen
-                </label>
-                <div id="weedDiscountButtonsContainer" class="discount-grid">
-                  <!-- Discount buttons -->
-                </div>
-                <div class="mt-1 text-xs text-gray-400 text-center">
-                  Aktiver Rabatt: <span id="weedActiveDiscountText" class="font-bold text-white">0%</span>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label for="weedBuyer" class="block text-xs font-medium text-gray-300 mb-1">
-                    <i class="fas fa-user mr-1 text-xs"></i> Käufer (Cloudflare)
-                  </label>
-                  <input id="weedBuyer" type="text" placeholder="Cloudflare Username" class="p-2 rounded-lg bg-gray-800/50 border border-gray-700 w-full focus:border-green-500 text-sm" required list="weed-buyer-options"/>
-                </div>
-                <div>
-                  <label for="weedSeller" class="block text-xs font-medium text-gray-300 mb-1">
-                    <i class="fas fa-user-tag mr-1 text-xs"></i> Verkäufer
-                  </label>
-                  <input id="weedSeller" type="text" placeholder="Verkäufer Name" class="p-2 rounded-lg bg-gray-800/50 border border-gray-700 w-full focus:border-green-500 text-sm" required/>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label for="weedQuantity" class="block text-xs font-medium text-gray-300 mb-1">
-                    <i class="fas fa-weight-hanging mr-1 text-xs"></i> Menge (Bricks)
-                  </label>
-                  <input id="weedQuantity" type="number" min="1" placeholder="Menge eingeben" class="p-2 rounded-lg bg-gray-800/50 border border-gray-700 w-full focus:border-green-500 text-sm"/>
-                </div>
-                <div class="p-2 rounded-lg bg-gray-800/50 border border-gray-700 flex items-center justify-center">
-                  <div class="text-center">
-                    <div class="small-muted mb-0.5">
-                      <i class="fas fa-dollar-sign mr-1 text-xs"></i> Gesamtpreis
-                    </div>
-                    <div id="weedTotalPrice" class="text-base font-bold text-purple-400">0 $</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Preisübersicht -->
-              <div class="bg-gray-800/20 p-3 rounded-lg border border-gray-700">
-                <div class="text-center mb-2">
-                  <div class="small-muted mb-1">Gesamtpreis</div>
-                  <div id="weedFinalPrice" class="font-bold text-green-400 text-lg">0 $</div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-3">
-                  <div class="p-2 rounded-lg bg-gray-800/40 text-center">
-                    <div class="small-muted mb-1">
-                      <i class="fas fa-user-tag mr-1 text-xs"></i> Verkäufer
-                    </div>
-                    <div id="weedSellerShare" class="text-base font-bold text-green-400">0 $</div>
-                    <div id="weedSellerShareChange" class="price-change price-increase hidden">
-                      <i class="fas fa-arrow-up text-xs"></i> +0 $
-                    </div>
-                  </div>
-                  <div class="p-2 rounded-lg bg-gray-800/40 text-center">
-                    <div class="small-muted mb-1">
-                      <i class="fas fa-user mr-1 text-xs"></i> Käufer
-                    </div>
-                    <div id="weedYourShare" class="text-base font-bold text-blue-400">0 $</div>
-                    <div id="weedYourShareChange" class="price-change price-decrease hidden">
-                      <i class="fas fa-arrow-down text-xs"></i> -0 $
-                    </div>
-                  </div>
-                </div>
-                
-                <div id="weedDiscountExplanation" class="mt-2 p-1.5 bg-blue-900/20 rounded-lg border border-blue-700/30">
-                  <div class="text-xs text-blue-300 text-center">
-                    <i class="fas fa-info-circle mr-1 text-xs"></i>
-                    <span id="weedDiscountExplanationText" class="text-xs">Rabatt verteilt Gesamtbetrag</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="flex gap-2 pt-1">
-                <button type="submit" class="flex-1 px-3 py-2 bg-green-600 hover:bg-green-500 rounded-lg btn font-medium flex items-center justify-center gap-1">
-                  <i class="fas fa-save text-xs"></i>
-                  Speichern
-                </button>
-                <button type="button" id="weedResetForm" class="px-3 py-2 bg-red-600 hover:bg-red-500 rounded-lg btn font-medium flex items-center justify-center gap-1">
-                  <i class="fas fa-undo text-xs"></i>
-                  Reset
-                </button>
-              </div>
-            </form>
-          </div>
-
-          <!-- Weed Übersicht -->
-          <div class="card p-4 shadow-soft mt-4">
-            <h2 class="text-base font-semibold mb-3 text-green-400 flex items-center gap-1">
-              <i class="fas fa-list text-sm"></i>
-              Weed Übersicht
-            </h2>
-            
-            <!-- Statistik-Karten -->
-            <div class="stats-grid">
-              <div class="stat-card">
-                <div class="stat-label">Gesamtumsatz</div>
-                <div id="weedTotalRevenueOverview" class="stat-value text-green-400">0 $</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-label">Anzahl</div>
-                <div id="weedTotalCountOverview" class="stat-value text-blue-400">0</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-label">Ø pro Ankauf</div>
-                <div id="weedAvgPerPurchase" class="stat-value text-purple-400">0 $</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-label">Dein Anteil</div>
-                <div id="weedYourTotalShare" class="stat-value text-yellow-400">0 $</div>
-              </div>
-            </div>
-            
-            <!-- Rabatt-Filter -->
-            <div class="flex gap-1 mb-3 flex-wrap" id="weedDiscountFilterContainer">
-              <!-- Discount filter buttons -->
-            </div>
-            
-            <!-- Suchfeld -->
-            <div class="search-box">
-              <input type="text" id="weedSearchInput" placeholder="Suchen nach Käufer/Verkäufer...">
-            </div>
-            
-            <div id="weedEntriesList" class="space-y-2 max-h-[50vh] overflow-auto scrollbar-custom p-1"></div>
-          </div>
-
-          <!-- Weed Admin -->
-          <div class="card p-4 shadow-soft mt-4">
-            <h2 class="text-base font-semibold mb-3 text-blue-400 flex items-center gap-1">
-              <i class="fas fa-cog text-sm"></i>
-              Weed Adminbereich
-            </h2>
-            <div id="weedAdminLoginSection">
-              <div class="mb-3">
-                <label for="weedAdminPass" class="block text-xs font-medium text-gray-300 mb-1">
-                  <i class="fas fa-key mr-1 text-xs"></i> Admin-Passwort
-                </label>
-                <input id="weedAdminPass" type="password" placeholder="Passwort eingeben" class="w-full p-2 rounded-lg bg-gray-800/50 border border-gray-700 focus:border-blue-500 text-sm"/>
-              </div>
-              <button id="weedAdminLoginBtn" class="w-full py-2 bg-blue-600 hover:bg-blue-500 rounded-lg btn font-medium flex items-center justify-center gap-1">
-                <i class="fas fa-sign-in-alt text-xs"></i>
-                Einloggen
-              </button>
-              <span id="weedAdminError" class="text-red-400 mt-2 block hidden text-center text-xs py-1.5 bg-red-900/20 rounded-lg">
-                <i class="fas fa-exclamation-triangle mr-1 text-xs"></i> Falsches Passwort
-              </span>
-            </div>
-            <div id="weedAdminContent" class="hidden">
-              <!-- Admin Content aus Script 1 -->
-            </div>
-          </div>
-        </div>
-
-        <!-- KOKAIN ANKAUF (Wird hier eingefügt) -->
-        <div id="cocaineSystem" class="hidden">
-          <!-- Kokain System Inhalt aus Script 2 -->
-        </div>
-
-        <!-- MATERIALRECYCLER (Wird hier eingefügt) -->
-        <div id="recyclerSystem" class="hidden">
-          <!-- Recycler System Inhalt aus Script 3 -->
-        </div>
-
-        <!-- WERKBANK MANAGER (Wird hier eingefügt) -->
-        <div id="workbenchSystem" class="hidden">
-          <!-- Werkbank System Inhalt aus Script 4 -->
-        </div>
-
-        <!-- DROGENROUTEN (Wird hier eingefügt) -->
-        <div id="routesSystem" class="hidden">
-          <!-- Routen System Inhalt aus Script 5 -->
-        </div>
-
-        <!-- TEXT MANAGER (Wird hier eingefügt) -->
-        <div id="textManagerSystem" class="hidden">
-          <!-- Text Manager System Inhalt aus Script 6 -->
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- Datalist für Cloudflare Username Autocomplete -->
-  <datalist id="weed-buyer-options">
-    <option value="Rey Ehrlich">
-    <option value="Philipp Yane">
-    <option value="Kai Dimauro">
-    <option value="Lisa Ehrlich">
-  </datalist>
-
-  <script type="module">
-    // GEMEINSAME KONFIGURATION FÜR ALLE SYSTEME
-    const DISCORD_CLIENT_ID = '1432942180770644079';
-    const DISCORD_REDIRECT_URI = window.location.origin + window.location.pathname;
-    const BACKEND_URL = 'https://discord-oauth.ehrlichcolin2.workers.dev';
-
-    // Firebase Import und Konfiguration
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
-    import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCw4nadHCIRcouTJJoQ3ElToiVVFr5Rufo",
-      authDomain: "khusland-b7d13.firebaseapp.com",
-      databaseURL: "https://khusland-b7d13-default-rtdb.firebaseio.com",
-      projectId: "khusland-b7d13",
-      storageBucket: "khusland-b7d13.firebasestorage.app",
-      messagingSenderId: "69573193613",
-      appId: "1:69573193613:web:86c4d839281b1e343cd7c4",
-      measurementId: "G-JSCWR4207G"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const db = getDatabase(app);
-
-    // GLOBALE VARIABLEN FÜR SYSTEM-MANAGEMENT
-    let currentSystem = 'dashboard';
-    let systems = {
-      weed: { name: 'Weed Ankauf', color: 'green', icon: 'fa-cannabis' },
-      cocaine: { name: 'Kokain Ankauf', color: 'purple', icon: 'fa-pills' },
-      recycler: { name: 'Materialrecycler', color: 'yellow', icon: 'fa-recycle' },
-      workbench: { name: 'Werkbank Manager', color: 'red', icon: 'fa-tools' },
-      routes: { name: 'Drogenrouten', color: 'green', icon: 'fa-route' },
-      textmanager: { name: 'Text Manager', color: 'pink', icon: 'fa-comment' }
-    };
-
-    // DOM ELEMENTE FÜR NAVIGATION
-    const loginScreen = document.getElementById('loginScreen');
-    const mainContent = document.getElementById('mainContent');
-    const discordLoginBtn = document.getElementById('discordLogin');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const notification = document.getElementById('notification');
-    const forceCheckBtn = document.getElementById('forceCheckBtn');
-    const usernameElement = document.getElementById('username');
-    const accessBadge = document.getElementById('accessBadge');
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Weed Ankauf - US Army Panel</title>
+    <link rel="icon" type="image/png" href="army_logo.png">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    // Navigation Buttons
-    const btnDashboard = document.getElementById('btnDashboard');
-    const btnWeed = document.getElementById('btnWeed');
-    const btnCocaine = document.getElementById('btnCocaine');
-    const btnRecycler = document.getElementById('btnRecycler');
-    const btnWorkbench = document.getElementById('btnWorkbench');
-    const btnRoutes = document.getElementById('btnRoutes');
-    const btnTextManager = document.getElementById('btnTextManager');
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            margin: 2rem auto;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            background: #2a5298;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .discord-login-btn {
+            background: #5865F2;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .discord-login-btn:hover {
+            background: #4752c4;
+        }
+        
+        .loading {
+            display: none;
+            margin-top: 1rem;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1e3c72;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 1rem 0;
+            display: none;
+        }
+        
+        .panel-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin: 2rem auto;
+            max-width: 1200px;
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .panel-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: 500;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .nav-btn.active {
+            background: rgba(255,255,255,0.4);
+            font-weight: 600;
+        }
+        
+        .panel-content {
+            padding: 2rem;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e9ecef;
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1e3c72;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 2px rgba(30, 60, 114, 0.2);
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: #1e3c72;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2a5298;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+        
+        .price-display {
+            background: #e9ecef;
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        
+        .price-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e3c72;
+        }
+        
+        .discount-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .discount-btn {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .discount-btn.active {
+            background: #1e3c72;
+            color: white;
+            border-color: #1e3c72;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .stat-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e3c72;
+            margin: 0.5rem 0;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: #28a745;
+        }
+        
+        .notification.error {
+            background: #dc3545;
+        }
+        
+        .notification.info {
+            background: #17a2b8;
+        }
+        
+        .notification.warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: 500;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .access-badge {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+        
+        .access-permanent {
+            background: #28a745;
+            color: white;
+        }
+        
+        .access-temporary {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .discount-badge {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #6c757d;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .entry-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .entry-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .entry-badges {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .entry-main {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e3c72;
+        }
+        
+        .entry-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .detail-item {
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .detail-label {
+            color: #6c757d;
+            font-size: 0.8rem;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: #1e3c72;
+        }
+        
+        .price-increase {
+            color: #28a745;
+            font-size: 0.8rem;
+        }
+        
+        .price-decrease {
+            color: #dc3545;
+            font-size: 0.8rem;
+        }
+        
+        .search-box {
+            margin-bottom: 1rem;
+        }
+        
+        .discount-filter-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 6px 12px;
+            background: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover {
+            background: #dee2e6;
+        }
+        
+        .filter-btn.active {
+            background: #1e3c72;
+            color: white;
+            border-color: #1e3c72;
+        }
+        
+        .admin-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e9ecef;
+        }
+        
+        .admin-section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1e3c72;
+        }
+        
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .export-btn {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .panel-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .panel-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-btn {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="logo">🌿</div>
+        <h1>Weed Ankauf Panel</h1>
+        <p>Bitte mit Discord anmelden um fortzufahren</p>
+        
+        <button id="discordLogin" class="discord-login-btn">
+            <i class="fab fa-discord"></i> Mit Discord anmelden
+        </button>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Anmeldung wird vorbereitet...</p>
+        </div>
+        
+        <div class="error-message" id="errorMessage"></div>
+    </div>
 
-    // System Container
-    const dashboard = document.getElementById('dashboard');
-    const weedSystem = document.getElementById('weedSystem');
-    const cocaineSystem = document.getElementById('cocaineSystem');
-    const recyclerSystem = document.getElementById('recyclerSystem');
-    const workbenchSystem = document.getElementById('workbenchSystem');
-    const routesSystem = document.getElementById('routesSystem');
-    const textManagerSystem = document.getElementById('textManagerSystem');
+    <!-- Main Panel (Hidden until login) -->
+    <div id="mainPanel" class="hidden">
+        <div class="panel-container">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <i class="fas fa-cannabis"></i>
+                    Weed Ankauf - US Army Panel
+                </div>
+                <div class="user-info">
+                    <span>Eingeloggt als: <span id="username">Benutzer</span></span>
+                    <span id="accessBadge" class="access-badge access-permanent hidden">Permanent</span>
+                    <button id="logoutBtn" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+            
+            <div class="panel-nav">
+                <button id="btnNew" class="nav-btn active">Neuer Ankauf</button>
+                <button id="btnOverview" class="nav-btn">Übersicht</button>
+                <button id="btnAdmin" class="nav-btn">Admin</button>
+            </div>
+            
+            <div class="panel-content">
+                <!-- New Entry Section -->
+                <div id="newEntry" class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-shopping-cart"></i>
+                        Neuer Ankauf
+                    </h2>
+                    
+                    <form id="entryForm">
+                        <div class="form-group">
+                            <label class="form-label">Rabatt auswählen</label>
+                            <div id="discountButtonsContainer" class="discount-grid">
+                                <!-- Discount buttons will be generated here -->
+                            </div>
+                            <div class="form-label" style="text-align: center; margin-top: 0.5rem;">
+                                Aktiver Rabatt: <span id="activeDiscountText" class="price-amount">0%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label for="buyer" class="form-label">Käufer (Cloudflare)</label>
+                                <input id="buyer" type="text" class="form-input" placeholder="Cloudflare Username" required list="buyer-options">
+                            </div>
+                            <div class="form-group">
+                                <label for="seller" class="form-label">Verkäufer</label>
+                                <input id="seller" type="text" class="form-input" placeholder="Verkäufer Name" required>
+                            </div>
+                        </div>
+                        
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label for="quantity" class="form-label">Menge (Bricks)</label>
+                                <input id="quantity" type="number" class="form-input" placeholder="Menge eingeben" min="1" required>
+                            </div>
+                            <div class="price-display">
+                                <div class="form-label">Gesamtpreis</div>
+                                <div id="totalPrice" class="price-amount">0 $</div>
+                            </div>
+                        </div>
+                        
+                        <div class="price-display" style="background: #d4edda;">
+                            <div class="form-label">Finaler Preis</div>
+                            <div id="finalPrice" class="price-amount" style="color: #155724;">0 $</div>
+                        </div>
+                        
+                        <div class="grid-2">
+                            <div class="price-display">
+                                <div class="form-label">Verkäufer Anteil</div>
+                                <div id="sellerShare" class="price-amount" style="color: #28a745;">0 $</div>
+                                <div id="sellerShareChange" class="price-increase hidden">
+                                    <i class="fas fa-arrow-up"></i> +0 $
+                                </div>
+                            </div>
+                            <div class="price-display">
+                                <div class="form-label">Käufer Anteil</div>
+                                <div id="yourShare" class="price-amount" style="color: #1e3c72;">0 $</div>
+                                <div id="yourShareChange" class="price-decrease hidden">
+                                    <i class="fas fa-arrow-down"></i> -0 $
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="price-display" style="background: #cce7ff;">
+                            <div class="form-label">Rabatt-Erklärung</div>
+                            <div id="discountExplanationText" style="font-size: 0.9rem; color: #1e3c72;">
+                                Rabatt verteilt Gesamtbetrag
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                            <button type="submit" class="btn btn-success" style="flex: 1;">
+                                <i class="fas fa-save"></i> Speichern
+                            </button>
+                            <button type="button" id="resetForm" class="btn btn-danger">
+                                <i class="fas fa-undo"></i> Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Overview Section -->
+                <div id="overview" class="card hidden">
+                    <h2 class="card-title">
+                        <i class="fas fa-list"></i>
+                        Übersicht
+                    </h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Gesamtumsatz</div>
+                            <div id="totalRevenueOverview" class="stat-value">0 $</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Anzahl Transaktionen</div>
+                            <div id="totalCountOverview" class="stat-value">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Ø pro Ankauf</div>
+                            <div id="avgPerPurchase" class="stat-value">0 $</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Dein Anteil</div>
+                            <div id="yourTotalShare" class="stat-value">0 $</div>
+                        </div>
+                    </div>
+                    
+                    <div class="discount-filter-container" id="discountFilterContainer">
+                        <!-- Discount filter buttons will be generated here -->
+                    </div>
+                    
+                    <div class="search-box">
+                        <input type="text" id="searchInput" class="form-input" placeholder="Suchen nach Käufer/Verkäufer...">
+                    </div>
+                    
+                    <div id="entriesList">
+                        <!-- Entries will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Admin Section -->
+                <div id="adminPanel" class="card hidden">
+                    <h2 class="card-title">
+                        <i class="fas fa-cog"></i>
+                        Adminbereich
+                    </h2>
+                    
+                    <div id="adminLoginSection">
+                        <div class="form-group">
+                            <label for="adminPass" class="form-label">Admin-Passwort</label>
+                            <input id="adminPass" type="password" class="form-input" placeholder="Passwort eingeben">
+                        </div>
+                        <button id="adminLoginBtn" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Einloggen
+                        </button>
+                        <div id="adminError" class="error-message">
+                            Falsches Passwort
+                        </div>
+                    </div>
+                    
+                    <div id="adminContent" class="hidden">
+                        <div class="admin-section">
+                            <h3 class="admin-section-title">
+                                <i class="fas fa-percentage"></i>
+                                Rabatt-Einstellungen
+                            </h3>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Neuen Rabatt hinzufügen</label>
+                                <div class="grid-2">
+                                    <input type="number" id="newDiscountValue" class="form-input" placeholder="Rabatt %" min="0" max="100">
+                                    <input type="text" id="newDiscountLabel" class="form-input" placeholder="Bezeichnung">
+                                </div>
+                                <button id="addDiscountBtn" class="btn btn-success" style="margin-top: 0.5rem;">
+                                    <i class="fas fa-plus"></i> Rabatt hinzufügen
+                                </button>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Aktive Rabatte</label>
+                                <div id="discountSettingsList">
+                                    <!-- Discount settings will be listed here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="admin-section">
+                            <h3 class="admin-section-title">
+                                <i class="fas fa-chart-bar"></i>
+                                Statistik
+                            </h3>
+                            <div class="grid-2">
+                                <div class="stat-card">
+                                    <div class="stat-label">Gesamteinträge</div>
+                                    <div id="totalCount" class="stat-value">0</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-label">Gesamtumsatz</div>
+                                    <div id="totalRevenue" class="stat-value">0 $</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="admin-section">
+                            <h3 class="admin-section-title">
+                                <i class="fas fa-download"></i>
+                                Export
+                            </h3>
+                            <div class="export-options">
+                                <button id="exportCsvDetailed" class="btn btn-primary export-btn">
+                                    <i class="fas fa-file-csv"></i> Detailliert Export
+                                </button>
+                                <button id="exportCsvSummary" class="btn btn-primary export-btn">
+                                    <i class="fas fa-file-alt"></i> Zusammenfassung
+                                </button>
+                                <button id="exportCsvMonthly" class="btn btn-primary export-btn">
+                                    <i class="fas fa-calendar-alt"></i> Monatsbericht
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="admin-section">
+                            <h3 class="admin-section-title">
+                                <i class="fas fa-table"></i>
+                                Alle Einträge
+                            </h3>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Datum</th>
+                                            <th>Käufer</th>
+                                            <th>Verkäufer</th>
+                                            <th>Menge</th>
+                                            <th>Rabatt</th>
+                                            <th>Preis</th>
+                                            <th>Verkäufer</th>
+                                            <th>Käufer</th>
+                                            <th>Aktion</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminTableBody">
+                                        <!-- Admin table data will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    // NOTIFICATION SYSTEM (Gemeinsam für alle Systeme)
-    function showNotification(message, type = 'info', duration = 4000) {
-      const notification = document.getElementById('notification');
-      notification.textContent = message;
-      notification.className = `notification ${type}`;
-      notification.classList.remove('hidden');
-      notification.classList.add('show');
-      
-      setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-          notification.classList.add('hidden');
-        }, 300);
-      }, duration);
-    }
+    <!-- Notification System -->
+    <div id="notification" class="notification hidden"></div>
 
-    // SYSTEM NAVIGATION
-    function showSystem(systemName) {
-      // Alle Systeme verstecken
-      dashboard.classList.add('hidden');
-      weedSystem.classList.add('hidden');
-      cocaineSystem.classList.add('hidden');
-      recyclerSystem.classList.add('hidden');
-      workbenchSystem.classList.add('hidden');
-      routesSystem.classList.add('hidden');
-      textManagerSystem.classList.add('hidden');
-      
-      // Navigation Buttons zurücksetzen
-      document.querySelectorAll('#mainContent button[id^="btn"]').forEach(btn => {
-        btn.classList.remove('pulse-glow', 'active-link');
-      });
-      
-      // Gewünschtes System anzeigen
-      currentSystem = systemName;
-      
-      switch(systemName) {
-        case 'dashboard':
-          dashboard.classList.remove('hidden');
-          btnDashboard.classList.add('pulse-glow', 'active-link');
-          break;
-        case 'weed':
-          weedSystem.classList.remove('hidden');
-          btnWeed.classList.add('pulse-glow', 'active-link');
-          initWeedSystem();
-          break;
-        case 'cocaine':
-          cocaineSystem.classList.remove('hidden');
-          btnCocaine.classList.add('pulse-glow', 'active-link');
-          initCocaineSystem();
-          break;
-        case 'recycler':
-          recyclerSystem.classList.remove('hidden');
-          btnRecycler.classList.add('pulse-glow', 'active-link');
-          initRecyclerSystem();
-          break;
-        case 'workbench':
-          workbenchSystem.classList.remove('hidden');
-          btnWorkbench.classList.add('pulse-glow', 'active-link');
-          initWorkbenchSystem();
-          break;
-        case 'routes':
-          routesSystem.classList.remove('hidden');
-          btnRoutes.classList.add('pulse-glow', 'active-link');
-          initRoutesSystem();
-          break;
-        case 'textmanager':
-          textManagerSystem.classList.remove('hidden');
-          btnTextManager.classList.add('pulse-glow', 'active-link');
-          initTextManagerSystem();
-          break;
-      }
-    }
+    <!-- Datalist for Cloudflare Username Autocomplete -->
+    <datalist id="buyer-options">
+        <option value="Rey Ehrlich">
+        <option value="Philipp Yane">
+        <option value="Kai Dimauro">
+        <option value="Lisa Ehrlich">
+    </datalist>
 
-    // MODULE CARD CLICK HANDLER
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.module-card').forEach(card => {
-        card.addEventListener('click', (e) => {
-          const module = card.getAttribute('data-module');
-          showSystem(module);
+    <script type="module">
+        // Discord OAuth Konfiguration
+        const DISCORD_CLIENT_ID = '1432942180770644079';
+        const DISCORD_REDIRECT_URI = window.location.origin + window.location.pathname;
+        const BACKEND_URL = 'https://discord-oauth.ehrlichcolin2.workers.dev';
+
+        // Firebase Import und Konfiguration
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
+        import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCw4nadHCIRcouTJJoQ3ElToiVVFr5Rufo",
+            authDomain: "khusland-b7d13.firebaseapp.com",
+            databaseURL: "https://khusland-b7d13-default-rtdb.firebaseio.com",
+            projectId: "khusland-b7d13",
+            storageBucket: "khusland-b7d13.firebasestorage.app",
+            messagingSenderId: "69573193613",
+            appId: "1:69573193613:web:86c4d839281b1e343cd7c4",
+            measurementId: "G-JSCWR4207G"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+        const entriesRef = ref(db,'weed_entries');
+        const discountsRef = ref(db,'discount_settings');
+
+        // CLOUDFLARE USERNAME VALIDIERUNG
+        const CLOUDFLARE_USERNAMES = ['Rey Ehrlich', 'Philipp Yane', 'Kai Dimauro', 'Lisa Ehrlich'];
+
+        function validateBuyerName(buyerName) {
+            return CLOUDFLARE_USERNAMES.includes(buyerName);
+        }
+
+        // RABATT-SYSTEM VARIABLEN
+        let currentDiscount = 0;
+        let availableDiscounts = [
+            { value: 0, label: 'Kein Rabatt', color: 'gray' },
+            { value: 10, label: 'Mitarbeiter', color: 'yellow' },
+            { value: 15, label: 'Einkäufer', color: 'blue' },
+            { value: 20, label: 'Normal', color: 'green' }
+        ];
+
+        // DOM Elemente
+        const loginScreen = document.getElementById('loginScreen');
+        const mainPanel = document.getElementById('mainPanel');
+        const discordLoginBtn = document.getElementById('discordLogin');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('errorMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const usernameElement = document.getElementById('username');
+        const notification = document.getElementById('notification');
+        const accessBadge = document.getElementById('accessBadge');
+
+        // Notification System
+        function showNotification(message, type = 'info', duration = 4000) {
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.remove('hidden');
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.classList.add('hidden');
+                }, 300);
+            }, duration);
+        }
+
+        // Discord OAuth Login
+        function startDiscordOAuth() {
+            const scope = 'identify';
+            const state = generateRandomState();
+            
+            const authUrl = new URL('https://discord.com/api/oauth2/authorize');
+            authUrl.searchParams.set('client_id', DISCORD_CLIENT_ID);
+            authUrl.searchParams.set('redirect_uri', DISCORD_REDIRECT_URI);
+            authUrl.searchParams.set('response_type', 'code');
+            authUrl.searchParams.set('scope', scope);
+            authUrl.searchParams.set('state', state);
+            
+            loading.style.display = 'block';
+            window.location.href = authUrl.toString();
+        }
+
+        function generateRandomState() {
+            return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        }
+
+        async function exchangeCodeForToken(code) {
+            try {
+                loading.style.display = 'block';
+                
+                const response = await fetch(`${BACKEND_URL}/token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        code, 
+                        redirect_uri: DISCORD_REDIRECT_URI
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Worker responded with status ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.access_token) {
+                    await verifyUser(data.access_token);
+                } else {
+                    throw new Error('Kein Access Token erhalten');
+                }
+            } catch (error) {
+                console.error('Fehler beim Token-Austausch:', error);
+                showError('Fehler bei der Anmeldung. Bitte versuche es später erneut.');
+                loading.style.display = 'none';
+            }
+        }
+
+        async function verifyUser(accessToken) {
+            try {
+                const response = await fetch(`${BACKEND_URL}/verify-user`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        accessToken
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Verification failed');
+                }
+
+                const data = await response.json();
+
+                if (data.isAuthorized) {
+                    localStorage.setItem('discord_user', JSON.stringify(data.user));
+                    localStorage.setItem('discord_access_token', accessToken);
+                    localStorage.setItem('user_access_info', JSON.stringify(data.accessInfo || {}));
+                    showMainContent(data.accessInfo || {});
+                    showNotification(`Eingeloggt als ${data.user.username}`, 'success');
+                } else {
+                    let errorMsg = 'Zugriff verweigert. ';
+                    if (data.accessInfo && data.accessInfo.message === 'access expired') {
+                        errorMsg += 'Dein Zugang ist abgelaufen.';
+                    } else if (data.accessInfo && data.accessInfo.message === 'not in authorized list') {
+                        errorMsg += 'Du bist nicht in der Liste der autorisierten Benutzer.';
+                    } else {
+                        errorMsg += 'Du bist nicht autorisiert.';
+                    }
+                    showError(errorMsg);
+                }
+            } catch (error) {
+                console.error('Fehler bei der Benutzerüberprüfung:', error);
+                showError('Fehler bei der Berechtigungsprüfung');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        async function checkUserAuthorization() {
+            const token = localStorage.getItem('discord_access_token');
+            const user = localStorage.getItem('discord_user');
+            
+            if (!token || !user) {
+                return { isAuthorized: false, reason: 'No token or user' };
+            }
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/verify-user`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        accessToken: token
+                    })
+                });
+
+                if (!response.ok) {
+                    localStorage.removeItem('discord_access_token');
+                    localStorage.removeItem('discord_user');
+                    localStorage.removeItem('user_access_info');
+                    return { isAuthorized: false, reason: 'Token invalid' };
+                }
+
+                const data = await response.json();
+                
+                if (!data.isAuthorized) {
+                    localStorage.removeItem('discord_access_token');
+                    localStorage.removeItem('discord_user');
+                    localStorage.removeItem('user_access_info');
+                }
+                
+                return data;
+                
+            } catch (error) {
+                console.error('Fehler bei der Autorisierungsprüfung:', error);
+                return { isAuthorized: false, reason: error.message };
+            }
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function showMainContent(accessInfo) {
+            loginScreen.classList.add('hidden');
+            mainPanel.classList.remove('hidden');
+            errorMessage.style.display = 'none';
+            loading.style.display = 'none';
+            
+            const user = JSON.parse(localStorage.getItem('discord_user'));
+            if (user) {
+                usernameElement.textContent = user.username;
+            }
+            
+            if (accessInfo) {
+                accessBadge.classList.remove('hidden');
+                if (accessInfo.isPermanent) {
+                    accessBadge.textContent = 'Permanent';
+                    accessBadge.className = 'access-badge access-permanent';
+                } else {
+                    accessBadge.textContent = accessInfo.message || 'Temporary';
+                    accessBadge.className = 'access-badge access-temporary';
+                }
+            }
+            
+            const cleanUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+        }
+
+        function logout() {
+            localStorage.removeItem('discord_user');
+            localStorage.removeItem('discord_access_token');
+            localStorage.removeItem('user_access_info');
+            
+            mainPanel.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+            errorMessage.style.display = 'none';
+            accessBadge.classList.add('hidden');
+            
+            document.getElementById('entryForm').reset();
+            updateShares();
+            
+            showNotification('Ausgeloggt', 'info');
+        }
+
+        function checkExistingLogin() {
+            const user = localStorage.getItem('discord_user');
+            const token = localStorage.getItem('discord_access_token');
+            const accessInfo = localStorage.getItem('user_access_info');
+            
+            if (user && token) {
+                showMainContent(accessInfo ? JSON.parse(accessInfo) : null);
+            } else {
+                localStorage.removeItem('discord_user');
+                localStorage.removeItem('discord_access_token');
+                localStorage.removeItem('user_access_info');
+            }
+        }
+
+        // Event Listeners
+        discordLoginBtn.addEventListener('click', startDiscordOAuth);
+        logoutBtn.addEventListener('click', logout);
+
+        // Initialisierung
+        checkExistingLogin();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        if (code) {
+            exchangeCodeForToken(code);
+        }
+
+        // Firebase-Funktionen
+        const ADMIN_PASSWORD = '1101';
+        let entries = [];
+        let filteredEntries = [];
+
+        function show(el) { 
+            el.classList.remove('hidden'); 
+        }
+        function hide(el) { 
+            el.classList.add('hidden'); 
+        }
+
+        function formatCurrency(n) { 
+            return new Intl.NumberFormat('de-DE').format(Math.round(n)) + ' $'; 
+        }
+        function formatDate(d) {
+            const date = new Date(d);
+            const pad = n => n.toString().padStart(2,'0');
+            return `${pad(date.getDate())}.${pad(date.getMonth()+1)}.${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        }
+
+        // Tabs Navigation
+        document.getElementById('btnNew').addEventListener('click', () => {
+            show(document.getElementById('newEntry')); 
+            hide(document.getElementById('overview')); 
+            hide(document.getElementById('adminPanel'));
+            updateButtonStates('new');
         });
-      });
-    });
+        
+        document.getElementById('btnOverview').addEventListener('click', () => {
+            hide(document.getElementById('newEntry')); 
+            show(document.getElementById('overview')); 
+            hide(document.getElementById('adminPanel'));
+            renderOverview();
+            updateButtonStates('overview');
+        });
+        
+        document.getElementById('btnAdmin').addEventListener('click', () => {
+            hide(document.getElementById('newEntry')); 
+            hide(document.getElementById('overview')); 
+            show(document.getElementById('adminPanel'));
+            updateButtonStates('admin');
+        });
 
-    // NAVIGATION EVENT LISTENER
-    btnDashboard.addEventListener('click', () => showSystem('dashboard'));
-    btnWeed.addEventListener('click', () => showSystem('weed'));
-    btnCocaine.addEventListener('click', () => showSystem('cocaine'));
-    btnRecycler.addEventListener('click', () => showSystem('recycler'));
-    btnWorkbench.addEventListener('click', () => showSystem('workbench'));
-    btnRoutes.addEventListener('click', () => showSystem('routes'));
-    btnTextManager.addEventListener('click', () => showSystem('textmanager'));
+        function updateButtonStates(activeButton) {
+            const buttons = {
+                new: document.getElementById('btnNew'),
+                overview: document.getElementById('btnOverview'),
+                admin: document.getElementById('btnAdmin')
+            };
+            
+            Object.values(buttons).forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (buttons[activeButton]) {
+                buttons[activeButton].classList.add('active');
+            }
+        }
 
-    // DISCORD OAUTH FUNKTIONEN (Gemeinsam für alle Systeme)
-    // ... (kompletter OAuth Code aus Script 1) ...
+        // Initialize with New Entry active
+        updateButtonStates('new');
 
-    // SYSTEM-INITIALISIERUNGSFUNKTIONEN
-    function initWeedSystem() {
-      // Hier kommt der komplette Weed System Code aus Script 1
-      console.log('Weed System initialisiert');
-    }
+        // RABATT-SYSTEM FUNKTIONEN
+        function loadDiscountSettings() {
+            onValue(discountsRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    availableDiscounts = Object.values(data);
+                    renderDiscountButtons();
+                    renderDiscountFilters();
+                    renderDiscountSettings();
+                } else {
+                    set(discountsRef, availableDiscounts);
+                }
+            });
+        }
 
-    function initCocaineSystem() {
-      // Hier kommt der komplette Kokain System Code aus Script 2
-      console.log('Kokain System initialisiert');
-    }
+        function renderDiscountButtons() {
+            const container = document.getElementById('discountButtonsContainer');
+            container.innerHTML = '';
+            
+            availableDiscounts.sort((a, b) => a.value - b.value).forEach(discount => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = `discount-btn ${discount.value === currentDiscount ? 'active' : ''}`;
+                button.innerHTML = `
+                    <div style="font-weight: bold; font-size: 0.9rem;">${discount.value}%</div>
+                    <div style="font-size: 0.7rem;">${discount.label}</div>
+                `;
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.discount-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    button.classList.add('active');
+                    currentDiscount = discount.value;
+                    
+                    updateDiscountDisplay();
+                    updateShares();
+                    
+                    if (discount.value > 0) {
+                        showNotification(`${discount.value}% Rabatt - Verkäufer ${100 - discount.value}% / Käufer ${discount.value}%`, 'info', 2000);
+                    } else {
+                        showNotification('Kein Rabatt - Verkäufer 100% / Käufer 0%', 'info', 2000);
+                    }
+                });
+                
+                container.appendChild(button);
+            });
+            
+            updateDiscountDisplay();
+        }
 
-    function initRecyclerSystem() {
-      // Hier kommt der komplette Recycler System Code aus Script 3
-      console.log('Recycler System initialisiert');
-    }
+        function renderDiscountFilters() {
+            const container = document.getElementById('discountFilterContainer');
+            container.innerHTML = '';
+            
+            const allButton = document.createElement('button');
+            allButton.className = 'filter-btn active';
+            allButton.textContent = 'Alle';
+            allButton.setAttribute('data-discount', 'all');
+            allButton.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                allButton.classList.add('active');
+                filteredEntries = [...entries];
+                renderOverview();
+            });
+            container.appendChild(allButton);
+            
+            availableDiscounts.sort((a, b) => a.value - b.value).forEach(discount => {
+                if (discount.value === 0) return;
+                
+                const button = document.createElement('button');
+                button.className = 'filter-btn';
+                button.textContent = `${discount.value}%`;
+                button.setAttribute('data-discount', discount.value);
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    filteredEntries = entries.filter(entry => entry.discount === discount.value);
+                    renderOverview();
+                });
+                container.appendChild(button);
+            });
+        }
 
-    function initWorkbenchSystem() {
-      // Hier kommt der komplette Werkbank System Code aus Script 4
-      console.log('Werkbank System initialisiert');
-    }
+        function renderDiscountSettings() {
+            const container = document.getElementById('discountSettingsList');
+            container.innerHTML = '';
+            
+            availableDiscounts.sort((a, b) => a.value - b.value).forEach((discount, index) => {
+                const item = document.createElement('div');
+                item.className = 'entry-card';
+                item.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${discount.value}%</strong> - ${discount.label}
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteDiscount(${index})" style="padding: 5px 10px; font-size: 0.8rem;">
+                            <i class="fas fa-trash"></i> Löschen
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
 
-    function initRoutesSystem() {
-      // Hier kommt der komplette Routen System Code aus Script 5
-      console.log('Routen System initialisiert');
-    }
+        function updateDiscountDisplay() {
+            const activeDiscount = availableDiscounts.find(d => d.value === currentDiscount);
+            if (activeDiscount) {
+                document.getElementById('activeDiscountText').textContent = 
+                    currentDiscount === 0 ? '0%' : `${activeDiscount.value}%`;
+            }
+        }
 
-    function initTextManagerSystem() {
-      // Hier kommt der komplette Text Manager Code aus Script 6
-      console.log('Text Manager System initialisiert');
-    }
+        // KORRIGIERTE RABATT-BERECHNUNG
+        function calculateSharesWithDiscount(totalPrice) {
+            if (currentDiscount === 0) {
+                return {
+                    totalPrice: Math.round(totalPrice),
+                    sellerShare: Math.round(totalPrice),
+                    yourShare: 0,
+                    discountAmount: 0,
+                    sellerIncrease: Math.round(totalPrice * 0.3),
+                    yourDecrease: Math.round(totalPrice * 0.3)
+                };
+            }
+            
+            const sellerPercentage = (100 - currentDiscount) / 100;
+            const yourPercentage = currentDiscount / 100;
+            
+            const finalSellerShare = totalPrice * sellerPercentage;
+            const finalYourShare = totalPrice * yourPercentage;
+            
+            const baseSellerShare = totalPrice * 0.7;
+            const baseYourShare = totalPrice * 0.3;
+            const sellerIncrease = finalSellerShare - baseSellerShare;
+            const yourDecrease = baseYourShare - finalYourShare;
+            
+            return {
+                totalPrice: Math.round(totalPrice),
+                sellerShare: Math.round(finalSellerShare),
+                yourShare: Math.round(finalYourShare),
+                discountAmount: Math.round(yourDecrease),
+                sellerIncrease: Math.round(sellerIncrease),
+                yourDecrease: Math.round(yourDecrease)
+            };
+        }
 
-    // DASHBOARD STATISTIKEN AKTUALISIEREN
-    function updateDashboardStats() {
-      // Hier werden später die Statistiken für jedes System aktualisiert
-      // Basierend auf den Firebase-Daten
-    }
+        // Share Calculation
+        const quantityInput = document.getElementById('quantity');
+        const sellerShareEl = document.getElementById('sellerShare');
+        const yourShareEl = document.getElementById('yourShare');
+        const totalPriceEl = document.getElementById('totalPrice');
+        const finalPriceEl = document.getElementById('finalPrice');
+        const sellerShareChangeEl = document.getElementById('sellerShareChange');
+        const yourShareChangeEl = document.getElementById('yourShareChange');
+        const discountExplanationEl = document.getElementById('discountExplanationText');
+        
+        function updateShares() { 
+            const q = Number(quantityInput.value) || 0;
+            const totalPrice = q * 2500;
+            
+            const shares = calculateSharesWithDiscount(totalPrice);
+            
+            totalPriceEl.textContent = formatCurrency(totalPrice);
+            finalPriceEl.textContent = formatCurrency(totalPrice);
+            
+            sellerShareEl.textContent = formatCurrency(shares.sellerShare);
+            yourShareEl.textContent = formatCurrency(shares.yourShare);
+            
+            if (shares.sellerIncrease > 0) {
+                sellerShareChangeEl.textContent = `+${formatCurrency(shares.sellerIncrease)}`;
+                sellerShareChangeEl.classList.remove('hidden');
+            } else {
+                sellerShareChangeEl.classList.add('hidden');
+            }
+            
+            if (shares.yourDecrease > 0) {
+                yourShareChangeEl.textContent = `-${formatCurrency(shares.yourDecrease)}`;
+                yourShareChangeEl.classList.remove('hidden');
+            } else {
+                yourShareChangeEl.classList.add('hidden');
+            }
+            
+            if (currentDiscount === 0) {
+                discountExplanationEl.textContent = 'Verkäufer 100% / Käufer 0%';
+            } else {
+                discountExplanationEl.textContent = `Verkäufer ${100 - currentDiscount}% / Käufer ${currentDiscount}%`;
+            }
+        }
+        
+        quantityInput.addEventListener('input', updateShares);
+        
+        // Rabatt-System initialisieren
+        loadDiscountSettings();
+        updateShares();
 
-    // INITIALISIERUNG BEIM LADEN
-    document.addEventListener('DOMContentLoaded', () => {
-      // Starte mit Dashboard
-      showSystem('dashboard');
-      
-      // Discord OAuth Initialisierung
-      // ... (OAuth Code) ...
-    });
+        // RABATT-EINSTELLUNGEN FUNKTIONEN
+        document.getElementById('addDiscountBtn').addEventListener('click', () => {
+            const value = parseInt(document.getElementById('newDiscountValue').value);
+            const label = document.getElementById('newDiscountLabel').value.trim();
+            
+            if (isNaN(value) || value < 0 || value > 100) {
+                showNotification('Bitte gültigen Rabattwert eingeben (0-100).', 'error');
+                return;
+            }
+            
+            if (!label) {
+                showNotification('Bitte Bezeichnung eingeben.', 'error');
+                return;
+            }
+            
+            if (availableDiscounts.some(d => d.value === value)) {
+                showNotification('Rabatt existiert bereits.', 'error');
+                return;
+            }
+            
+            const newDiscount = {
+                value: value,
+                label: label,
+                color: 'gray'
+            };
+            
+            availableDiscounts.push(newDiscount);
+            set(discountsRef, availableDiscounts);
+            
+            document.getElementById('newDiscountValue').value = '';
+            document.getElementById('newDiscountLabel').value = '';
+            
+            showNotification(`Rabatt ${value}% hinzugefügt`, 'success');
+        });
 
-  </script>
+        window.deleteDiscount = function(index) {
+            if (availableDiscounts.length <= 1) {
+                showNotification('Mindestens ein Rabatt muss vorhanden sein.', 'error');
+                return;
+            }
+            
+            const discount = availableDiscounts[index];
+            if (confirm(`Rabatt ${discount.value}% (${discount.label}) löschen?`)) {
+                availableDiscounts.splice(index, 1);
+                set(discountsRef, availableDiscounts);
+                showNotification(`Rabatt ${discount.value}% gelöscht`, 'success');
+            }
+        }
+
+        // Form submit
+        document.getElementById('entryForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            
+            const buyer = document.getElementById('buyer').value.trim();
+            const seller = document.getElementById('seller').value.trim();
+            const quantity = Number(quantityInput.value);
+            
+            if (!validateBuyerName(buyer)) {
+                showNotification('Fehler: Ungültiger Cloudflare Username. Erlaubt: ' + CLOUDFLARE_USERNAMES.join(', '), 'error');
+                return;
+            }
+            
+            if (!buyer || !seller || !quantity) {
+                showNotification('Bitte alle Felder ausfüllen!', 'error');
+                return;
+            }
+            
+            const totalPrice = quantity * 2500;
+            const shares = calculateSharesWithDiscount(totalPrice);
+            
+            const activeDiscount = availableDiscounts.find(d => d.value === currentDiscount);
+            
+            const entry = {
+                buyer,
+                seller,
+                quantity,
+                totalPrice: totalPrice,
+                discount: currentDiscount,
+                discountLabel: activeDiscount ? activeDiscount.label : 'Kein Rabatt',
+                discountAmount: shares.discountAmount,
+                sellerShare: shares.sellerShare,
+                yourShare: shares.yourShare,
+                sellerIncrease: shares.sellerIncrease,
+                yourDecrease: shares.yourDecrease,
+                date: formatDate(new Date()),
+                timestamp: Date.now()
+            };
+
+            try {
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Speichere...';
+                submitBtn.disabled = true;
+                
+                await push(entriesRef, entry);
+                e.target.reset();
+                updateShares();
+                
+                if (currentDiscount === 0) {
+                    showNotification('Eintrag gespeichert! Verkäufer 100% / Käufer 0%', 'success');
+                } else {
+                    showNotification(`Eintrag gespeichert! Verkäufer ${100 - currentDiscount}% / Käufer ${currentDiscount}%`, 'success');
+                }
+                
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+            } catch (error) {
+                console.error('Fehler beim Speichern:', error);
+                showNotification('Fehler beim Speichern!', 'error');
+            }
+        });
+
+        // Reset form
+        document.getElementById('resetForm').addEventListener('click', () => {
+            if (confirm('Formular zurücksetzen?')) {
+                document.getElementById('entryForm').reset(); 
+                updateShares();
+                showNotification('Formular zurückgesetzt', 'info');
+            }
+        });
+
+        // Real-time listener
+        onValue(entriesRef, snapshot => {
+            entries = [];
+            snapshot.forEach(child => {
+                const data = child.val();
+                data.key = child.key;
+                entries.push(data);
+            });
+            entries.sort((a, b) => b.timestamp - a.timestamp);
+            filteredEntries = [...entries];
+            renderOverview();
+            renderAdminTable();
+        });
+
+        // Suchfunktion
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            if (searchTerm.trim() === '') {
+                filteredEntries = [...entries];
+            } else {
+                filteredEntries = entries.filter(entry => 
+                    entry.buyer.toLowerCase().includes(searchTerm) || 
+                    entry.seller.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            renderOverview();
+        });
+
+        // Übersicht rendern
+        const entriesList = document.getElementById('entriesList');
+        function renderOverview() {
+            entriesList.innerHTML = '';
+            if (filteredEntries.length === 0) {
+                entriesList.innerHTML = '<div class="text-center py-6 text-gray-400"><p>Keine Einträge vorhanden.</p></div>'; 
+                return;
+            }
+            
+            let totalRevenue = 0;
+            let yourTotalShare = 0;
+            
+            filteredEntries.forEach(entry => {
+                totalRevenue += entry.totalPrice;
+                yourTotalShare += entry.yourShare;
+            });
+            
+            const avgPerPurchase = filteredEntries.length > 0 ? totalRevenue / filteredEntries.length : 0;
+            
+            document.getElementById('totalRevenueOverview').textContent = formatCurrency(totalRevenue);
+            document.getElementById('totalCountOverview').textContent = filteredEntries.length;
+            document.getElementById('avgPerPurchase').textContent = formatCurrency(avgPerPurchase);
+            document.getElementById('yourTotalShare').textContent = formatCurrency(yourTotalShare);
+            
+            filteredEntries.forEach(en => {
+                const discountText = en.discountLabel || (en.discount === 0 ? 'Kein Rabatt' : `${en.discount}%`);
+                
+                const el = document.createElement('div');
+                el.className = 'entry-card';
+                el.innerHTML = `
+                    <div class="entry-header">
+                        <div class="entry-date">${en.date}</div>
+                        <div class="entry-badges">
+                            <span class="discount-badge">${en.quantity} Bricks</span>
+                            <span class="discount-badge">${discountText}</span>
+                        </div>
+                    </div>
+                    <div class="entry-main">${en.buyer} → ${en.seller}</div>
+                    <div class="entry-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Gesamt</div>
+                            <div class="detail-value">${formatCurrency(en.totalPrice)}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Rabatt</div>
+                            <div class="detail-value" style="color: #dc3545;">-${formatCurrency(en.discountAmount)}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Verkäufer</div>
+                            <div class="detail-value" style="color: #28a745;">${formatCurrency(en.sellerShare)}</div>
+                            ${en.sellerIncrease > 0 ? `<div class="price-increase"><i class="fas fa-arrow-up"></i> +${formatCurrency(en.sellerIncrease)}</div>` : ''}
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Käufer</div>
+                            <div class="detail-value" style="color: #1e3c72;">${formatCurrency(en.yourShare)}</div>
+                            ${en.yourDecrease > 0 ? `<div class="price-decrease"><i class="fas fa-arrow-down"></i> -${formatCurrency(en.yourDecrease)}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+                entriesList.appendChild(el);
+            });
+        }
+
+        // Admin
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        const adminPassInput = document.getElementById('adminPass');
+        const adminError = document.getElementById('adminError');
+        const adminTableBody = document.getElementById('adminTableBody');
+        const totalCount = document.getElementById('totalCount');
+        const totalRevenue = document.getElementById('totalRevenue');
+
+        adminLoginBtn.addEventListener('click', () => {
+            if (adminPassInput.value === ADMIN_PASSWORD) {
+                adminError.classList.add('hidden'); 
+                show(document.getElementById('adminContent')); 
+                renderAdminTable();
+                renderDiscountSettings();
+                adminPassInput.value = '';
+                showNotification('Admin-Bereich betreten', 'success');
+            } else {
+                adminError.classList.remove('hidden');
+                adminPassInput.value = '';
+                adminPassInput.focus();
+                showNotification('Falsches Passwort', 'error');
+            }
+        });
+
+        adminPassInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                adminLoginBtn.click();
+            }
+        });
+
+        function renderAdminTable() {
+            adminTableBody.innerHTML = '';
+            let revenue = 0;
+            
+            entries.forEach(en => {
+                revenue += en.yourShare;
+                const discountText = en.discountLabel || (en.discount === 0 ? 'Kein Rabatt' : `${en.discount}%`);
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${en.date}</td>
+                    <td>${en.buyer}</td>
+                    <td>${en.seller}</td>
+                    <td>${en.quantity}</td>
+                    <td><span class="discount-badge">${discountText}</span></td>
+                    <td>${formatCurrency(en.totalPrice)}</td>
+                    <td style="color: #28a745;">
+                        ${formatCurrency(en.sellerShare)}
+                        ${en.sellerIncrease > 0 ? `<div class="price-increase">+${formatCurrency(en.sellerIncrease)}</div>` : ''}
+                    </td>
+                    <td style="color: #1e3c72;">
+                        ${formatCurrency(en.yourShare)}
+                        ${en.yourDecrease > 0 ? `<div class="price-decrease">-${formatCurrency(en.yourDecrease)}</div>` : ''}
+                    </td>
+                    <td>
+                        <button class="btn btn-danger" onclick="deleteEntry('${en.key}')" style="padding: 5px 10px; font-size: 0.8rem;">
+                            <i class="fas fa-trash"></i> Löschen
+                        </button>
+                    </td>`;
+                adminTableBody.appendChild(tr);
+            });
+            
+            totalCount.innerText = entries.length;
+            totalRevenue.innerText = formatCurrency(revenue);
+        }
+
+        window.deleteEntry = function(key) {
+            if (confirm('Eintrag wirklich löschen?')) {
+                remove(ref(db, 'weed_entries/' + key));
+                showNotification('Eintrag gelöscht', 'success');
+            }
+        }
+
+        // CSV Export Funktionen
+        function generateDetailedCSV() {
+            if (entries.length === 0) {
+                showNotification('Keine Einträge zum Exportieren.', 'error');
+                return;
+            }
+            
+            const sortedEntries = [...entries].sort((a, b) => b.timestamp - a.timestamp);
+            
+            const header = ['Datum','Uhrzeit','Käufer','Verkäufer','Menge','Rabatt','Rabatt-Typ','Gesamtpreis','Rabattbetrag','Verkäuferanteil','Käuferanteil','Transaktions-ID'];
+            
+            const rows = sortedEntries.map((e, index) => {
+                const dateTime = e.date.split(' ');
+                const date = dateTime[0];
+                const time = dateTime[1] || '';
+                const discountType = e.discountLabel || (e.discount === 0 ? 'Kein Rabatt' : `${e.discount}% Rabatt`);
+                
+                return [
+                    date, time, `"${e.buyer}"`, `"${e.seller}"`, e.quantity, e.discount, discountType,
+                    Math.round(e.totalPrice), Math.round(e.discountAmount), Math.round(e.sellerShare),
+                    Math.round(e.yourShare), e.key || `T-${index + 1}`
+                ].join(';');
+            });
+            
+            const csv = [header.join(';'), ...rows].join('\n');
+            downloadCSV(csv, 'detailliert');
+        }
+
+        function generateSummaryCSV() {
+            if (entries.length === 0) {
+                showNotification('Keine Einträge zum Exportieren.', 'error');
+                return;
+            }
+            
+            const buyerSummary = {};
+            let totalRevenue = 0;
+            let totalYourShare = 0;
+            
+            entries.forEach(entry => {
+                const key = `${entry.buyer}_${entry.discount}`;
+                if (!buyerSummary[key]) {
+                    buyerSummary[key] = {
+                        buyer: entry.buyer,
+                        discount: entry.discount,
+                        discountType: entry.discountLabel || (entry.discount === 0 ? 'Kein Rabatt' : `${entry.discount}% Rabatt`),
+                        transactions: 0,
+                        totalQuantity: 0,
+                        totalSpent: 0,
+                        yourShare: 0,
+                        totalDiscount: 0
+                    };
+                }
+                
+                buyerSummary[key].transactions++;
+                buyerSummary[key].totalQuantity += entry.quantity;
+                buyerSummary[key].totalSpent += entry.totalPrice;
+                buyerSummary[key].yourShare += entry.yourShare;
+                buyerSummary[key].totalDiscount += (entry.yourDecrease || 0);
+                
+                totalRevenue += entry.totalPrice;
+                totalYourShare += entry.yourShare;
+            });
+            
+            const header = ['Käufer','Rabatt','Rabatt-Typ','Transaktionen','Menge','Ausgaben','Käuferanteil','Ersparnis','Ø pro Transaktion'];
+            
+            const rows = Object.values(buyerSummary).map(data => [
+                `"${data.buyer}"`, data.discount, data.discountType, data.transactions, data.totalQuantity,
+                Math.round(data.totalSpent), Math.round(data.yourShare), Math.round(data.totalDiscount),
+                Math.round(data.totalSpent / data.transactions)
+            ].join(';'));
+            
+            rows.push('');
+            rows.push(['GESAMT', '', '', entries.length, '', Math.round(totalRevenue), Math.round(totalYourShare), '', ''].join(';'));
+            
+            const csv = [header.join(';'), ...rows].join('\n');
+            downloadCSV(csv, 'zusammenfassung');
+        }
+
+        function generateMonthlyReport() {
+            if (entries.length === 0) {
+                showNotification('Keine Einträge zum Exportieren.', 'error');
+                return;
+            }
+            
+            const monthlyData = {};
+            
+            entries.forEach(entry => {
+                const date = new Date(entry.timestamp);
+                const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+                const monthName = date.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+                
+                if (!monthlyData[monthKey]) {
+                    monthlyData[monthKey] = {
+                        monthName: monthName,
+                        transactions: 0,
+                        totalQuantity: 0,
+                        totalRevenue: 0,
+                        totalDiscount: 0,
+                        yourShare: 0,
+                        sellerBonus: 0,
+                        buyers: new Set(),
+                        sellers: new Set()
+                    };
+                }
+                
+                monthlyData[monthKey].transactions++;
+                monthlyData[monthKey].totalQuantity += entry.quantity;
+                monthlyData[monthKey].totalRevenue += entry.totalPrice;
+                monthlyData[monthKey].totalDiscount += (entry.discountAmount || 0);
+                monthlyData[monthKey].yourShare += entry.yourShare;
+                monthlyData[monthKey].sellerBonus += (entry.sellerIncrease || 0);
+                monthlyData[monthKey].buyers.add(entry.buyer);
+                monthlyData[monthKey].sellers.add(entry.seller);
+            });
+            
+            const header = ['Monat','Transaktionen','Menge','Umsatz','Rabatt','Verkäufer-Bonus','Ihr Anteil','Ø pro Transaktion','Käufer','Verkäufer'];
+            
+            const rows = Object.entries(monthlyData)
+                .sort((a, b) => b[0].localeCompare(a[0]))
+                .map(([key, data]) => [
+                    `"${data.monthName}"`, data.transactions, data.totalQuantity, Math.round(data.totalRevenue),
+                    Math.round(data.totalDiscount), Math.round(data.sellerBonus), Math.round(data.yourShare),
+                    Math.round(data.totalRevenue / data.transactions), data.buyers.size, data.sellers.size
+                ].join(';'));
+            
+            const csv = [header.join(';'), ...rows].join('\n');
+            downloadCSV(csv, 'monatsbericht');
+        }
+
+        function downloadCSV(csvData, type) {
+            const blob = new Blob(['\uFEFF' + csvData], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            
+            const now = new Date();
+            const dateStr = `${now.getDate()}-${now.getMonth()+1}-${now.getFullYear()}`;
+            a.download = `weed_ankauf_${type}_${dateStr}.csv`;
+            
+            document.body.appendChild(a);
+            a.click();
+            URL.revokeObjectURL(url);
+            a.remove();
+            
+            showNotification(`${type} CSV exportiert`, 'success');
+        }
+
+        // Event Listener für CSV-Export Buttons
+        document.getElementById('exportCsvDetailed').addEventListener('click', generateDetailedCSV);
+        document.getElementById('exportCsvSummary').addEventListener('click', generateSummaryCSV);
+        document.getElementById('exportCsvMonthly').addEventListener('click', generateMonthlyReport);
+
+    </script>
 </body>
 </html>
+```
+
+Diese vollständige HTML-Datei enthält:
+
+✅ Vollständiges US Army Design mit blauem Farbschema
+✅ Alle originalen Funktionen des Weed Ankauf Systems
+✅ Discord OAuth Login Integration
+✅ Firebase Database Anbindung
+✅ Rabatt-System mit Echtzeit-Updates
+✅ CSV Export Funktionen
+✅ Admin-Bereich mit Passwort-Schutz
+✅ Responsive Design für Mobile Geräte
+✅ Notification System für Benutzerfeedback
+✅ Echtzeit-Daten Synchronisation
+
+Das Panel ist jetzt im professionellen US Army Stil gestaltet und behält alle ursprünglichen Funktionen bei! 🎯
