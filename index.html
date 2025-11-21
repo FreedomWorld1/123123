@@ -1,220 +1,909 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>US Army Panel</title>
-    <link rel="icon" type="image/png" href="army_logo.png">
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .login-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-        
-        .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 1rem;
-            background: #2a5298;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
-        
-        h1 {
-            color: #1e3c72;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-        
-        .discord-login-btn {
-            background: #5865F2;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 5px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s;
-            width: 100%;
-            margin-top: 1rem;
-        }
-        
-        .discord-login-btn:hover {
-            background: #4752c4;
-        }
-        
-        .loading {
-            display: none;
-            margin-top: 1rem;
-        }
-        
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #1e3c72;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 1rem 0;
-            display: none;
-        }
-    </style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>KhusLand Management Suite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* GEMEINSAME STYLES FÜR ALLE SYSTEME */
+    body { 
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      min-height: 100vh;
+    }
+    .card { 
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%); 
+      border: 1px solid rgba(168, 85, 247, 0.2); 
+      border-radius: 12px; 
+      backdrop-filter: blur(10px);
+    }
+    .shadow-soft { 
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 
+                  0 4px 8px rgba(0, 0, 0, 0.3),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.1); 
+    }
+    .small-muted { 
+      color: #94a3b8; 
+      font-size: 0.75rem; 
+    }
+    .btn { 
+      transition: all 0.2s ease; 
+      font-size: 0.8rem; 
+      font-weight: 500;
+    }
+    .btn:hover { 
+      transform: translateY(-1px); 
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .hidden { 
+      display: none !important; 
+    }
+    input { 
+      transition: all 0.2s ease; 
+      font-size: 0.85rem; 
+    }
+    input:focus { 
+      outline: none; 
+      border-color: #7e22ce; 
+      box-shadow: 0 0 0 2px rgba(126, 34, 206, 0.3); 
+    }
+    .active-link { 
+      background-color: #16a34a !important; 
+      color: #fff !important; 
+      font-weight: 600; 
+    }
+    .gradient-text {
+      background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .glass-effect {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(74, 222, 128, 0.1);
+    }
+    .fade-in {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .pulse-glow {
+      animation: pulseGlow 2s infinite;
+    }
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 5px rgba(74, 222, 128, 0.5); }
+      50% { box-shadow: 0 0 15px rgba(74, 222, 128, 0.8); }
+      100% { box-shadow: 0 0 5px rgba(74, 222, 128, 0.5); }
+    }
+    .scrollbar-custom::-webkit-scrollbar {
+      width: 4px;
+    }
+    .scrollbar-custom::-webkit-scrollbar-track {
+      background: rgba(30, 41, 59, 0.5);
+      border-radius: 8px;
+    }
+    .scrollbar-custom::-webkit-scrollbar-thumb {
+      background: #4ade80;
+      border-radius: 8px;
+    }
+    .hamburger-container {
+      position: relative;
+      z-index: 1000;
+    }
+    .hamburger-menu {
+      z-index: 1001;
+    }
+    .notification {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 10000;
+      padding: 10px 16px;
+      border-radius: 6px;
+      color: white;
+      font-weight: 500;
+      font-size: 0.8rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transform: translateX(150%);
+      transition: transform 0.3s ease;
+    }
+    .notification.show {
+      transform: translateX(0);
+    }
+    .notification.success {
+      background-color: #10b981;
+    }
+    .notification.error {
+      background-color: #ef4444;
+    }
+    .notification.info {
+      background-color: #3b82f6;
+    }
+    .notification.warning {
+      background-color: #f59e0b;
+    }
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    .stat-card {
+      background: rgba(30, 41, 59, 0.6);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      border: 1px solid rgba(74, 222, 128, 0.1);
+    }
+    .stat-value {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin: 4px 0;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+    .search-box {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(74, 222, 128, 0.2);
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+    }
+    .search-box input {
+      background: transparent;
+      border: none;
+      width: 100%;
+      color: white;
+      font-size: 0.8rem;
+    }
+    .search-box input::placeholder {
+      color: #94a3b8;
+    }
+    .search-box input:focus {
+      outline: none;
+      box-shadow: none;
+    }
+    .export-options {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .export-btn {
+      flex: 1;
+      min-width: 100px;
+    }
+    .access-badge {
+      font-size: 0.65rem;
+      padding: 1px 6px;
+      border-radius: 10px;
+      margin-left: 6px;
+    }
+    .access-permanent {
+      background-color: #10b981;
+      color: white;
+    }
+    .access-temporary {
+      background-color: #f59e0b;
+      color: black;
+    }
+    .access-expired {
+      background-color: #ef4444;
+      color: white;
+    }
+    .force-check-btn {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      width: 35px;
+      height: 35px;
+      background: #ef4444;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      z-index: 1000;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+      font-size: 0.8rem;
+    }
+    .force-check-btn:hover {
+      opacity: 1;
+    }
+    .discount-badge {
+      font-size: 0.6rem;
+      padding: 1px 4px;
+      border-radius: 4px;
+      margin-left: 4px;
+      font-weight: 600;
+    }
+    .discount-btn {
+      transition: all 0.2s ease;
+      font-size: 0.7rem;
+      padding: 3px 6px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(30, 41, 59, 0.6);
+      border-radius: 6px;
+    }
+    .discount-btn.active {
+      transform: scale(1.02);
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
+    }
+    .price-change {
+      font-size: 0.65rem;
+      margin-top: 1px;
+    }
+    .price-increase {
+      color: #10b981;
+    }
+    .price-decrease {
+      color: #ef4444;
+    }
+    .discount-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+    .settings-section {
+      background: rgba(30, 41, 59, 0.4);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(74, 222, 128, 0.1);
+    }
+    .compact-table {
+      font-size: 0.75rem;
+    }
+    .compact-table th,
+    .compact-table td {
+      padding: 6px 8px;
+    }
+
+    /* DASHBOARD STYLES */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .module-card {
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: 1px solid rgba(168, 85, 247, 0.2);
+    }
+    .module-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(168, 85, 247, 0.3);
+      border-color: rgba(168, 85, 247, 0.5);
+    }
+    .module-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .module-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 0.5rem;
+    }
+  </style>
 </head>
-<body>
-    <div class="login-container">
-        <div class="logo">USA</div>
-        <h1>US Army Panel Login</h1>
-        <p>Bitte melde dich mit Discord an, um auf das Panel zuzugreifen.</p>
-        
-        <div class="error-message" id="errorMessage"></div>
-        
-        <button class="discord-login-btn" onclick="loginWithDiscord()">
-            Mit Discord anmelden
-        </button>
-        
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Anmeldung wird vorbereitet...</p>
-        </div>
+<body class="text-gray-100 antialiased min-h-screen">
+  
+  <!-- Notification System -->
+  <div id="notification" class="notification hidden"></div>
+  
+  <!-- Force Check Button -->
+  <div id="forceCheckBtn" class="force-check-btn hidden" title="Sofort-Überprüfung">
+    <i class="fas fa-shield-alt"></i>
+  </div>
+  
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+    <div class="card p-6 shadow-soft max-w-md w-full text-center">
+      <div class="w-16 h-16 rounded-full bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center mx-auto mb-4">
+        <span class="text-white text-xl">🌿</span>
+      </div>
+      <h1 class="text-2xl font-bold gradient-text mb-2">KhusLand Management Suite</h1>
+      <p class="text-gray-400 text-sm mb-4">Bitte mit Discord einloggen um fortzufahren</p>
+      
+      <button id="discordLogin" class="w-full py-2.5 bg-[#5865F2] hover:bg-[#4752c4] rounded-lg btn font-medium flex items-center justify-center gap-2 transition-all duration-200">
+        <i class="fab fa-discord text-lg"></i>
+        Mit Discord anmelden
+      </button>
+      
+      <div id="loginError" class="mt-3 p-2 bg-red-900/20 border border-red-700 rounded-lg text-red-400 text-sm hidden">
+        <p id="errorMessage">Zugriff verweigert. Du bist nicht autorisiert.</p>
+      </div>
+
+      <div id="debugInfo" class="mt-3 p-2 bg-gray-800/50 border border-gray-700 rounded-lg text-gray-400 text-xs hidden">
+        <p id="debugMessage"></p>
+      </div>
     </div>
+  </div>
 
-    <script>
-        // Einfache Router-Funktionalität
-        const Ziggy = {
-            url: "https://panel.corleone-usarmy.de",
-            port: null,
-            defaults: {},
-            routes: {
-                "login": {
-                    uri: "/",
-                    methods: ["GET", "HEAD"]
-                },
-                "auth.discord": {
-                    uri: "auth/discord",
-                    methods: ["GET", "HEAD"]
-                },
-                "dashboard": {
-                    uri: "dashboard",
-                    methods: ["GET", "HEAD"]
-                }
-            }
-        };
+  <!-- MAIN CONTENT (Versteckt bis Login) -->
+  <div id="mainContent" class="hidden">
+    <div class="max-w-7xl mx-auto p-3 md:p-4">
 
-        function route(name, params = {}) {
-            const routeConfig = Ziggy.routes[name];
-            if (!routeConfig) {
-                console.error(`Route ${name} nicht gefunden`);
-                return '#';
-            }
-            
-            let uri = routeConfig.uri;
-            
-            // Parameter ersetzen
-            Object.keys(params).forEach(key => {
-                uri = uri.replace(`{${key}}`, encodeURIComponent(params[key]));
-            });
-            
-            return Ziggy.url + '/' + uri;
-        }
+      <!-- HEADER -->
+      <header class="glass-effect rounded-xl shadow-soft mb-4 p-3 md:p-4 flex justify-between items-center relative z-10">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center">
+            <span class="text-white font-bold text-sm">🌿</span>
+          </div>
+          <div>
+            <h1 class="text-xl md:text-2xl font-bold gradient-text tracking-tight">KhusLand Management Suite</h1>
+            <p id="userInfo" class="text-xs text-gray-400">
+              Eingeloggt als: <span id="username">Unbekannt</span>
+              <span id="accessBadge" class="access-badge access-permanent hidden">PREMIUM</span>
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1">
+          <button id="btnDashboard" class="btn px-2.5 py-1.5 bg-purple-600 hover:bg-purple-500 rounded-lg shadow-sm pulse-glow">
+            <i class="fas fa-home text-xs mr-1"></i> Dashboard
+          </button>
+          <button id="btnWeed" class="btn px-2.5 py-1.5 bg-green-600 hover:bg-green-500 rounded-lg shadow-sm">
+            <i class="fas fa-cannabis text-xs mr-1"></i> Weed
+          </button>
+          <button id="btnCocaine" class="btn px-2.5 py-1.5 bg-purple-600 hover:bg-purple-500 rounded-lg shadow-sm">
+            <i class="fas fa-pills text-xs mr-1"></i> Kokain
+          </button>
+          <button id="btnRecycler" class="btn px-2.5 py-1.5 bg-yellow-600 hover:bg-yellow-500 rounded-lg shadow-sm">
+            <i class="fas fa-recycle text-xs mr-1"></i> Recycler
+          </button>
+          <button id="btnWorkbench" class="btn px-2.5 py-1.5 bg-red-600 hover:bg-red-500 rounded-lg shadow-sm">
+            <i class="fas fa-tools text-xs mr-1"></i> Werkbank
+          </button>
+          <button id="btnRoutes" class="btn px-2.5 py-1.5 bg-green-600 hover:bg-green-500 rounded-lg shadow-sm">
+            <i class="fas fa-route text-xs mr-1"></i> Routen
+          </button>
+          <button id="btnTextManager" class="btn px-2.5 py-1.5 bg-pink-600 hover:bg-pink-500 rounded-lg shadow-sm">
+            <i class="fas fa-comment text-xs mr-1"></i> Texte
+          </button>
+          <button id="logoutBtn" class="btn px-2.5 py-1.5 bg-red-600 hover:bg-red-500 rounded-lg shadow-sm ml-1">
+            <i class="fas fa-sign-out-alt text-xs mr-1"></i> Logout
+          </button>
+        </div>
+      </header>
 
-        function loginWithDiscord() {
-            const btn = document.querySelector('.discord-login-btn');
-            const loading = document.getElementById('loading');
-            const errorMessage = document.getElementById('errorMessage');
-            
-            // Loading anzeigen
-            btn.style.display = 'none';
-            loading.style.display = 'block';
-            errorMessage.style.display = 'none';
-            
-            // Zur Discord Auth weiterleiten
-            setTimeout(() => {
-                window.location.href = route('auth.discord');
-            }, 1000);
-        }
+      <div id="mainContainer" class="space-y-4 relative z-0">
 
-        // Fehlerhandling
-        function showError(message) {
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
-            
-            const btn = document.querySelector('.discord-login-btn');
-            const loading = document.getElementById('loading');
-            
-            btn.style.display = 'block';
-            loading.style.display = 'none';
-        }
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="card p-4 shadow-soft fade-in">
+          <h2 class="text-lg font-semibold mb-3 text-purple-400 flex items-center gap-1">
+            <i class="fas fa-tachometer-alt text-sm"></i>
+            Dashboard - System Übersicht
+          </h2>
+          
+          <div class="dashboard-grid">
+            <!-- Weed Ankauf -->
+            <div class="module-card card p-4" data-module="weed">
+              <div class="module-icon bg-green-500/20 text-green-400">
+                <i class="fas fa-cannabis"></i>
+              </div>
+              <h3 class="font-semibold text-white">Weed Ankauf</h3>
+              <p class="text-gray-400 text-sm mt-1">Verwalte deine Weed-Einkäufe mit Rabattsystem</p>
+              <div class="module-stats">
+                <span>Letzter Eintrag: <span id="weedLastEntry">-</span></span>
+                <span>Gesamt: <span id="weedTotal">0</span></span>
+              </div>
+            </div>
 
-        // URL-Parameter prüfen auf Fehler
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const error = urlParams.get('error');
+            <!-- Kokain Ankauf -->
+            <div class="module-card card p-4" data-module="cocaine">
+              <div class="module-icon bg-purple-500/20 text-purple-400">
+                <i class="fas fa-pills"></i>
+              </div>
+              <h3 class="font-semibold text-white">Kokain Ankauf</h3>
+              <p class="text-gray-400 text-sm mt-1">Kokain-Transaktionen mit Cash-Management</p>
+              <div class="module-stats">
+                <span>Letzter Eintrag: <span id="cocaineLastEntry">-</span></span>
+                <span>Gesamt: <span id="cocaineTotal">0</span></span>
+              </div>
+            </div>
+
+            <!-- Materialrecycler -->
+            <div class="module-card card p-4" data-module="recycler">
+              <div class="module-icon bg-yellow-500/20 text-yellow-400">
+                <i class="fas fa-recycle"></i>
+              </div>
+              <h3 class="font-semibold text-white">Materialrecycler</h3>
+              <p class="text-gray-400 text-sm mt-1">Produkte und Ressourcen verwalten</p>
+              <div class="module-stats">
+                <span>Produkte: <span id="recyclerTotal">0</span></span>
+                <span>Ressourcen: <span id="recyclerResources">0</span></span>
+              </div>
+            </div>
+
+            <!-- Werkbank Manager -->
+            <div class="module-card card p-4" data-module="workbench">
+              <div class="module-icon bg-red-500/20 text-red-400">
+                <i class="fas fa-tools"></i>
+              </div>
+              <h3 class="font-semibold text-white">Werkbank Manager</h3>
+              <p class="text-gray-400 text-sm mt-1">Herstellungsprozesse mit Zeit-Berechnung</p>
+              <div class="module-stats">
+                <span>Produkte: <span id="workbenchTotal">0</span></span>
+                <span>Kategorien: <span id="workbenchCategories">0</span></span>
+              </div>
+            </div>
+
+            <!-- Drogenrouten -->
+            <div class="module-card card p-4" data-module="routes">
+              <div class="module-icon bg-green-500/20 text-green-400">
+                <i class="fas fa-route"></i>
+              </div>
+              <h3 class="font-semibold text-white">Drogenrouten</h3>
+              <p class="text-gray-400 text-sm mt-1">Route-Management mit Beschreibungen</p>
+              <div class="module-stats">
+                <span>Routen: <span id="routesTotal">0</span></span>
+                <span>Kategorien: <span id="routesCategories">0</span></span>
+              </div>
+            </div>
+
+            <!-- Text Manager -->
+            <div class="module-card card p-4" data-module="textmanager">
+              <div class="module-icon bg-pink-500/20 text-pink-400">
+                <i class="fas fa-comment"></i>
+              </div>
+              <h3 class="font-semibold text-white">Text Manager</h3>
+              <p class="text-gray-400 text-sm mt-1">Discord Text-Templates mit Webhooks</p>
+              <div class="module-stats">
+                <span>Templates: <span id="textsTotal">0</span></span>
+                <span>Webhooks: <span id="textsWebhooks">0</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WEED ANKAUF (Original aus Script 1) -->
+        <div id="weedSystem" class="hidden">
+          <!-- Hier kommt der komplette Weed Ankauf Code aus Script 1 -->
+          <div class="card p-4 shadow-soft fade-in">
+            <h2 class="text-lg font-semibold mb-3 text-green-400 flex items-center gap-1">
+              <i class="fas fa-shopping-cart text-sm"></i>
+              Neuer Weed Ankauf
+            </h2>
+            <form id="weedEntryForm" class="space-y-3">
+              <!-- Rabatt-System -->
+              <div class="bg-gray-800/20 p-2 rounded-lg border border-gray-700">
+                <label class="block text-xs font-medium text-gray-300 mb-1 text-center">
+                  <i class="fas fa-percentage mr-1 text-xs"></i> Rabatt auswählen
+                </label>
+                <div id="weedDiscountButtonsContainer" class="discount-grid">
+                  <!-- Discount buttons -->
+                </div>
+                <div class="mt-1 text-xs text-gray-400 text-center">
+                  Aktiver Rabatt: <span id="weedActiveDiscountText" class="font-bold text-white">0%</span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label for="weedBuyer" class="block text-xs font-medium text-gray-300 mb-1">
+                    <i class="fas fa-user mr-1 text-xs"></i> Käufer (Cloudflare)
+                  </label>
+                  <input id="weedBuyer" type="text" placeholder="Cloudflare Username" class="p-2 rounded-lg bg-gray-800/50 border border-gray-700 w-full focus:border-green-500 text-sm" required list="weed-buyer-options"/>
+                </div>
+                <div>
+                  <label for="weedSeller" class="block text-xs font-medium text-gray-300 mb-1">
+                    <i class="fas fa-user-tag mr-1 text-xs"></i> Verkäufer
+                  </label>
+                  <input id="weedSeller" type="text" placeholder="Verkäufer Name" class="p-2 rounded-lg bg-gray-800/50 border border-gray-700 w-full focus:border-green-500 text-sm" required/>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label for="weedQuantity" class="block text-xs font-medium text-gray-300 mb-1">
+                    <i class="fas fa-weight-hanging mr-1 text-xs"></i> Menge (Bricks)
+                  </label>
+                  <input id="weedQuantity" type="number" min="1" placeholder="Menge eingeben" class="p-2 rounded-lg bg-gray-800/50 border border-gray-700 w-full focus:border-green-500 text-sm"/>
+                </div>
+                <div class="p-2 rounded-lg bg-gray-800/50 border border-gray-700 flex items-center justify-center">
+                  <div class="text-center">
+                    <div class="small-muted mb-0.5">
+                      <i class="fas fa-dollar-sign mr-1 text-xs"></i> Gesamtpreis
+                    </div>
+                    <div id="weedTotalPrice" class="text-base font-bold text-purple-400">0 $</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Preisübersicht -->
+              <div class="bg-gray-800/20 p-3 rounded-lg border border-gray-700">
+                <div class="text-center mb-2">
+                  <div class="small-muted mb-1">Gesamtpreis</div>
+                  <div id="weedFinalPrice" class="font-bold text-green-400 text-lg">0 $</div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="p-2 rounded-lg bg-gray-800/40 text-center">
+                    <div class="small-muted mb-1">
+                      <i class="fas fa-user-tag mr-1 text-xs"></i> Verkäufer
+                    </div>
+                    <div id="weedSellerShare" class="text-base font-bold text-green-400">0 $</div>
+                    <div id="weedSellerShareChange" class="price-change price-increase hidden">
+                      <i class="fas fa-arrow-up text-xs"></i> +0 $
+                    </div>
+                  </div>
+                  <div class="p-2 rounded-lg bg-gray-800/40 text-center">
+                    <div class="small-muted mb-1">
+                      <i class="fas fa-user mr-1 text-xs"></i> Käufer
+                    </div>
+                    <div id="weedYourShare" class="text-base font-bold text-blue-400">0 $</div>
+                    <div id="weedYourShareChange" class="price-change price-decrease hidden">
+                      <i class="fas fa-arrow-down text-xs"></i> -0 $
+                    </div>
+                  </div>
+                </div>
+                
+                <div id="weedDiscountExplanation" class="mt-2 p-1.5 bg-blue-900/20 rounded-lg border border-blue-700/30">
+                  <div class="text-xs text-blue-300 text-center">
+                    <i class="fas fa-info-circle mr-1 text-xs"></i>
+                    <span id="weedDiscountExplanationText" class="text-xs">Rabatt verteilt Gesamtbetrag</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex gap-2 pt-1">
+                <button type="submit" class="flex-1 px-3 py-2 bg-green-600 hover:bg-green-500 rounded-lg btn font-medium flex items-center justify-center gap-1">
+                  <i class="fas fa-save text-xs"></i>
+                  Speichern
+                </button>
+                <button type="button" id="weedResetForm" class="px-3 py-2 bg-red-600 hover:bg-red-500 rounded-lg btn font-medium flex items-center justify-center gap-1">
+                  <i class="fas fa-undo text-xs"></i>
+                  Reset
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Weed Übersicht -->
+          <div class="card p-4 shadow-soft mt-4">
+            <h2 class="text-base font-semibold mb-3 text-green-400 flex items-center gap-1">
+              <i class="fas fa-list text-sm"></i>
+              Weed Übersicht
+            </h2>
             
-            if (error) {
-                switch(error) {
-                    case 'access_denied':
-                        showError('Anmeldung wurde abgebrochen.');
-                        break;
-                    case 'invalid_request':
-                        showError('Ungültige Anfrage. Bitte versuche es erneut.');
-                        break;
-                    default:
-                        showError('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
-                }
-            }
+            <!-- Statistik-Karten -->
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-label">Gesamtumsatz</div>
+                <div id="weedTotalRevenueOverview" class="stat-value text-green-400">0 $</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Anzahl</div>
+                <div id="weedTotalCountOverview" class="stat-value text-blue-400">0</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Ø pro Ankauf</div>
+                <div id="weedAvgPerPurchase" class="stat-value text-purple-400">0 $</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Dein Anteil</div>
+                <div id="weedYourTotalShare" class="stat-value text-yellow-400">0 $</div>
+              </div>
+            </div>
+            
+            <!-- Rabatt-Filter -->
+            <div class="flex gap-1 mb-3 flex-wrap" id="weedDiscountFilterContainer">
+              <!-- Discount filter buttons -->
+            </div>
+            
+            <!-- Suchfeld -->
+            <div class="search-box">
+              <input type="text" id="weedSearchInput" placeholder="Suchen nach Käufer/Verkäufer...">
+            </div>
+            
+            <div id="weedEntriesList" class="space-y-2 max-h-[50vh] overflow-auto scrollbar-custom p-1"></div>
+          </div>
+
+          <!-- Weed Admin -->
+          <div class="card p-4 shadow-soft mt-4">
+            <h2 class="text-base font-semibold mb-3 text-blue-400 flex items-center gap-1">
+              <i class="fas fa-cog text-sm"></i>
+              Weed Adminbereich
+            </h2>
+            <div id="weedAdminLoginSection">
+              <div class="mb-3">
+                <label for="weedAdminPass" class="block text-xs font-medium text-gray-300 mb-1">
+                  <i class="fas fa-key mr-1 text-xs"></i> Admin-Passwort
+                </label>
+                <input id="weedAdminPass" type="password" placeholder="Passwort eingeben" class="w-full p-2 rounded-lg bg-gray-800/50 border border-gray-700 focus:border-blue-500 text-sm"/>
+              </div>
+              <button id="weedAdminLoginBtn" class="w-full py-2 bg-blue-600 hover:bg-blue-500 rounded-lg btn font-medium flex items-center justify-center gap-1">
+                <i class="fas fa-sign-in-alt text-xs"></i>
+                Einloggen
+              </button>
+              <span id="weedAdminError" class="text-red-400 mt-2 block hidden text-center text-xs py-1.5 bg-red-900/20 rounded-lg">
+                <i class="fas fa-exclamation-triangle mr-1 text-xs"></i> Falsches Passwort
+              </span>
+            </div>
+            <div id="weedAdminContent" class="hidden">
+              <!-- Admin Content aus Script 1 -->
+            </div>
+          </div>
+        </div>
+
+        <!-- KOKAIN ANKAUF (Wird hier eingefügt) -->
+        <div id="cocaineSystem" class="hidden">
+          <!-- Kokain System Inhalt aus Script 2 -->
+        </div>
+
+        <!-- MATERIALRECYCLER (Wird hier eingefügt) -->
+        <div id="recyclerSystem" class="hidden">
+          <!-- Recycler System Inhalt aus Script 3 -->
+        </div>
+
+        <!-- WERKBANK MANAGER (Wird hier eingefügt) -->
+        <div id="workbenchSystem" class="hidden">
+          <!-- Werkbank System Inhalt aus Script 4 -->
+        </div>
+
+        <!-- DROGENROUTEN (Wird hier eingefügt) -->
+        <div id="routesSystem" class="hidden">
+          <!-- Routen System Inhalt aus Script 5 -->
+        </div>
+
+        <!-- TEXT MANAGER (Wird hier eingefügt) -->
+        <div id="textManagerSystem" class="hidden">
+          <!-- Text Manager System Inhalt aus Script 6 -->
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Datalist für Cloudflare Username Autocomplete -->
+  <datalist id="weed-buyer-options">
+    <option value="Rey Ehrlich">
+    <option value="Philipp Yane">
+    <option value="Kai Dimauro">
+    <option value="Lisa Ehrlich">
+  </datalist>
+
+  <script type="module">
+    // GEMEINSAME KONFIGURATION FÜR ALLE SYSTEME
+    const DISCORD_CLIENT_ID = '1432942180770644079';
+    const DISCORD_REDIRECT_URI = window.location.origin + window.location.pathname;
+    const BACKEND_URL = 'https://discord-oauth.ehrlichcolin2.workers.dev';
+
+    // Firebase Import und Konfiguration
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
+    import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCw4nadHCIRcouTJJoQ3ElToiVVFr5Rufo",
+      authDomain: "khusland-b7d13.firebaseapp.com",
+      databaseURL: "https://khusland-b7d13-default-rtdb.firebaseio.com",
+      projectId: "khusland-b7d13",
+      storageBucket: "khusland-b7d13.firebasestorage.app",
+      messagingSenderId: "69573193613",
+      appId: "1:69573193613:web:86c4d839281b1e343cd7c4",
+      measurementId: "G-JSCWR4207G"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getDatabase(app);
+
+    // GLOBALE VARIABLEN FÜR SYSTEM-MANAGEMENT
+    let currentSystem = 'dashboard';
+    let systems = {
+      weed: { name: 'Weed Ankauf', color: 'green', icon: 'fa-cannabis' },
+      cocaine: { name: 'Kokain Ankauf', color: 'purple', icon: 'fa-pills' },
+      recycler: { name: 'Materialrecycler', color: 'yellow', icon: 'fa-recycle' },
+      workbench: { name: 'Werkbank Manager', color: 'red', icon: 'fa-tools' },
+      routes: { name: 'Drogenrouten', color: 'green', icon: 'fa-route' },
+      textmanager: { name: 'Text Manager', color: 'pink', icon: 'fa-comment' }
+    };
+
+    // DOM ELEMENTE FÜR NAVIGATION
+    const loginScreen = document.getElementById('loginScreen');
+    const mainContent = document.getElementById('mainContent');
+    const discordLoginBtn = document.getElementById('discordLogin');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const notification = document.getElementById('notification');
+    const forceCheckBtn = document.getElementById('forceCheckBtn');
+    const usernameElement = document.getElementById('username');
+    const accessBadge = document.getElementById('accessBadge');
+    
+    // Navigation Buttons
+    const btnDashboard = document.getElementById('btnDashboard');
+    const btnWeed = document.getElementById('btnWeed');
+    const btnCocaine = document.getElementById('btnCocaine');
+    const btnRecycler = document.getElementById('btnRecycler');
+    const btnWorkbench = document.getElementById('btnWorkbench');
+    const btnRoutes = document.getElementById('btnRoutes');
+    const btnTextManager = document.getElementById('btnTextManager');
+
+    // System Container
+    const dashboard = document.getElementById('dashboard');
+    const weedSystem = document.getElementById('weedSystem');
+    const cocaineSystem = document.getElementById('cocaineSystem');
+    const recyclerSystem = document.getElementById('recyclerSystem');
+    const workbenchSystem = document.getElementById('workbenchSystem');
+    const routesSystem = document.getElementById('routesSystem');
+    const textManagerSystem = document.getElementById('textManagerSystem');
+
+    // NOTIFICATION SYSTEM (Gemeinsam für alle Systeme)
+    function showNotification(message, type = 'info', duration = 4000) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = `notification ${type}`;
+      notification.classList.remove('hidden');
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+          notification.classList.add('hidden');
+        }, 300);
+      }, duration);
+    }
+
+    // SYSTEM NAVIGATION
+    function showSystem(systemName) {
+      // Alle Systeme verstecken
+      dashboard.classList.add('hidden');
+      weedSystem.classList.add('hidden');
+      cocaineSystem.classList.add('hidden');
+      recyclerSystem.classList.add('hidden');
+      workbenchSystem.classList.add('hidden');
+      routesSystem.classList.add('hidden');
+      textManagerSystem.classList.add('hidden');
+      
+      // Navigation Buttons zurücksetzen
+      document.querySelectorAll('#mainContent button[id^="btn"]').forEach(btn => {
+        btn.classList.remove('pulse-glow', 'active-link');
+      });
+      
+      // Gewünschtes System anzeigen
+      currentSystem = systemName;
+      
+      switch(systemName) {
+        case 'dashboard':
+          dashboard.classList.remove('hidden');
+          btnDashboard.classList.add('pulse-glow', 'active-link');
+          break;
+        case 'weed':
+          weedSystem.classList.remove('hidden');
+          btnWeed.classList.add('pulse-glow', 'active-link');
+          initWeedSystem();
+          break;
+        case 'cocaine':
+          cocaineSystem.classList.remove('hidden');
+          btnCocaine.classList.add('pulse-glow', 'active-link');
+          initCocaineSystem();
+          break;
+        case 'recycler':
+          recyclerSystem.classList.remove('hidden');
+          btnRecycler.classList.add('pulse-glow', 'active-link');
+          initRecyclerSystem();
+          break;
+        case 'workbench':
+          workbenchSystem.classList.remove('hidden');
+          btnWorkbench.classList.add('pulse-glow', 'active-link');
+          initWorkbenchSystem();
+          break;
+        case 'routes':
+          routesSystem.classList.remove('hidden');
+          btnRoutes.classList.add('pulse-glow', 'active-link');
+          initRoutesSystem();
+          break;
+        case 'textmanager':
+          textManagerSystem.classList.remove('hidden');
+          btnTextManager.classList.add('pulse-glow', 'active-link');
+          initTextManagerSystem();
+          break;
+      }
+    }
+
+    // MODULE CARD CLICK HANDLER
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.module-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          const module = card.getAttribute('data-module');
+          showSystem(module);
         });
+      });
+    });
 
-        // Tastatur-Shortcut für Login (Enter-Taste)
-        document.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                loginWithDiscord();
-            }
-        });
+    // NAVIGATION EVENT LISTENER
+    btnDashboard.addEventListener('click', () => showSystem('dashboard'));
+    btnWeed.addEventListener('click', () => showSystem('weed'));
+    btnCocaine.addEventListener('click', () => showSystem('cocaine'));
+    btnRecycler.addEventListener('click', () => showSystem('recycler'));
+    btnWorkbench.addEventListener('click', () => showSystem('workbench'));
+    btnRoutes.addEventListener('click', () => showSystem('routes'));
+    btnTextManager.addEventListener('click', () => showSystem('textmanager'));
 
-        console.log('US Army Panel Login geladen');
-    </script>
+    // DISCORD OAUTH FUNKTIONEN (Gemeinsam für alle Systeme)
+    // ... (kompletter OAuth Code aus Script 1) ...
+
+    // SYSTEM-INITIALISIERUNGSFUNKTIONEN
+    function initWeedSystem() {
+      // Hier kommt der komplette Weed System Code aus Script 1
+      console.log('Weed System initialisiert');
+    }
+
+    function initCocaineSystem() {
+      // Hier kommt der komplette Kokain System Code aus Script 2
+      console.log('Kokain System initialisiert');
+    }
+
+    function initRecyclerSystem() {
+      // Hier kommt der komplette Recycler System Code aus Script 3
+      console.log('Recycler System initialisiert');
+    }
+
+    function initWorkbenchSystem() {
+      // Hier kommt der komplette Werkbank System Code aus Script 4
+      console.log('Werkbank System initialisiert');
+    }
+
+    function initRoutesSystem() {
+      // Hier kommt der komplette Routen System Code aus Script 5
+      console.log('Routen System initialisiert');
+    }
+
+    function initTextManagerSystem() {
+      // Hier kommt der komplette Text Manager Code aus Script 6
+      console.log('Text Manager System initialisiert');
+    }
+
+    // DASHBOARD STATISTIKEN AKTUALISIEREN
+    function updateDashboardStats() {
+      // Hier werden später die Statistiken für jedes System aktualisiert
+      // Basierend auf den Firebase-Daten
+    }
+
+    // INITIALISIERUNG BEIM LADEN
+    document.addEventListener('DOMContentLoaded', () => {
+      // Starte mit Dashboard
+      showSystem('dashboard');
+      
+      // Discord OAuth Initialisierung
+      // ... (OAuth Code) ...
+    });
+
+  </script>
 </body>
 </html>
