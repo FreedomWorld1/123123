@@ -1,0 +1,2520 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buchhaltungssystem für Rechnungen & Ratenzahlungen</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .income { background: #dbeafe; color: var(--primary); }
+        .expense { background: #fee2e2; color: var(--danger); }
+        .profit { background: #dcfce7; color: var(--success); }
+        .pending { background: #fef3c7; color: var(--warning); }
+        
+        .stat-info h3 {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-info .amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-item {
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-item:hover {
+            background: #f1f5f9;
+        }
+        
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .content-area {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        tr:hover {
+            background: #f8fafc;
+        }
+        
+        .status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-paid { background: #dcfce7; color: #166534; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-overdue { background: #fee2e2; color: #991b1b; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .invoice-items {
+            margin: 1.5rem 0;
+        }
+        
+        .item-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: end;
+        }
+        
+        .item-total {
+            padding: 0.8rem;
+            background: #f8fafc;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .remove-item {
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .add-item {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        
+        .installment-plan {
+            background: #f0f9ff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success { background: #dcfce7; color: #166534; }
+        .alert-warning { background: #fef3c7; color: #92400e; }
+        .alert-danger { background: #fee2e2; color: #991b1b; }
+        
+        .data-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            padding: 0.3rem 0.8rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        .view-btn { background: #dbeafe; color: var(--primary); }
+        .edit-btn { background: #fef3c7; color: var(--warning); }
+        .delete-btn { background: #fee2e2; color: var(--danger); }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .recent-activity {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .activity-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+        
+        .activity-item {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .item-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-calculator fa-2x" style="color: #2563eb;"></i>
+                <h1>Buchhaltungssystem Pro</h1>
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="exportData()">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <button class="btn btn-warning" onclick="importData()">
+                    <i class="fas fa-upload"></i> Import
+                </button>
+            </div>
+        </header>
+
+        <div class="stats-grid" id="statsContainer">
+            <!-- Stats werden von JavaScript geladen -->
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <ul class="nav-menu">
+                    <li class="nav-item active" onclick="showTab('dashboard')">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </li>
+                    <li class="nav-item" onclick="showTab('invoices')">
+                        <i class="fas fa-file-invoice"></i> Rechnungen
+                    </li>
+                    <li class="nav-item" onclick="showTab('installments')">
+                        <i class="fas fa-calendar-alt"></i> Ratenzahlungen
+                    </li>
+                    <li class="nav-item" onclick="showTab('customers')">
+                        <i class="fas fa-users"></i> Kunden
+                    </li>
+                    <li class="nav-item" onclick="showTab('products')">
+                        <i class="fas fa-box"></i> Produkte
+                    </li>
+                    <li class="nav-item" onclick="showTab('purchases')">
+                        <i class="fas fa-shopping-cart"></i> Einkäufe
+                    </li>
+                    <li class="nav-item" onclick="showTab('reports')">
+                        <i class="fas fa-chart-bar"></i> Berichte
+                    </li>
+                </ul>
+            </div>
+
+            <div class="content-area">
+                <!-- Dashboard Tab -->
+                <div id="dashboard" class="tab-content active">
+                    <div class="page-header">
+                        <h2>Dashboard</h2>
+                        <div>
+                            <select id="periodSelect" onchange="updateDashboard()" style="padding: 0.5rem; border-radius: 6px;">
+                                <option value="month">Dieser Monat</option>
+                                <option value="quarter">Dieses Quartal</option>
+                                <option value="year">Dieses Jahr</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-grid">
+                        <div class="chart-container">
+                            <h3>Finanzentwicklung</h3>
+                            <canvas id="financeChart" height="300"></canvas>
+                        </div>
+                        
+                        <div class="recent-activity">
+                            <h3>Aktuelle Aktivitäten</h3>
+                            <ul class="activity-list" id="activityList">
+                                <!-- Aktivitäten werden geladen -->
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">Überfällige Rechnungen</h3>
+                        <div class="table-container">
+                            <table id="overdueInvoicesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Rechnungsnummer</th>
+                                        <th>Kunde</th>
+                                        <th>Fälligkeitsdatum</th>
+                                        <th>Offener Betrag</th>
+                                        <th>Aktionen</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Daten werden geladen -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rechnungen Tab -->
+                <div id="invoices" class="tab-content">
+                    <div class="page-header">
+                        <h2>Rechnungen</h2>
+                        <button class="btn btn-primary" onclick="openInvoiceModal()">
+                            <i class="fas fa-plus"></i> Neue Rechnung
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rechnungsnummer</th>
+                                    <th>Kunde</th>
+                                    <th>Datum</th>
+                                    <th>Fällig am</th>
+                                    <th>Betrag</th>
+                                    <th>Status</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoicesTable">
+                                <!-- Daten werden geladen -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Ratenzahlungen Tab -->
+                <div id="installments" class="tab-content">
+                    <div class="page-header">
+                        <h2>Ratenzahlungen</h2>
+                        <button class="btn btn-primary" onclick="openInstallmentModal()">
+                            <i class="fas fa-plus"></i> Neuer Ratenplan
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rechnung</th>
+                                    <th>Kunde</th>
+                                    <th>Ratenplan</th>
+                                    <th>Nächste Rate</th>
+                                    <th>Offener Betrag</th>
+                                    <th>Status</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="installmentsTable">
+                                <!-- Daten werden geladen -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Kunden Tab -->
+                <div id="customers" class="tab-content">
+                    <div class="page-header">
+                        <h2>Kunden</h2>
+                        <button class="btn btn-primary" onclick="openCustomerModal()">
+                            <i class="fas fa-plus"></i> Neuer Kunde
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>E-Mail</th>
+                                    <th>Telefon</th>
+                                    <th>Rechnungen</th>
+                                    <th>Letzte Aktivität</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customersTable">
+                                <!-- Daten werden geladen -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Produkte Tab -->
+                <div id="products" class="tab-content">
+                    <div class="page-header">
+                        <h2>Produkte & Dienstleistungen</h2>
+                        <button class="btn btn-primary" onclick="openProductModal()">
+                            <i class="fas fa-plus"></i> Neues Produkt
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Kategorie</th>
+                                    <th>Preis</th>
+                                    <th>Lagerbestand</th>
+                                    <th>Umsatz</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTable">
+                                <!-- Daten werden geladen -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Einkäufe Tab -->
+                <div id="purchases" class="tab-content">
+                    <div class="page-header">
+                        <h2>Einkäufe & Lieferanten</h2>
+                        <button class="btn btn-primary" onclick="openPurchaseModal()">
+                            <i class="fas fa-plus"></i> Neuer Einkauf
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Lieferant</th>
+                                    <th>Datum</th>
+                                    <th>Betrag</th>
+                                    <th>Zahlungsstatus</th>
+                                    <th>Notizen</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="purchasesTable">
+                                <!-- Daten werden geladen -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Berichte Tab -->
+                <div id="reports" class="tab-content">
+                    <div class="page-header">
+                        <h2>Finanzberichte</h2>
+                        <div>
+                            <input type="date" id="reportStartDate" style="padding: 0.5rem; border-radius: 6px;">
+                            bis
+                            <input type="date" id="reportEndDate" style="padding: 0.5rem; border-radius: 6px;">
+                            <button class="btn btn-primary" onclick="generateReport()">
+                                <i class="fas fa-filter"></i> Filtern
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid" id="reportStats">
+                        <!-- Berichtsdaten werden geladen -->
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+                        <div class="chart-container">
+                            <h3>Einnahmen vs. Ausgaben</h3>
+                            <canvas id="incomeExpenseChart" height="250"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3>Top Kunden</h3>
+                            <canvas id="topCustomersChart" height="250"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem;">
+                        <h3>Transaktionsdetails</h3>
+                        <div class="table-container">
+                            <table id="transactionsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Datum</th>
+                                        <th>Typ</th>
+                                        <th>Kategorie</th>
+                                        <th>Beschreibung</th>
+                                        <th>Betrag</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Daten werden geladen -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal für neue Rechnung -->
+    <div id="invoiceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Neue Rechnung erstellen</h3>
+                <button onclick="closeModal('invoiceModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="invoiceCustomer">Kunde *</label>
+                    <select id="invoiceCustomer" required>
+                        <option value="">Kunden auswählen...</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="invoiceDate">Rechnungsdatum *</label>
+                        <input type="date" id="invoiceDate" required value="<?php echo date('Y-m-d'); ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="dueDate">Fälligkeitsdatum *</label>
+                        <input type="date" id="dueDate" required value="<?php echo date('Y-m-d', strtotime('+30 days')); ?>">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Rechnungspositionen</label>
+                    <div class="invoice-items">
+                        <div id="invoiceItems">
+                            <!-- Items werden dynamisch hinzugefügt -->
+                        </div>
+                        <button type="button" class="add-item" onclick="addInvoiceItem()">
+                            <i class="fas fa-plus"></i> Position hinzufügen
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="totalAmount">Gesamtbetrag</label>
+                    <input type="text" id="totalAmount" readonly style="background: #f8fafc; font-weight: bold; font-size: 1.2rem;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentMethod">Zahlungsmethode</label>
+                    <select id="paymentMethod">
+                        <option value="cash">Bar</option>
+                        <option value="bank_transfer">Überweisung</option>
+                        <option value="credit_card">Kreditkarte</option>
+                        <option value="installment">Ratenzahlung</option>
+                    </select>
+                </div>
+                
+                <div id="installmentOptions" style="display: none;">
+                    <div class="installment-plan">
+                        <h4>Ratenzahlungsplan</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="installmentCount">Anzahl Raten</label>
+                                <select id="installmentCount">
+                                    <option value="2">2 Raten</option>
+                                    <option value="3">3 Raten</option>
+                                    <option value="6">6 Raten</option>
+                                    <option value="12">12 Raten</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="installmentFrequency">Ratenintervall</label>
+                                <select id="installmentFrequency">
+                                    <option value="monthly">Monatlich</option>
+                                    <option value="quarterly">Vierteljährlich</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="invoiceNotes">Notizen</label>
+                    <textarea id="invoiceNotes" rows="3"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="closeModal('invoiceModal')" style="background: var(--secondary); color: white;">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" onclick="saveInvoice()">Rechnung speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal für Zahlungserfassung -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Zahlung erfassen</h3>
+                <button onclick="closeModal('paymentModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="paymentAmount">Betrag *</label>
+                    <input type="number" id="paymentAmount" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentDate">Zahlungsdatum *</label>
+                    <input type="date" id="paymentDate" required value="<?php echo date('Y-m-d'); ?>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentMethod">Zahlungsmethode</label>
+                    <select id="paymentMethodSelect">
+                        <option value="cash">Bar</option>
+                        <option value="bank_transfer">Überweisung</option>
+                        <option value="credit_card">Kreditkarte</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentNotes">Notizen</label>
+                    <textarea id="paymentNotes" rows="3"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="closeModal('paymentModal')" style="background: var(--secondary); color: white;">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" onclick="recordPayment()">Zahlung speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal für Kunden -->
+    <div id="customerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="customerModalTitle">Neuer Kunde</h3>
+                <button onclick="closeModal('customerModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="customerName">Name *</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="customerEmail">E-Mail</label>
+                        <input type="email" id="customerEmail">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerPhone">Telefon</label>
+                        <input type="tel" id="customerPhone">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customerAddress">Adresse</label>
+                    <textarea id="customerAddress" rows="2"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="closeModal('customerModal')" style="background: var(--secondary); color: white;">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCustomer()">Kunde speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal für Produkte -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="productModalTitle">Neues Produkt</h3>
+                <button onclick="closeModal('productModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="productName">Produktname *</label>
+                    <input type="text" id="productName" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productPrice">Preis (€) *</label>
+                        <input type="number" id="productPrice" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productCategory">Kategorie</label>
+                        <select id="productCategory">
+                            <option value="product">Produkt</option>
+                            <option value="service">Dienstleistung</option>
+                            <option value="material">Material</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productStock">Lagerbestand</label>
+                        <input type="number" id="productStock" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="productUnit">Einheit</label>
+                        <input type="text" id="productUnit" value="Stück">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productDescription">Beschreibung</label>
+                    <textarea id="productDescription" rows="3"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="closeModal('productModal')" style="background: var(--secondary); color: white;">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" onclick="saveProduct()">Produkt speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal für Einkäufe -->
+    <div id="purchaseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Neuer Einkauf</h3>
+                <button onclick="closeModal('purchaseModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="purchaseSupplier">Lieferant *</label>
+                    <input type="text" id="purchaseSupplier" placeholder="Name des Lieferanten" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="purchaseDate">Einkaufsdatum *</label>
+                        <input type="date" id="purchaseDate" required value="<?php echo date('Y-m-d'); ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="purchaseTotal">Gesamtbetrag (€) *</label>
+                        <input type="number" id="purchaseTotal" step="0.01" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="purchaseItems">Einkaufteile (eine pro Zeile, Format: Produktname - Menge - Preis)</label>
+                    <textarea id="purchaseItems" rows="4" placeholder="z.B. Büromaterial - 10 - 15.50"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="purchaseNotes">Notizen</label>
+                    <textarea id="purchaseNotes" rows="3"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="closeModal('purchaseModal')" style="background: var(--secondary); color: white;">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" onclick="savePurchase()">Einkauf speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="alertContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Hauptklasse für das Buchhaltungssystem
+        class AccountingSystem {
+            constructor() {
+                this.dbName = 'accounting_db';
+                this.dbVersion = 1;
+                this.db = null;
+                this.initDatabase();
+                
+                // Chart-Instanzen
+                this.charts = {};
+                this.currentInvoiceId = null;
+                this.currentPaymentInvoiceId = null;
+                this.editingCustomerId = null;
+                this.editingProductId = null;
+            }
+            
+            async initDatabase() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(this.dbName, this.dbVersion);
+                    
+                    request.onerror = (event) => {
+                        console.error('Datenbankfehler:', event.target.error);
+                        reject(event.target.error);
+                    };
+                    
+                    request.onsuccess = (event) => {
+                        this.db = event.target.result;
+                        console.log('Datenbank initialisiert');
+                        this.loadInitialData();
+                        resolve();
+                    };
+                    
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        
+                        // Kunden-Tabelle
+                        if (!db.objectStoreNames.contains('customers')) {
+                            const customerStore = db.createObjectStore('customers', { keyPath: 'id', autoIncrement: true });
+                            customerStore.createIndex('name', 'name', { unique: false });
+                            customerStore.createIndex('email', 'email', { unique: false });
+                        }
+                        
+                        // Produkte-Tabelle
+                        if (!db.objectStoreNames.contains('products')) {
+                            const productStore = db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
+                            productStore.createIndex('name', 'name', { unique: false });
+                            productStore.createIndex('category', 'category', { unique: false });
+                        }
+                        
+                        // Rechnungen-Tabelle
+                        if (!db.objectStoreNames.contains('invoices')) {
+                            const invoiceStore = db.createObjectStore('invoices', { keyPath: 'id', autoIncrement: true });
+                            invoiceStore.createIndex('customerId', 'customerId', { unique: false });
+                            invoiceStore.createIndex('invoiceNumber', 'invoiceNumber', { unique: true });
+                            invoiceStore.createIndex('status', 'status', { unique: false });
+                            invoiceStore.createIndex('dueDate', 'dueDate', { unique: false });
+                        }
+                        
+                        // Rechnungspositionen-Tabelle
+                        if (!db.objectStoreNames.contains('invoiceItems')) {
+                            const itemStore = db.createObjectStore('invoiceItems', { keyPath: 'id', autoIncrement: true });
+                            itemStore.createIndex('invoiceId', 'invoiceId', { unique: false });
+                            itemStore.createIndex('productId', 'productId', { unique: false });
+                        }
+                        
+                        // Ratenpläne-Tabelle
+                        if (!db.objectStoreNames.contains('installmentPlans')) {
+                            const planStore = db.createObjectStore('installmentPlans', { keyPath: 'id', autoIncrement: true });
+                            planStore.createIndex('invoiceId', 'invoiceId', { unique: false });
+                        }
+                        
+                        // Einzelne Raten-Tabelle
+                        if (!db.objectStoreNames.contains('installments')) {
+                            const installmentStore = db.createObjectStore('installments', { keyPath: 'id', autoIncrement: true });
+                            installmentStore.createIndex('planId', 'planId', { unique: false });
+                            installmentStore.createIndex('invoiceId', 'invoiceId', { unique: false });
+                            installmentStore.createIndex('status', 'status', { unique: false });
+                            installmentStore.createIndex('dueDate', 'dueDate', { unique: false });
+                        }
+                        
+                        // Einkäufe-Tabelle
+                        if (!db.objectStoreNames.contains('purchases')) {
+                            const purchaseStore = db.createObjectStore('purchases', { keyPath: 'id', autoIncrement: true });
+                            purchaseStore.createIndex('supplier', 'supplier', { unique: false });
+                            purchaseStore.createIndex('date', 'date', { unique: false });
+                        }
+                        
+                        // Transaktionen-Tabelle
+                        if (!db.objectStoreNames.contains('transactions')) {
+                            const transactionStore = db.createObjectStore('transactions', { keyPath: 'id', autoIncrement: true });
+                            transactionStore.createIndex('date', 'date', { unique: false });
+                            transactionStore.createIndex('type', 'type', { unique: false });
+                            transactionStore.createIndex('category', 'category', { unique: false });
+                        }
+                    };
+                });
+            }
+            
+            async loadInitialData() {
+                // Testdaten einfügen, wenn Datenbank leer ist
+                const customers = await this.getAll('customers');
+                if (customers.length === 0) {
+                    await this.addSampleData();
+                }
+                
+                this.updateDashboard();
+                this.loadInvoices();
+                this.loadCustomers();
+                this.loadProducts();
+                this.loadPurchases();
+            }
+            
+            async addSampleData() {
+                // Beispiel-Kunden
+                const sampleCustomers = [
+                    { name: 'Max Mustermann', email: 'max@example.com', phone: '0123 456789', address: 'Musterstraße 1, 12345 Musterstadt' },
+                    { name: 'Erika Musterfrau', email: 'erika@example.com', phone: '0987 654321', address: 'Beispielweg 2, 54321 Beispielstadt' },
+                    { name: 'Test GmbH', email: 'info@testgmbh.de', phone: '030 123456', address: 'Berliner Allee 10, 10115 Berlin' }
+                ];
+                
+                for (const customer of sampleCustomers) {
+                    await this.add('customers', customer);
+                }
+                
+                // Beispiel-Produkte
+                const sampleProducts = [
+                    { name: 'Webdesign Paket', price: 1499.99, category: 'service', stock: 0, description: 'Komplettes Webdesign inkl. Responsive Design' },
+                    { name: 'Bürostuhl', price: 299.99, category: 'product', stock: 15, description: 'Ergonomischer Bürostuhl' },
+                    { name: 'Druckerpapier', price: 12.50, category: 'material', stock: 200, description: '500 Blatt, 80g/m²' },
+                    { name: 'IT-Support Stunde', price: 89.99, category: 'service', stock: 0, description: 'Remote-Support pro Stunde' }
+                ];
+                
+                for (const product of sampleProducts) {
+                    await this.add('products', product);
+                }
+                
+                // Beispiel-Rechnungen
+                const customers = await this.getAll('customers');
+                const products = await this.getAll('products');
+                
+                if (customers.length > 0 && products.length > 0) {
+                    const invoice = {
+                        invoiceNumber: 'R-2024-0001',
+                        customerId: customers[0].id,
+                        issueDate: '2024-01-15',
+                        dueDate: '2024-02-14',
+                        totalAmount: 1799.97,
+                        paidAmount: 899.99,
+                        status: 'partial',
+                        paymentMethod: 'installment',
+                        notes: 'Ratenzahlung vereinbart'
+                    };
+                    
+                    const invoiceId = await this.add('invoices', invoice);
+                    
+                    // Rechnungspositionen
+                    await this.add('invoiceItems', {
+                        invoiceId: invoiceId,
+                        productId: products[0].id,
+                        quantity: 1,
+                        unitPrice: 1499.99,
+                        totalPrice: 1499.99
+                    });
+                    
+                    await this.add('invoiceItems', {
+                        invoiceId: invoiceId,
+                        productId: products[3].id,
+                        quantity: 3,
+                        unitPrice: 89.99,
+                        totalPrice: 269.97
+                    });
+                    
+                    // Ratenplan
+                    const planId = await this.add('installmentPlans', {
+                        invoiceId: invoiceId,
+                        totalInstallments: 2,
+                        installmentAmount: 899.99,
+                        frequency: 'monthly',
+                        startDate: '2024-02-01'
+                    });
+                    
+                    // Einzelne Raten
+                    await this.add('installments', {
+                        planId: planId,
+                        invoiceId: invoiceId,
+                        installmentNumber: 1,
+                        dueDate: '2024-02-01',
+                        amount: 899.99,
+                        paidDate: '2024-02-01',
+                        status: 'paid'
+                    });
+                    
+                    await this.add('installments', {
+                        planId: planId,
+                        invoiceId: invoiceId,
+                        installmentNumber: 2,
+                        dueDate: '2024-03-01',
+                        amount: 899.99,
+                        status: 'pending'
+                    });
+                    
+                    // Transaktionen
+                    await this.add('transactions', {
+                        date: '2024-01-15',
+                        type: 'income',
+                        category: 'sales',
+                        amount: 1799.97,
+                        description: 'Rechnung R-2024-0001',
+                        referenceId: invoiceId,
+                        referenceType: 'invoice'
+                    });
+                    
+                    await this.add('transactions', {
+                        date: '2024-02-01',
+                        type: 'income',
+                        category: 'payment',
+                        amount: 899.99,
+                        description: 'Rate 1 für Rechnung R-2024-0001',
+                        referenceId: invoiceId,
+                        referenceType: 'installment'
+                    });
+                }
+                
+                // Beispiel-Einkauf
+                await this.add('purchases', {
+                    supplier: 'Bürobedarf Müller',
+                    date: '2024-01-10',
+                    totalAmount: 450.00,
+                    paymentStatus: 'paid',
+                    notes: 'Büromaterial für Q1'
+                });
+                
+                await this.add('transactions', {
+                    date: '2024-01-10',
+                    type: 'expense',
+                    category: 'purchase',
+                    amount: 450.00,
+                    description: 'Büromaterial Einkauf',
+                    referenceType: 'purchase'
+                });
+            }
+            
+            // CRUD-Operationen
+            async add(storeName, data) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([storeName], 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.add(data);
+                    
+                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+            
+            async get(storeName, id) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([storeName], 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.get(id);
+                    
+                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+            
+            async getAll(storeName, indexName = null, range = null) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([storeName], 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const target = indexName ? store.index(indexName) : store;
+                    const request = range ? target.getAll(range) : target.getAll();
+                    
+                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+            
+            async update(storeName, id, data) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([storeName], 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.put({ ...data, id });
+                    
+                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+            
+            async delete(storeName, id) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([storeName], 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.delete(id);
+                    
+                    request.onsuccess = (event) => resolve(true);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+            
+            // Spezifische Geschäftslogik
+            async generateInvoiceNumber() {
+                const invoices = await this.getAll('invoices');
+                const year = new Date().getFullYear();
+                const count = invoices.filter(inv => inv.invoiceNumber?.includes(year.toString())).length + 1;
+                return `R-${year}-${count.toString().padStart(4, '0')}`;
+            }
+            
+            async createInvoice(invoiceData, items) {
+                // Rechnungsnummer generieren
+                invoiceData.invoiceNumber = invoiceData.invoiceNumber || await this.generateInvoiceNumber();
+                
+                // Rechnung speichern
+                const invoiceId = await this.add('invoices', invoiceData);
+                
+                // Rechnungspositionen speichern
+                for (const item of items) {
+                    await this.add('invoiceItems', {
+                        ...item,
+                        invoiceId: invoiceId
+                    });
+                    
+                    // Lagerbestand aktualisieren (wenn Produkt)
+                    if (item.productId) {
+                        const product = await this.get('products', item.productId);
+                        if (product && product.stock !== undefined) {
+                            product.stock -= item.quantity;
+                            await this.update('products', product.id, product);
+                        }
+                    }
+                }
+                
+                // Transaktion erfassen
+                await this.add('transactions', {
+                    date: invoiceData.issueDate,
+                    type: 'income',
+                    category: 'sales',
+                    amount: invoiceData.totalAmount,
+                    description: `Rechnung ${invoiceData.invoiceNumber}`,
+                    referenceId: invoiceId,
+                    referenceType: 'invoice'
+                });
+                
+                // Bei Ratenzahlung: Ratenplan erstellen
+                if (invoiceData.paymentMethod === 'installment') {
+                    const installmentCount = parseInt(document.getElementById('installmentCount').value) || 2;
+                    const installmentAmount = invoiceData.totalAmount / installmentCount;
+                    
+                    const planId = await this.add('installmentPlans', {
+                        invoiceId: invoiceId,
+                        totalInstallments: installmentCount,
+                        installmentAmount: installmentAmount,
+                        frequency: document.getElementById('installmentFrequency').value || 'monthly',
+                        startDate: invoiceData.issueDate
+                    });
+                    
+                    // Einzelne Raten erstellen
+                    const frequencyDays = document.getElementById('installmentFrequency').value === 'quarterly' ? 90 : 30;
+                    
+                    for (let i = 0; i < installmentCount; i++) {
+                        const dueDate = new Date(invoiceData.issueDate);
+                        dueDate.setDate(dueDate.getDate() + (frequencyDays * (i + 1)));
+                        
+                        await this.add('installments', {
+                            planId: planId,
+                            invoiceId: invoiceId,
+                            installmentNumber: i + 1,
+                            dueDate: dueDate.toISOString().split('T')[0],
+                            amount: installmentAmount,
+                            status: 'pending'
+                        });
+                    }
+                }
+                
+                return invoiceId;
+            }
+            
+            async recordPayment(invoiceId, paymentData) {
+                const invoice = await this.get('invoices', invoiceId);
+                if (!invoice) return false;
+                
+                // Zahlung erfassen
+                invoice.paidAmount = (invoice.paidAmount || 0) + paymentData.amount;
+                
+                if (invoice.paidAmount >= invoice.totalAmount) {
+                    invoice.status = 'paid';
+                } else if (invoice.paidAmount > 0) {
+                    invoice.status = 'partial';
+                }
+                
+                await this.update('invoices', invoiceId, invoice);
+                
+                // Transaktion erfassen
+                await this.add('transactions', {
+                    date: paymentData.date,
+                    type: 'income',
+                    category: 'payment',
+                    amount: paymentData.amount,
+                    description: `Zahlung für Rechnung ${invoice.invoiceNumber}`,
+                    referenceId: invoiceId,
+                    referenceType: 'invoice'
+                });
+                
+                // Wenn es sich um eine Rate handelt
+                if (paymentData.installmentId) {
+                    const installment = await this.get('installments', paymentData.installmentId);
+                    if (installment) {
+                        installment.status = 'paid';
+                        installment.paidDate = paymentData.date;
+                        await this.update('installments', installment.id, installment);
+                    }
+                }
+                
+                return true;
+            }
+            
+            async getFinancialOverview(period = 'month') {
+                const now = new Date();
+                let startDate, endDate;
+                
+                switch (period) {
+                    case 'today':
+                        startDate = endDate = now.toISOString().split('T')[0];
+                        break;
+                    case 'week':
+                        startDate = new Date(now.setDate(now.getDate() - 7)).toISOString().split('T')[0];
+                        endDate = new Date().toISOString().split('T')[0];
+                        break;
+                    case 'quarter':
+                        const quarter = Math.floor(now.getMonth() / 3);
+                        startDate = new Date(now.getFullYear(), quarter * 3, 1).toISOString().split('T')[0];
+                        endDate = new Date(now.getFullYear(), quarter * 3 + 3, 0).toISOString().split('T')[0];
+                        break;
+                    case 'year':
+                        startDate = new Date(now.getFullYear(), 0, 1).toISOString().split('T')[0];
+                        endDate = new Date(now.getFullYear(), 11, 31).toISOString().split('T')[0];
+                        break;
+                    case 'month':
+                    default:
+                        startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+                        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+                }
+                
+                // Einnahmen berechnen
+                const incomeTransactions = await this.getAll('transactions');
+                const income = incomeTransactions
+                    .filter(t => t.type === 'income' && t.date >= startDate && t.date <= endDate)
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                // Ausgaben berechnen
+                const expenseTransactions = await this.getAll('transactions');
+                const expenses = expenseTransactions
+                    .filter(t => t.type === 'expense' && t.date >= startDate && t.date <= endDate)
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                // Offene Rechnungen
+                const invoices = await this.getAll('invoices');
+                const openInvoices = invoices.filter(inv => inv.status !== 'paid');
+                const openInvoicesAmount = openInvoices.reduce((sum, inv) => sum + (inv.totalAmount - (inv.paidAmount || 0)), 0);
+                
+                // Überfällige Rechnungen
+                const today = new Date().toISOString().split('T')[0];
+                const overdueInvoices = openInvoices.filter(inv => inv.dueDate < today);
+                const overdueAmount = overdueInvoices.reduce((sum, inv) => sum + (inv.totalAmount - (inv.paidAmount || 0)), 0);
+                
+                // Fällige Raten
+                const installments = await this.getAll('installments');
+                const dueInstallments = installments.filter(inst => inst.status === 'pending' && inst.dueDate <= today);
+                const dueInstallmentsAmount = dueInstallments.reduce((sum, inst) => sum + inst.amount, 0);
+                
+                return {
+                    income,
+                    expenses,
+                    profit: income - expenses,
+                    openInvoicesCount: openInvoices.length,
+                    openInvoicesAmount,
+                    overdueInvoicesCount: overdueInvoices.length,
+                    overdueInvoicesAmount: overdueAmount,
+                    dueInstallmentsCount: dueInstallments.length,
+                    dueInstallmentsAmount
+                };
+            }
+            
+            async getOverdueInvoices() {
+                const invoices = await this.getAll('invoices');
+                const customers = await this.getAll('customers');
+                const today = new Date().toISOString().split('T')[0];
+                
+                return invoices
+                    .filter(inv => inv.status !== 'paid' && inv.dueDate < today)
+                    .map(inv => {
+                        const customer = customers.find(c => c.id === inv.customerId);
+                        return {
+                            ...inv,
+                            customerName: customer ? customer.name : 'Unbekannt',
+                            outstandingAmount: inv.totalAmount - (inv.paidAmount || 0)
+                        };
+                    });
+            }
+            
+            async getRecentActivities(limit = 10) {
+                const transactions = await this.getAll('transactions');
+                const invoices = await this.getAll('invoices');
+                const customers = await this.getAll('customers');
+                
+                return transactions
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, limit)
+                    .map(trans => {
+                        const invoice = trans.referenceType === 'invoice' ? 
+                            invoices.find(inv => inv.id === trans.referenceId) : null;
+                        const customer = invoice ? 
+                            customers.find(c => c.id === invoice.customerId) : null;
+                        
+                        return {
+                            date: trans.date,
+                            type: trans.type,
+                            amount: trans.amount,
+                            description: trans.description,
+                            customerName: customer ? customer.name : null,
+                            icon: trans.type === 'income' ? 'fa-arrow-down' : 'fa-arrow-up'
+                        };
+                    });
+            }
+            
+            // UI Aktualisierungen
+            async updateDashboard() {
+                const period = document.getElementById('periodSelect')?.value || 'month';
+                const overview = await this.getFinancialOverview(period);
+                
+                // Stats aktualisieren
+                const statsContainer = document.getElementById('statsContainer');
+                statsContainer.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-icon income">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Einnahmen</h3>
+                            <div class="amount">${overview.income.toFixed(2)} €</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon expense">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Ausgaben</h3>
+                            <div class="amount">${overview.expenses.toFixed(2)} €</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon profit">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Gewinn</h3>
+                            <div class="amount">${overview.profit.toFixed(2)} €</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Offene Rechnungen</h3>
+                            <div class="amount">${overview.openInvoicesCount} (${overview.openInvoicesAmount.toFixed(2)} €)</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Chart aktualisieren
+                this.updateFinanceChart(period);
+                
+                // Aktuelle Aktivitäten
+                this.updateRecentActivities();
+                
+                // Überfällige Rechnungen
+                this.updateOverdueInvoices();
+            }
+            
+            async updateFinanceChart(period) {
+                const ctx = document.getElementById('financeChart')?.getContext('2d');
+                if (!ctx) return;
+                
+                // Monatliche Daten für das Chart
+                const months = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+                const currentMonth = new Date().getMonth();
+                const labels = months.slice(Math.max(0, currentMonth - 5), currentMonth + 1);
+                
+                // Dummy-Daten (in einer echten Anwendung würden diese aus der DB kommen)
+                const incomeData = labels.map(() => Math.random() * 10000 + 5000);
+                const expenseData = labels.map(() => Math.random() * 6000 + 3000);
+                
+                if (this.charts.finance) {
+                    this.charts.finance.destroy();
+                }
+                
+                this.charts.finance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Einnahmen',
+                                data: incomeData,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            },
+                            {
+                                label: 'Ausgaben',
+                                data: expenseData,
+                                borderColor: '#ef4444',
+                                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Finanzentwicklung'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toFixed(0) + ' €';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            async updateRecentActivities() {
+                const activities = await this.getRecentActivities(5);
+                const container = document.getElementById('activityList');
+                
+                if (!container) return;
+                
+                container.innerHTML = activities.map(act => `
+                    <li class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas ${act.icon} ${act.type === 'income' ? 'text-success' : 'text-danger'}"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600;">${act.description}</div>
+                            <div style="font-size: 0.9rem; color: var(--secondary);">
+                                ${act.customerName ? `von ${act.customerName} · ` : ''}
+                                ${new Date(act.date).toLocaleDateString('de-DE')} · 
+                                ${act.amount.toFixed(2)} €
+                            </div>
+                        </div>
+                    </li>
+                `).join('');
+            }
+            
+            async updateOverdueInvoices() {
+                const overdueInvoices = await this.getOverdueInvoices();
+                const container = document.querySelector('#overdueInvoicesTable tbody');
+                
+                if (!container) return;
+                
+                container.innerHTML = overdueInvoices.map(inv => `
+                    <tr>
+                        <td>${inv.invoiceNumber}</td>
+                        <td>${inv.customerName}</td>
+                        <td>${new Date(inv.dueDate).toLocaleDateString('de-DE')}</td>
+                        <td>${inv.outstandingAmount.toFixed(2)} €</td>
+                        <td>
+                            <button class="action-btn view-btn" onclick="viewInvoice(${inv.id})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn edit-btn" onclick="recordPaymentModal(${inv.id})">
+                                <i class="fas fa-euro-sign"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            async loadInvoices() {
+                const invoices = await this.getAll('invoices');
+                const customers = await this.getAll('customers');
+                const container = document.getElementById('invoicesTable');
+                
+                if (!container) return;
+                
+                container.innerHTML = invoices.map(inv => {
+                    const customer = customers.find(c => c.id === inv.customerId);
+                    const statusClass = inv.status === 'paid' ? 'status-paid' : 
+                                       inv.status === 'partial' ? 'status-pending' : 
+                                       inv.dueDate < new Date().toISOString().split('T')[0] ? 'status-overdue' : 'status-pending';
+                    const statusText = inv.status === 'paid' ? 'Bezahlt' : 
+                                     inv.status === 'partial' ? 'Teilweise' : 
+                                     inv.dueDate < new Date().toISOString().split('T')[0] ? 'Überfällig' : 'Offen';
+                    
+                    return `
+                        <tr>
+                            <td>${inv.invoiceNumber}</td>
+                            <td>${customer ? customer.name : 'Unbekannt'}</td>
+                            <td>${new Date(inv.issueDate).toLocaleDateString('de-DE')}</td>
+                            <td>${new Date(inv.dueDate).toLocaleDateString('de-DE')}</td>
+                            <td>${inv.totalAmount.toFixed(2)} €</td>
+                            <td><span class="status ${statusClass}">${statusText}</span></td>
+                            <td class="data-actions">
+                                <button class="action-btn view-btn" onclick="viewInvoice(${inv.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn edit-btn" onclick="recordPaymentModal(${inv.id})">
+                                    <i class="fas fa-euro-sign"></i>
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deleteInvoice(${inv.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            async loadCustomers() {
+                const customers = await this.getAll('customers');
+                const invoices = await this.getAll('invoices');
+                const container = document.getElementById('customersTable');
+                
+                if (!container) return;
+                
+                container.innerHTML = customers.map(customer => {
+                    const customerInvoices = invoices.filter(inv => inv.customerId === customer.id);
+                    const totalInvoices = customerInvoices.length;
+                    const totalAmount = customerInvoices.reduce((sum, inv) => sum + inv.totalAmount, 0);
+                    
+                    return `
+                        <tr>
+                            <td>${customer.name}</td>
+                            <td>${customer.email || '-'}</td>
+                            <td>${customer.phone || '-'}</td>
+                            <td>${totalInvoices} (${totalAmount.toFixed(2)} €)</td>
+                            <td>${customer.lastActivity || '-'}</td>
+                            <td class="data-actions">
+                                <button class="action-btn view-btn" onclick="viewCustomer(${customer.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn edit-btn" onclick="editCustomer(${customer.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deleteCustomer(${customer.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            async loadProducts() {
+                const products = await this.getAll('products');
+                const container = document.getElementById('productsTable');
+                
+                if (!container) return;
+                
+                container.innerHTML = products.map(product => {
+                    const categoryNames = {
+                        'product': 'Produkt',
+                        'service': 'Dienstleistung',
+                        'material': 'Material'
+                    };
+                    
+                    return `
+                        <tr>
+                            <td>${product.name}</td>
+                            <td>${categoryNames[product.category] || product.category}</td>
+                            <td>${product.price.toFixed(2)} €</td>
+                            <td>${product.stock !== undefined ? product.stock : '-'}</td>
+                            <td>-</td>
+                            <td class="data-actions">
+                                <button class="action-btn view-btn" onclick="viewProduct(${product.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn edit-btn" onclick="editProduct(${product.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deleteProduct(${product.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            async loadPurchases() {
+                const purchases = await this.getAll('purchases');
+                const container = document.getElementById('purchasesTable');
+                
+                if (!container) return;
+                
+                container.innerHTML = purchases.map(purchase => {
+                    const statusClass = purchase.paymentStatus === 'paid' ? 'status-paid' : 'status-pending';
+                    const statusText = purchase.paymentStatus === 'paid' ? 'Bezahlt' : 'Offen';
+                    
+                    return `
+                        <tr>
+                            <td>${purchase.supplier}</td>
+                            <td>${new Date(purchase.date).toLocaleDateString('de-DE')}</td>
+                            <td>${purchase.totalAmount.toFixed(2)} €</td>
+                            <td><span class="status ${statusClass}">${statusText}</span></td>
+                            <td>${purchase.notes || '-'}</td>
+                            <td class="data-actions">
+                                <button class="action-btn view-btn" onclick="viewPurchase(${purchase.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn edit-btn">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deletePurchase(${purchase.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            async loadInstallments() {
+                const installments = await this.getAll('installments');
+                const plans = await this.getAll('installmentPlans');
+                const invoices = await this.getAll('invoices');
+                const customers = await this.getAll('customers');
+                const container = document.getElementById('installmentsTable');
+                
+                if (!container) return;
+                
+                // Gruppiere Raten nach Rechnung
+                const installmentByInvoice = {};
+                installments.forEach(inst => {
+                    if (!installmentByInvoice[inst.invoiceId]) {
+                        installmentByInvoice[inst.invoiceId] = [];
+                    }
+                    installmentByInvoice[inst.invoiceId].push(inst);
+                });
+                
+                const rows = [];
+                for (const [invoiceId, insts] of Object.entries(installmentByInvoice)) {
+                    const invoice = invoices.find(inv => inv.id === parseInt(invoiceId));
+                    if (!invoice) continue;
+                    
+                    const customer = customers.find(c => c.id === invoice.customerId);
+                    const plan = plans.find(p => p.invoiceId === invoice.id);
+                    
+                    const pendingInsts = insts.filter(inst => inst.status === 'pending');
+                    const nextInst = pendingInsts.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))[0];
+                    const outstandingAmount = pendingInsts.reduce((sum, inst) => sum + inst.amount, 0);
+                    
+                    rows.push(`
+                        <tr>
+                            <td>${invoice.invoiceNumber}</td>
+                            <td>${customer ? customer.name : 'Unbekannt'}</td>
+                            <td>${plan ? `${plan.totalInstallments} Raten` : '-'}</td>
+                            <td>${nextInst ? new Date(nextInst.dueDate).toLocaleDateString('de-DE') : '-'}</td>
+                            <td>${outstandingAmount.toFixed(2)} €</td>
+                            <td><span class="status ${pendingInsts.length > 0 ? 'status-pending' : 'status-paid'}">
+                                ${pendingInsts.length > 0 ? 'Offen' : 'Bezahlt'}
+                            </span></td>
+                            <td class="data-actions">
+                                <button class="action-btn view-btn" onclick="viewInstallments(${invoice.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn edit-btn" onclick="recordPaymentModal(${invoice.id})">
+                                    <i class="fas fa-euro-sign"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `);
+                }
+                
+                container.innerHTML = rows.join('');
+            }
+            
+            showAlert(message, type = 'success') {
+                const container = document.getElementById('alertContainer');
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type}`;
+                alert.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'}"></i>
+                    ${message}
+                `;
+                
+                container.appendChild(alert);
+                
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 300);
+                }, 3000);
+            }
+        }
+
+        // Globale Instanz
+        const accountingSystem = new AccountingSystem();
+
+        // UI-Funktionen
+        function showTab(tabName) {
+            // Tab-Inhalt verstecken
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Tab anzeigen
+            document.getElementById(tabName).classList.add('active');
+            
+            // Navigation aktualisieren
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // Tab-spezifische Daten laden
+            switch(tabName) {
+                case 'dashboard':
+                    accountingSystem.updateDashboard();
+                    break;
+                case 'invoices':
+                    accountingSystem.loadInvoices();
+                    break;
+                case 'installments':
+                    accountingSystem.loadInstallments();
+                    break;
+                case 'customers':
+                    accountingSystem.loadCustomers();
+                    break;
+                case 'products':
+                    accountingSystem.loadProducts();
+                    break;
+                case 'purchases':
+                    accountingSystem.loadPurchases();
+                    break;
+            }
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            accountingSystem.currentInvoiceId = null;
+            accountingSystem.editingCustomerId = null;
+            accountingSystem.editingProductId = null;
+        }
+
+        let invoiceItems = [];
+        function addInvoiceItem() {
+            const container = document.getElementById('invoiceItems');
+            const itemId = invoiceItems.length + 1;
+            
+            const itemHtml = `
+                <div class="item-row" id="item-${itemId}">
+                    <div>
+                        <label>Produkt/Beschreibung</label>
+                        <input type="text" class="item-description" placeholder="Produkt oder Dienstleistung" onchange="calculateInvoiceTotal()">
+                    </div>
+                    <div>
+                        <label>Menge</label>
+                        <input type="number" class="item-quantity" value="1" min="1" onchange="calculateInvoiceTotal()">
+                    </div>
+                    <div>
+                        <label>Preis (€)</label>
+                        <input type="number" class="item-price" step="0.01" onchange="calculateInvoiceTotal()">
+                    </div>
+                    <div>
+                        <label>Gesamt (€)</label>
+                        <div class="item-total">0.00</div>
+                    </div>
+                    <div>
+                        <button type="button" class="remove-item" onclick="removeInvoiceItem(${itemId})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', itemHtml);
+            invoiceItems.push({ id: itemId });
+        }
+
+        function removeInvoiceItem(itemId) {
+            const element = document.getElementById(`item-${itemId}`);
+            if (element) {
+                element.remove();
+                invoiceItems = invoiceItems.filter(item => item.id !== itemId);
+                calculateInvoiceTotal();
+            }
+        }
+
+        function calculateInvoiceTotal() {
+            let total = 0;
+            
+            document.querySelectorAll('.item-row').forEach(row => {
+                const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                const itemTotal = quantity * price;
+                
+                row.querySelector('.item-total').textContent = itemTotal.toFixed(2);
+                total += itemTotal;
+            });
+            
+            document.getElementById('totalAmount').value = total.toFixed(2) + ' €';
+            
+            // Installment-Betrag aktualisieren
+            const installmentCount = document.getElementById('installmentCount')?.value || 2;
+            const installmentAmount = total / installmentCount;
+            // Hier könnte der Ratenbetrag aktualisiert werden
+        }
+
+        function toggleInstallmentOptions() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const options = document.getElementById('installmentOptions');
+            options.style.display = paymentMethod === 'installment' ? 'block' : 'none';
+            
+            if (paymentMethod === 'installment') {
+                calculateInvoiceTotal();
+            }
+        }
+
+        async function openInvoiceModal() {
+            // Kunden für Dropdown laden
+            const customers = await accountingSystem.getAll('customers');
+            const customerSelect = document.getElementById('invoiceCustomer');
+            customerSelect.innerHTML = '<option value="">Kunden auswählen...</option>' +
+                customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            
+            // Formular zurücksetzen
+            document.getElementById('invoiceItems').innerHTML = '';
+            invoiceItems = [];
+            addInvoiceItem(); // Erste Position hinzufügen
+            
+            // Event Listener für Zahlungsmethode
+            document.getElementById('paymentMethod').addEventListener('change', toggleInstallmentOptions);
+            
+            // Modal öffnen
+            openModal('invoiceModal');
+        }
+
+        async function saveInvoice() {
+            const customerId = document.getElementById('invoiceCustomer').value;
+            const issueDate = document.getElementById('invoiceDate').value;
+            const dueDate = document.getElementById('dueDate').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const notes = document.getElementById('invoiceNotes').value;
+            
+            if (!customerId) {
+                accountingSystem.showAlert('Bitte wählen Sie einen Kunden aus', 'warning');
+                return;
+            }
+            
+            // Rechnungspositionen sammeln
+            const items = [];
+            let totalAmount = 0;
+            
+            document.querySelectorAll('.item-row').forEach(row => {
+                const description = row.querySelector('.item-description').value;
+                const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                
+                if (description && quantity > 0 && price > 0) {
+                    const itemTotal = quantity * price;
+                    items.push({
+                        description: description,
+                        quantity: quantity,
+                        unitPrice: price,
+                        totalPrice: itemTotal
+                    });
+                    totalAmount += itemTotal;
+                }
+            });
+            
+            if (items.length === 0) {
+                accountingSystem.showAlert('Bitte fügen Sie mindestens eine Rechnungsposition hinzu', 'warning');
+                return;
+            }
+            
+            // Rechnung erstellen
+            const invoiceData = {
+                customerId: parseInt(customerId),
+                issueDate: issueDate,
+                dueDate: dueDate,
+                totalAmount: totalAmount,
+                paidAmount: 0,
+                status: 'open',
+                paymentMethod: paymentMethod,
+                notes: notes
+            };
+            
+            try {
+                const invoiceId = await accountingSystem.createInvoice(invoiceData, items);
+                accountingSystem.showAlert(`Rechnung erfolgreich erstellt (Nr. ${invoiceData.invoiceNumber})`);
+                
+                // UI aktualisieren
+                closeModal('invoiceModal');
+                accountingSystem.loadInvoices();
+                accountingSystem.updateDashboard();
+                
+            } catch (error) {
+                accountingSystem.showAlert('Fehler beim Erstellen der Rechnung: ' + error.message, 'danger');
+            }
+        }
+
+        function recordPaymentModal(invoiceId) {
+            accountingSystem.currentPaymentInvoiceId = invoiceId;
+            openModal('paymentModal');
+        }
+
+        async function recordPayment() {
+            const amount = parseFloat(document.getElementById('paymentAmount').value);
+            const date = document.getElementById('paymentDate').value;
+            
+            if (!amount || amount <= 0) {
+                accountingSystem.showAlert('Bitte geben Sie einen gültigen Betrag ein', 'warning');
+                return;
+            }
+            
+            try {
+                const success = await accountingSystem.recordPayment(
+                    accountingSystem.currentPaymentInvoiceId,
+                    {
+                        amount: amount,
+                        date: date,
+                        method: document.getElementById('paymentMethodSelect').value,
+                        notes: document.getElementById('paymentNotes').value
+                    }
+                );
+                
+                if (success) {
+                    accountingSystem.showAlert('Zahlung erfolgreich erfasst');
+                    closeModal('paymentModal');
+                    accountingSystem.loadInvoices();
+                    accountingSystem.loadInstallments();
+                    accountingSystem.updateDashboard();
+                }
+            } catch (error) {
+                accountingSystem.showAlert('Fehler beim Erfassen der Zahlung: ' + error.message, 'danger');
+            }
+        }
+
+        async function openCustomerModal(editId = null) {
+            const modalTitle = document.getElementById('customerModalTitle');
+            
+            if (editId) {
+                modalTitle.textContent = 'Kunde bearbeiten';
+                const customer = await accountingSystem.get('customers', editId);
+                if (customer) {
+                    document.getElementById('customerName').value = customer.name;
+                    document.getElementById('customerEmail').value = customer.email || '';
+                    document.getElementById('customerPhone').value = customer.phone || '';
+                    document.getElementById('customerAddress').value = customer.address || '';
+                    accountingSystem.editingCustomerId = editId;
+                }
+            } else {
+                modalTitle.textContent = 'Neuer Kunde';
+                document.getElementById('customerName').value = '';
+                document.getElementById('customerEmail').value = '';
+                document.getElementById('customerPhone').value = '';
+                document.getElementById('customerAddress').value = '';
+                accountingSystem.editingCustomerId = null;
+            }
+            
+            openModal('customerModal');
+        }
+
+        async function saveCustomer() {
+            const name = document.getElementById('customerName').value;
+            
+            if (!name) {
+                accountingSystem.showAlert('Bitte geben Sie einen Namen ein', 'warning');
+                return;
+            }
+            
+            const customerData = {
+                name: name,
+                email: document.getElementById('customerEmail').value,
+                phone: document.getElementById('customerPhone').value,
+                address: document.getElementById('customerAddress').value,
+                lastActivity: new Date().toISOString().split('T')[0]
+            };
+            
+            try {
+                if (accountingSystem.editingCustomerId) {
+                    await accountingSystem.update('customers', accountingSystem.editingCustomerId, customerData);
+                    accountingSystem.showAlert('Kunde erfolgreich aktualisiert');
+                } else {
+                    await accountingSystem.add('customers', customerData);
+                    accountingSystem.showAlert('Kunde erfolgreich hinzugefügt');
+                }
+                
+                closeModal('customerModal');
+                accountingSystem.loadCustomers();
+                accountingSystem.updateDashboard();
+                
+            } catch (error) {
+                accountingSystem.showAlert('Fehler beim Speichern des Kunden: ' + error.message, 'danger');
+            }
+        }
+
+        async function openProductModal(editId = null) {
+            const modalTitle = document.getElementById('productModalTitle');
+            
+            if (editId) {
+                modalTitle.textContent = 'Produkt bearbeiten';
+                const product = await accountingSystem.get('products', editId);
+                if (product) {
+                    document.getElementById('productName').value = product.name;
+                    document.getElementById('productPrice').value = product.price;
+                    document.getElementById('productCategory').value = product.category || 'product';
+                    document.getElementById('productStock').value = product.stock || 0;
+                    document.getElementById('productUnit').value = product.unit || 'Stück';
+                    document.getElementById('productDescription').value = product.description || '';
+                    accountingSystem.editingProductId = editId;
+                }
+            } else {
+                modalTitle.textContent = 'Neues Produkt';
+                document.getElementById('productName').value = '';
+                document.getElementById('productPrice').value = '';
+                document.getElementById('productCategory').value = 'product';
+                document.getElementById('productStock').value = 0;
+                document.getElementById('productUnit').value = 'Stück';
+                document.getElementById('productDescription').value = '';
+                accountingSystem.editingProductId = null;
+            }
+            
+            openModal('productModal');
+        }
+
+        async function saveProduct() {
+            const name = document.getElementById('productName').value;
+            const price = parseFloat(document.getElementById('productPrice').value);
+            
+            if (!name) {
+                accountingSystem.showAlert('Bitte geben Sie einen Produktnamen ein', 'warning');
+                return;
+            }
+            
+            if (!price || price <= 0) {
+                accountingSystem.showAlert('Bitte geben Sie einen gültigen Preis ein', 'warning');
+                return;
+            }
+            
+            const productData = {
+                name: name,
+                price: price,
+                category: document.getElementById('productCategory').value,
+                stock: parseInt(document.getElementById('productStock').value) || 0,
+                unit: document.getElementById('productUnit').value,
+                description: document.getElementById('productDescription').value
+            };
+            
+            try {
+                if (accountingSystem.editingProductId) {
+                    await accountingSystem.update('products', accountingSystem.editingProductId, productData);
+                    accountingSystem.showAlert('Produkt erfolgreich aktualisiert');
+                } else {
+                    await accountingSystem.add('products', productData);
+                    accountingSystem.showAlert('Produkt erfolgreich hinzugefügt');
+                }
+                
+                closeModal('productModal');
+                accountingSystem.loadProducts();
+                
+            } catch (error) {
+                accountingSystem.showAlert('Fehler beim Speichern des Produkts: ' + error.message, 'danger');
+            }
+        }
+
+        function openPurchaseModal() {
+            openModal('purchaseModal');
+        }
+
+        async function savePurchase() {
+            const supplier = document.getElementById('purchaseSupplier').value;
+            const date = document.getElementById('purchaseDate').value;
+            const total = parseFloat(document.getElementById('purchaseTotal').value);
+            
+            if (!supplier) {
+                accountingSystem.showAlert('Bitte geben Sie einen Lieferanten an', 'warning');
+                return;
+            }
+            
+            if (!total || total <= 0) {
+                accountingSystem.showAlert('Bitte geben Sie einen gültigen Betrag ein', 'warning');
+                return;
+            }
+            
+            const purchaseData = {
+                supplier: supplier,
+                date: date,
+                totalAmount: total,
+                paymentStatus: 'unpaid',
+                notes: document.getElementById('purchaseNotes').value
+            };
+            
+            try {
+                await accountingSystem.add('purchases', purchaseData);
+                
+                // Transaktion erfassen
+                await accountingSystem.add('transactions', {
+                    date: date,
+                    type: 'expense',
+                    category: 'purchase',
+                    amount: total,
+                    description: `Einkauf von ${supplier}`,
+                    referenceType: 'purchase'
+                });
+                
+                accountingSystem.showAlert('Einkauf erfolgreich erfasst');
+                closeModal('purchaseModal');
+                accountingSystem.loadPurchases();
+                accountingSystem.updateDashboard();
+                
+            } catch (error) {
+                accountingSystem.showAlert('Fehler beim Speichern des Einkaufs: ' + error.message, 'danger');
+            }
+        }
+
+        async function openInstallmentModal() {
+            // Modal für neue Ratenpläne
+            accountingSystem.showAlert('Bitte erstellen Sie zuerst eine Rechnung mit Ratenzahlung', 'info');
+        }
+
+        async function deleteInvoice(id) {
+            if (confirm('Sind Sie sicher, dass Sie diese Rechnung löschen möchten?')) {
+                try {
+                    // Rechnungspositionen löschen
+                    const items = await accountingSystem.getAll('invoiceItems');
+                    const invoiceItems = items.filter(item => item.invoiceId === id);
+                    for (const item of invoiceItems) {
+                        await accountingSystem.delete('invoiceItems', item.id);
+                    }
+                    
+                    // Rechnung löschen
+                    await accountingSystem.delete('invoices', id);
+                    
+                    accountingSystem.showAlert('Rechnung erfolgreich gelöscht');
+                    accountingSystem.loadInvoices();
+                    accountingSystem.updateDashboard();
+                    
+                } catch (error) {
+                    accountingSystem.showAlert('Fehler beim Löschen der Rechnung: ' + error.message, 'danger');
+                }
+            }
+        }
+
+        async function deleteCustomer(id) {
+            if (confirm('Sind Sie sicher, dass Sie diesen Kunden löschen möchten?')) {
+                try {
+                    // Prüfen, ob der Kunde Rechnungen hat
+                    const invoices = await accountingSystem.getAll('invoices');
+                    const customerInvoices = invoices.filter(inv => inv.customerId === id);
+                    
+                    if (customerInvoices.length > 0) {
+                        if (!confirm('Dieser Kunde hat noch Rechnungen. Trotzdem löschen?')) {
+                            return;
+                        }
+                    }
+                    
+                    await accountingSystem.delete('customers', id);
+                    accountingSystem.showAlert('Kunde erfolgreich gelöscht');
+                    accountingSystem.loadCustomers();
+                    
+                } catch (error) {
+                    accountingSystem.showAlert('Fehler beim Löschen des Kunden: ' + error.message, 'danger');
+                }
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (confirm('Sind Sie sicher, dass Sie dieses Produkt löschen möchten?')) {
+                try {
+                    await accountingSystem.delete('products', id);
+                    accountingSystem.showAlert('Produkt erfolgreich gelöscht');
+                    accountingSystem.loadProducts();
+                    
+                } catch (error) {
+                    accountingSystem.showAlert('Fehler beim Löschen des Produkts: ' + error.message, 'danger');
+                }
+            }
+        }
+
+        async function deletePurchase(id) {
+            if (confirm('Sind Sie sicher, dass Sie diesen Einkauf löschen möchten?')) {
+                try {
+                    await accountingSystem.delete('purchases', id);
+                    accountingSystem.showAlert('Einkauf erfolgreich gelöscht');
+                    accountingSystem.loadPurchases();
+                    accountingSystem.updateDashboard();
+                    
+                } catch (error) {
+                    accountingSystem.showAlert('Fehler beim Löschen des Einkaufs: ' + error.message, 'danger');
+                }
+            }
+        }
+
+        function viewInvoice(id) {
+            accountingSystem.showAlert('Detailansicht wird in einer erweiterten Version verfügbar sein', 'info');
+        }
+
+        function viewCustomer(id) {
+            accountingSystem.showAlert('Kundendetails werden in einer erweiterten Version verfügbar sein', 'info');
+        }
+
+        function editCustomer(id) {
+            openCustomerModal(id);
+        }
+
+        function viewProduct(id) {
+            accountingSystem.showAlert('Produktdetails werden in einer erweiterten Version verfügbar sein', 'info');
+        }
+
+        function editProduct(id) {
+            openProductModal(id);
+        }
+
+        function viewPurchase(id) {
+            accountingSystem.showAlert('Einkaufsdetails werden in einer erweiterten Version verfügbar sein', 'info');
+        }
+
+        function viewInstallments(invoiceId) {
+            accountingSystem.showAlert('Ratenplan-Details werden in einer erweiterten Version verfügbar sein', 'info');
+        }
+
+        async function exportData() {
+            try {
+                const data = {
+                    customers: await accountingSystem.getAll('customers'),
+                    products: await accountingSystem.getAll('products'),
+                    invoices: await accountingSystem.getAll('invoices'),
+                    invoiceItems: await accountingSystem.getAll('invoiceItems'),
+                    installmentPlans: await accountingSystem.getAll('installmentPlans'),
+                    installments: await accountingSystem.getAll('installments'),
+                    purchases: await accountingSystem.getAll('purchases'),
+                    transactions: await accountingSystem.getAll('transactions')
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `buchhaltung-backup-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                accountingSystem.showAlert('Daten erfolgreich exportiert');
+                
+            } catch (error) {
+                accountingSystem.showAlert('Fehler beim Exportieren der Daten: ' + error.message, 'danger');
+            }
+        }
+
+        function importData() {
+            accountingSystem.showAlert('Import-Funktion wird in einer erweiterten Version verfügbar sein', 'info');
+        }
+
+        async function generateReport() {
+            accountingSystem.showAlert('Berichtsgenerierung wird in einer erweiterten Version verfügbar sein', 'info');
+        }
+
+        // Event Listener für Zahlungsmethode in Rechnung
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentMethodSelect = document.getElementById('paymentMethod');
+            if (paymentMethodSelect) {
+                paymentMethodSelect.addEventListener('change', toggleInstallmentOptions);
+            }
+            
+            // Initial Dashboard laden
+            accountingSystem.updateDashboard();
+        });
+    </script>
+</body>
+</html>
