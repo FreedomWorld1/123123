@@ -850,7 +850,7 @@
     </div>
 
     <!-- Login Screen -->
-    <div class="login-screen" id="loginScreen">
+    <div class="login-screen hidden" id="loginScreen">
         <div class="login-container">
             <div class="login-logo">
                 <i class="fas fa-calculator"></i>
@@ -978,11 +978,11 @@
                                 <h3 style="margin-bottom: 1rem;">Einnahmen vs Ausgaben</h3>
                                 <div style="height: 200px; display: flex; align-items: flex-end; gap: 10px;">
                                     <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-                                        <div style="width: 80%; background: #2563eb; border-radius: 4px;" id="incomeBar"></div>
+                                        <div style="width: 80%; background: #2563eb; border-radius: 4px; height: 100px;" id="incomeBar"></div>
                                         <small>Einnahmen</small>
                                     </div>
                                     <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-                                        <div style="width: 80%; background: #ef4444; border-radius: 4px;" id="expenseBar"></div>
+                                        <div style="width: 80%; background: #ef4444; border-radius: 4px; height: 60px;" id="expenseBar"></div>
                                         <small>Ausgaben</small>
                                     </div>
                                 </div>
@@ -1276,7 +1276,106 @@
                 </div>
             </div>
 
-            <!-- Weitere Mobile Tabs... -->
+            <!-- Invoices Tab -->
+            <div class="mobile-tab-content" id="mobileInvoices">
+                <div class="page-header">
+                    <h3>Rechnungen</h3>
+                    <button class="btn btn-primary" onclick="openInvoiceModal()">
+                        <i class="fas fa-plus"></i> Neu
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rechnung</th>
+                                <th>Kunde</th>
+                                <th>Betrag</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mobileInvoicesTableBody">
+                            <!-- Wird durch JavaScript gefüllt -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Income Tab -->
+            <div class="mobile-tab-content" id="mobileIncome">
+                <div class="page-header">
+                    <h3>Einkommen</h3>
+                    <button class="btn btn-primary" onclick="openIncomeModal()">
+                        <i class="fas fa-plus"></i> Neu
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Datum</th>
+                                <th>Beschreibung</th>
+                                <th>Betrag</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mobileIncomeTableBody">
+                            <!-- Wird durch JavaScript gefüllt -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Customers Tab -->
+            <div class="mobile-tab-content" id="mobileCustomers">
+                <div class="page-header">
+                    <h3>Kunden</h3>
+                    <button class="btn btn-primary" onclick="openCustomerModal()">
+                        <i class="fas fa-plus"></i> Neu
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>E-Mail</th>
+                                <th>Telefon</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mobileCustomersTableBody">
+                            <!-- Wird durch JavaScript gefüllt -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Purchases Tab -->
+            <div class="mobile-tab-content" id="mobilePurchases">
+                <div class="page-header">
+                    <h3>Einkäufe</h3>
+                    <button class="btn btn-primary" onclick="openPurchaseModal()">
+                        <i class="fas fa-plus"></i> Neu
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Datum</th>
+                                <th>Lieferant</th>
+                                <th>Betrag</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mobilePurchasesTableBody">
+                            <!-- Wird durch JavaScript gefüllt -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1561,79 +1660,140 @@
         
         // ===== INITIALISIERUNG =====
         window.addEventListener('DOMContentLoaded', function() {
-            // Loading Screen
+            console.log('DOM Content Loaded - Starte Initialisierung');
+            
+            // Loading Screen nach 1.5 Sekunden ausblenden
             setTimeout(() => {
-                document.getElementById('loadingScreen').classList.add('hidden');
-                document.getElementById('loginScreen').classList.remove('hidden');
-                loadData();
-            }, 1500);
-            
-            // Login Handler
-            document.getElementById('loginForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
+                console.log('Verberge Loading Screen...');
+                const loadingScreen = document.getElementById('loadingScreen');
+                const loginScreen = document.getElementById('loginScreen');
                 
-                if (username === 'colin' && password === '11012021') {
-                    loginSuccess();
-                } else {
-                    showLoginError();
+                if (loadingScreen) {
+                    loadingScreen.classList.add('hidden');
                 }
-            });
-            
-            // Heutiges Datum setzen
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('invoiceDate')?.value = today;
-            document.getElementById('incomeDate')?.value = today;
-            document.getElementById('purchaseDate')?.value = today;
-            document.getElementById('installmentStartDate')?.value = today;
-            
-            // Dark Mode prüfen
-            checkDarkMode();
-            
-            // Navigation einrichten
-            setupNavigation();
+                
+                if (loginScreen) {
+                    loginScreen.classList.remove('hidden');
+                }
+                
+                // Daten laden
+                loadData();
+                
+                // Heutiges Datum setzen
+                const today = new Date().toISOString().split('T')[0];
+                const dateFields = ['invoiceDate', 'incomeDate', 'purchaseDate', 'installmentStartDate', 'dueDate'];
+                dateFields.forEach(fieldId => {
+                    const element = document.getElementById(fieldId);
+                    if (element) {
+                        element.value = today;
+                    }
+                });
+                
+                // Login Form Event Listener
+                const loginForm = document.getElementById('loginForm');
+                if (loginForm) {
+                    loginForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const username = document.getElementById('username').value;
+                        const password = document.getElementById('password').value;
+                        
+                        if (username === 'colin' && password === '11012021') {
+                            loginSuccess();
+                        } else {
+                            showLoginError();
+                        }
+                    });
+                }
+                
+                // Dark Mode prüfen
+                const savedDarkMode = localStorage.getItem('darkMode');
+                if (savedDarkMode === 'true') {
+                    darkMode = true;
+                    document.body.setAttribute('data-theme', 'dark');
+                }
+                
+                // Navigation einrichten
+                setupNavigation();
+                
+                console.log('Initialisierung abgeschlossen');
+            }, 1500);
         });
         
         // ===== DATENVERWALTUNG =====
         function loadData() {
-            // Daten aus localStorage laden
-            invoices = JSON.parse(localStorage.getItem('invoices')) || [];
-            incomes = JSON.parse(localStorage.getItem('incomes')) || [];
-            customers = JSON.parse(localStorage.getItem('customers')) || [];
-            purchases = JSON.parse(localStorage.getItem('purchases')) || [];
-            installments = JSON.parse(localStorage.getItem('installments')) || [];
+            console.log('Lade Daten aus localStorage...');
             
-            // Beispielkunden wenn keine vorhanden
-            if (customers.length === 0) {
-                customers = [
-                    {
-                        id: 1,
-                        name: "Max Mustermann",
-                        email: "max@mustermann.de",
-                        phone: "0123456789",
-                        company: "Mustermann GmbH",
-                        address: "Musterstraße 1, 12345 Musterstadt"
-                    },
-                    {
-                        id: 2,
-                        name: "Erika Schmidt",
-                        email: "erika@schmidt.de",
-                        phone: "0987654321",
-                        company: "Schmidt & Co",
-                        address: "Beispielweg 5, 54321 Beispielstadt"
-                    }
-                ];
-                saveCustomers();
+            // Versuche Daten aus localStorage zu laden
+            try {
+                invoices = JSON.parse(localStorage.getItem('invoices')) || [];
+                incomes = JSON.parse(localStorage.getItem('incomes')) || [];
+                customers = JSON.parse(localStorage.getItem('customers')) || [];
+                purchases = JSON.parse(localStorage.getItem('purchases')) || [];
+                installments = JSON.parse(localStorage.getItem('installments')) || [];
+                
+                console.log('Daten geladen:');
+                console.log('- Rechnungen:', invoices.length);
+                console.log('- Einkommen:', incomes.length);
+                console.log('- Kunden:', customers.length);
+                console.log('- Einkäufe:', purchases.length);
+                console.log('- Ratenzahlungen:', installments.length);
+                
+                // Beispielkunden wenn keine vorhanden
+                if (customers.length === 0) {
+                    console.log('Erstelle Beispielkunden...');
+                    customers = [
+                        {
+                            id: 1,
+                            name: "Max Mustermann",
+                            email: "max@mustermann.de",
+                            phone: "0123456789",
+                            company: "Mustermann GmbH",
+                            address: "Musterstraße 1, 12345 Musterstadt",
+                            createdAt: new Date().toISOString()
+                        },
+                        {
+                            id: 2,
+                            name: "Erika Schmidt",
+                            email: "erika@schmidt.de",
+                            phone: "0987654321",
+                            company: "Schmidt & Co",
+                            address: "Beispielweg 5, 54321 Beispielstadt",
+                            createdAt: new Date().toISOString()
+                        }
+                    ];
+                    saveCustomers();
+                }
+                
+                // Beispielrechnung wenn keine vorhanden
+                if (invoices.length === 0) {
+                    console.log('Erstelle Beispielrechnung...');
+                    invoices = [
+                        {
+                            id: 1,
+                            number: "INV-2023-001",
+                            date: new Date().toISOString().split('T')[0],
+                            customerId: 1,
+                            amount: 1500.00,
+                            dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                            description: "Webentwicklung Projekt",
+                            paymentMethod: "bank",
+                            installmentPlan: 0,
+                            status: "offen",
+                            createdAt: new Date().toISOString()
+                        }
+                    ];
+                    saveInvoices();
+                }
+                
+            } catch (error) {
+                console.error('Fehler beim Laden der Daten:', error);
+                // Setze leere Arrays bei Fehler
+                invoices = [];
+                incomes = [];
+                customers = [];
+                purchases = [];
+                installments = [];
             }
-        }
-        
-        function saveData() {
-            localStorage.setItem('invoices', JSON.stringify(invoices));
-            localStorage.setItem('incomes', JSON.stringify(incomes));
-            localStorage.setItem('customers', JSON.stringify(customers));
-            localStorage.setItem('purchases', JSON.stringify(purchases));
-            localStorage.setItem('installments', JSON.stringify(installments));
         }
         
         function saveInvoices() {
@@ -1658,24 +1818,40 @@
         
         // ===== LOGIN FUNKTIONEN =====
         function loginSuccess() {
+            console.log('Login erfolgreich');
             isLoggedIn = true;
+            
+            // Login Screen ausblenden
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('loginError').classList.remove('show');
             
+            // Gerätetyp erkennen
             detectDeviceType();
+            
+            // App anzeigen
             showApp();
+            
+            // Dashboard aktualisieren
             updateDashboard();
+            
+            // Notification anzeigen
             showNotification('Erfolgreich eingeloggt!', 'success');
         }
         
         function showLoginError() {
+            console.log('Login fehlgeschlagen');
             const errorEl = document.getElementById('loginError');
-            errorEl.classList.add('show');
-            errorEl.style.animation = 'none';
-            setTimeout(() => {
-                errorEl.style.animation = 'shake 0.5s ease-in-out';
-            }, 10);
+            if (errorEl) {
+                errorEl.classList.add('show');
+                
+                // Fehler-Animation
+                errorEl.style.animation = 'none';
+                setTimeout(() => {
+                    errorEl.style.animation = 'shake 0.5s ease-in-out';
+                }, 10);
+            }
             
+            // Inputs markieren
             const inputs = document.querySelectorAll('#loginForm input');
             inputs.forEach(input => {
                 input.style.borderColor = '#ef4444';
@@ -1686,16 +1862,27 @@
         }
         
         function logout() {
+            console.log('Logout');
             isLoggedIn = false;
+            
+            // Alle App-Layouts ausblenden
             document.getElementById('pcApp').classList.remove('active');
             document.getElementById('mobileApp').classList.remove('active');
             document.querySelectorAll('.app-container').forEach(el => {
                 el.classList.remove('active');
             });
             
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
+            // Login Screen anzeigen
+            const loginScreen = document.getElementById('loginScreen');
+            if (loginScreen) {
+                loginScreen.classList.remove('hidden');
+            }
+            
+            // Felder leeren
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            if (usernameInput) usernameInput.value = '';
+            if (passwordInput) passwordInput.value = '';
             
             showNotification('Erfolgreich ausgeloggt', 'success');
         }
@@ -1703,27 +1890,47 @@
         // ===== GERÄTEERKENNUNG =====
         function detectDeviceType() {
             currentDevice = window.innerWidth <= 768 ? 'mobile' : 'pc';
+            console.log(`Gerät erkannt: ${currentDevice} (Breite: ${window.innerWidth}px)`);
         }
         
         function showApp() {
+            console.log(`Zeige App für Gerät: ${currentDevice}`);
+            
+            // Gerätespezifisches Layout anzeigen
             if (currentDevice === 'pc') {
                 document.getElementById('pcApp').classList.add('active');
             } else {
                 document.getElementById('mobileApp').classList.add('active');
             }
+            
+            // App Container anzeigen
             document.querySelector('.app-container').classList.add('active');
+            
+            // Tab aktualisieren
+            switchTab(currentTab);
         }
         
         // ===== NAVIGATION =====
         function setupNavigation() {
+            console.log('Richte Navigation ein...');
+            
             // PC Navigation
             document.querySelectorAll('.pc-nav-item').forEach(item => {
                 item.addEventListener('click', function() {
                     const tab = this.getAttribute('data-tab');
+                    console.log(`PC Navigation: Tab ${tab} ausgewählt`);
+                    
                     switchTab(tab);
+                    
+                    // Active State setzen
                     document.querySelectorAll('.pc-nav-item').forEach(i => i.classList.remove('active'));
                     this.classList.add('active');
-                    document.getElementById('pcPageTitle').textContent = this.textContent.trim();
+                    
+                    // Page Title aktualisieren
+                    const pageTitle = document.getElementById('pcPageTitle');
+                    if (pageTitle) {
+                        pageTitle.textContent = this.textContent.trim();
+                    }
                 });
             });
             
@@ -1732,8 +1939,12 @@
                 if (item.getAttribute('data-tab')) {
                     item.addEventListener('click', function() {
                         const tab = this.getAttribute('data-tab');
+                        console.log(`Mobile Navigation: Tab ${tab} ausgewählt`);
+                        
                         switchTab(tab);
                         toggleMobileMenu();
+                        
+                        // Active State setzen
                         document.querySelectorAll('.mobile-nav-item').forEach(i => i.classList.remove('active'));
                         this.classList.add('active');
                     });
@@ -1742,6 +1953,7 @@
         }
         
         function switchTab(tabName) {
+            console.log(`Wechsle zu Tab: ${tabName}`);
             currentTab = tabName;
             
             // Alle Tabs ausblenden
@@ -1750,9 +1962,15 @@
             
             // Gewählten Tab anzeigen
             if (currentDevice === 'pc') {
-                document.getElementById(`pc${capitalizeFirst(tabName)}`).classList.add('active');
+                const tabElement = document.getElementById(`pc${capitalizeFirst(tabName)}`);
+                if (tabElement) {
+                    tabElement.classList.add('active');
+                }
             } else {
-                document.getElementById(`mobile${capitalizeFirst(tabName)}`).classList.add('active');
+                const tabElement = document.getElementById(`mobile${capitalizeFirst(tabName)}`);
+                if (tabElement) {
+                    tabElement.classList.add('active');
+                }
             }
             
             // Tab-spezifische Daten laden
@@ -1783,9 +2001,13 @@
         
         // ===== MODAL FUNKTIONEN =====
         function openInvoiceModal() {
+            console.log('Öffne Rechnungs-Modal');
             document.getElementById('invoiceModal').classList.add('active');
             populateCustomerSelect();
-            document.getElementById('invoiceNumber').value = 'INV-' + new Date().getTime();
+            
+            // Rechnungsnummer generieren
+            const invoiceNumber = 'INV-' + new Date().getFullYear() + '-' + String(invoices.length + 1).padStart(3, '0');
+            document.getElementById('invoiceNumber').value = invoiceNumber;
         }
         
         function closeInvoiceModal() {
@@ -1794,6 +2016,7 @@
         }
         
         function openIncomeModal() {
+            console.log('Öffne Einkommens-Modal');
             document.getElementById('incomeModal').classList.add('active');
         }
         
@@ -1803,6 +2026,7 @@
         }
         
         function openCustomerModal() {
+            console.log('Öffne Kunden-Modal');
             document.getElementById('customerModal').classList.add('active');
         }
         
@@ -1812,6 +2036,7 @@
         }
         
         function openPurchaseModal() {
+            console.log('Öffne Einkaufs-Modal');
             document.getElementById('purchaseModal').classList.add('active');
         }
         
@@ -1821,6 +2046,7 @@
         }
         
         function openInstallmentModal() {
+            console.log('Öffne Ratenzahlungs-Modal');
             document.getElementById('installmentModal').classList.add('active');
             populateInvoiceSelect();
         }
@@ -1836,14 +2062,26 @@
         
         // ===== DATEN SPEICHERN =====
         function saveInvoice() {
+            console.log('Speichere Rechnung...');
+            
+            const invoiceNumber = document.getElementById('invoiceNumber').value;
+            const invoiceDate = document.getElementById('invoiceDate').value;
+            const customerId = parseInt(document.getElementById('customerSelect').value);
+            const amount = parseFloat(document.getElementById('invoiceAmount').value);
+            
+            if (!invoiceNumber || !invoiceDate || !customerId || !amount) {
+                showNotification('Bitte alle Pflichtfelder ausfüllen!', 'error');
+                return;
+            }
+            
             const invoice = {
-                id: invoices.length + 1,
-                number: document.getElementById('invoiceNumber').value,
-                date: document.getElementById('invoiceDate').value,
-                customerId: parseInt(document.getElementById('customerSelect').value),
-                amount: parseFloat(document.getElementById('invoiceAmount').value),
-                dueDate: document.getElementById('dueDate').value,
-                description: document.getElementById('invoiceDescription').value,
+                id: invoices.length > 0 ? Math.max(...invoices.map(i => i.id)) + 1 : 1,
+                number: invoiceNumber,
+                date: invoiceDate,
+                customerId: customerId,
+                amount: amount,
+                dueDate: document.getElementById('dueDate').value || null,
+                description: document.getElementById('invoiceDescription').value || '',
                 paymentMethod: document.getElementById('paymentMethod').value,
                 installmentPlan: parseInt(document.getElementById('installmentPlan').value),
                 status: 'offen',
@@ -1865,11 +2103,22 @@
         }
         
         function saveIncome() {
+            console.log('Speichere Einkommen...');
+            
+            const incomeDate = document.getElementById('incomeDate').value;
+            const amount = parseFloat(document.getElementById('incomeAmount').value);
+            const description = document.getElementById('incomeDescription').value;
+            
+            if (!incomeDate || !amount || !description) {
+                showNotification('Bitte alle Pflichtfelder ausfüllen!', 'error');
+                return;
+            }
+            
             const income = {
-                id: incomes.length + 1,
-                date: document.getElementById('incomeDate').value,
-                amount: parseFloat(document.getElementById('incomeAmount').value),
-                description: document.getElementById('incomeDescription').value,
+                id: incomes.length > 0 ? Math.max(...incomes.map(i => i.id)) + 1 : 1,
+                date: incomeDate,
+                amount: amount,
+                description: description,
                 category: document.getElementById('incomeCategory').value,
                 paymentMethod: document.getElementById('incomePaymentMethod').value,
                 createdAt: new Date().toISOString()
@@ -1885,13 +2134,23 @@
         }
         
         function saveCustomer() {
+            console.log('Speichere Kunde...');
+            
+            const name = document.getElementById('customerName').value;
+            const email = document.getElementById('customerEmail').value;
+            
+            if (!name || !email) {
+                showNotification('Bitte alle Pflichtfelder ausfüllen!', 'error');
+                return;
+            }
+            
             const customer = {
-                id: customers.length + 1,
-                name: document.getElementById('customerName').value,
-                email: document.getElementById('customerEmail').value,
-                phone: document.getElementById('customerPhone').value,
-                company: document.getElementById('customerCompany').value,
-                address: document.getElementById('customerAddress').value,
+                id: customers.length > 0 ? Math.max(...customers.map(c => c.id)) + 1 : 1,
+                name: name,
+                email: email,
+                phone: document.getElementById('customerPhone').value || '',
+                company: document.getElementById('customerCompany').value || '',
+                address: document.getElementById('customerAddress').value || '',
                 createdAt: new Date().toISOString()
             };
             
@@ -1904,12 +2163,23 @@
         }
         
         function savePurchase() {
+            console.log('Speichere Einkauf...');
+            
+            const purchaseDate = document.getElementById('purchaseDate').value;
+            const amount = parseFloat(document.getElementById('purchaseAmount').value);
+            const supplier = document.getElementById('purchaseSupplier').value;
+            
+            if (!purchaseDate || !amount || !supplier) {
+                showNotification('Bitte alle Pflichtfelder ausfüllen!', 'error');
+                return;
+            }
+            
             const purchase = {
-                id: purchases.length + 1,
-                date: document.getElementById('purchaseDate').value,
-                amount: parseFloat(document.getElementById('purchaseAmount').value),
-                supplier: document.getElementById('purchaseSupplier').value,
-                description: document.getElementById('purchaseDescription').value,
+                id: purchases.length > 0 ? Math.max(...purchases.map(p => p.id)) + 1 : 1,
+                date: purchaseDate,
+                amount: amount,
+                supplier: supplier,
+                description: document.getElementById('purchaseDescription').value || '',
                 category: document.getElementById('purchaseCategory').value,
                 paymentMethod: document.getElementById('purchasePaymentMethod').value,
                 createdAt: new Date().toISOString()
@@ -1925,11 +2195,21 @@
         }
         
         function saveInstallment() {
+            console.log('Speichere Ratenzahlung...');
+            
+            const invoiceId = parseInt(document.getElementById('installmentInvoice').value);
+            const months = parseInt(document.getElementById('installmentMonths').value);
+            
+            if (!invoiceId || !months) {
+                showNotification('Bitte alle Pflichtfelder ausfüllen!', 'error');
+                return;
+            }
+            
             const installment = {
-                id: installments.length + 1,
-                invoiceId: parseInt(document.getElementById('installmentInvoice').value),
-                months: parseInt(document.getElementById('installmentMonths').value),
-                interest: parseFloat(document.getElementById('installmentInterest').value),
+                id: installments.length > 0 ? Math.max(...installments.map(i => i.id)) + 1 : 1,
+                invoiceId: invoiceId,
+                months: months,
+                interest: parseFloat(document.getElementById('installmentInterest').value) || 0,
                 startDate: document.getElementById('installmentStartDate').value,
                 status: 'aktiv',
                 createdAt: new Date().toISOString()
@@ -1943,147 +2223,317 @@
             showNotification('Ratenzahlung erstellt!', 'success');
         }
         
+        // ===== HELPER FUNKTIONEN =====
+        function createInstallmentFromInvoice(invoice) {
+            const installment = {
+                id: installments.length > 0 ? Math.max(...installments.map(i => i.id)) + 1 : 1,
+                invoiceId: invoice.id,
+                months: invoice.installmentPlan,
+                interest: 0,
+                startDate: new Date().toISOString().split('T')[0],
+                status: 'aktiv',
+                createdAt: new Date().toISOString()
+            };
+            
+            installments.push(installment);
+            saveInstallments();
+            showNotification('Ratenzahlung automatisch erstellt!', 'info');
+        }
+        
+        function populateCustomerSelect() {
+            const select = document.getElementById('customerSelect');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">Kunde auswählen...</option>';
+            customers.forEach(customer => {
+                const option = document.createElement('option');
+                option.value = customer.id;
+                option.textContent = `${customer.name} ${customer.company ? '(' + customer.company + ')' : ''}`;
+                select.appendChild(option);
+            });
+        }
+        
+        function populateInvoiceSelect() {
+            const select = document.getElementById('installmentInvoice');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">Rechnung auswählen...</option>';
+            invoices.filter(i => i.status !== 'bezahlt').forEach(invoice => {
+                const customer = customers.find(c => c.id === invoice.customerId);
+                const option = document.createElement('option');
+                option.value = invoice.id;
+                option.textContent = `${invoice.number} - ${customer?.name || 'Unbekannt'} - ${formatCurrency(invoice.amount)}`;
+                select.appendChild(option);
+            });
+        }
+        
+        function capitalizeFirst(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('de-DE');
+            } catch (e) {
+                return dateString;
+            }
+        }
+        
+        function formatCurrency(amount) {
+            if (isNaN(amount)) amount = 0;
+            return new Intl.NumberFormat('de-DE', { 
+                style: 'currency', 
+                currency: 'EUR',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+        
         // ===== TABELLEN LADEN =====
         function loadInvoicesTable() {
             const tbody = document.getElementById('invoicesTableBody');
-            tbody.innerHTML = '';
+            const mobileTbody = document.getElementById('mobileInvoicesTableBody');
             
-            invoices.forEach(invoice => {
-                const customer = customers.find(c => c.id === invoice.customerId) || {name: 'Unbekannt'};
-                const statusClass = invoice.status === 'bezahlt' ? 'badge-success' : 
-                                   invoice.status === 'überfällig' ? 'badge-danger' : 'badge-warning';
+            if (!tbody && !mobileTbody) return;
+            
+            // PC Tabelle
+            if (tbody) {
+                tbody.innerHTML = '';
                 
-                const row = `
-                    <tr>
-                        <td>${invoice.number}</td>
-                        <td>${customer.name}</td>
-                        <td>${formatDate(invoice.date)}</td>
-                        <td>${formatCurrency(invoice.amount)}</td>
-                        <td><span class="badge ${statusClass}">${invoice.status}</span></td>
-                        <td>${invoice.dueDate ? formatDate(invoice.dueDate) : '-'}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn btn-primary" onclick="viewInvoice(${invoice.id})">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn btn-warning" onclick="editInvoice(${invoice.id})">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn btn-danger" onclick="deleteInvoice(${invoice.id})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
+                invoices.forEach(invoice => {
+                    const customer = customers.find(c => c.id === invoice.customerId) || {name: 'Unbekannt'};
+                    const statusClass = invoice.status === 'bezahlt' ? 'badge-success' : 
+                                     invoice.status === 'überfällig' ? 'badge-danger' : 'badge-warning';
+                    
+                    const row = `
+                        <tr>
+                            <td>${invoice.number}</td>
+                            <td>${customer.name}</td>
+                            <td>${formatDate(invoice.date)}</td>
+                            <td>${formatCurrency(invoice.amount)}</td>
+                            <td><span class="badge ${statusClass}">${invoice.status}</span></td>
+                            <td>${invoice.dueDate ? formatDate(invoice.dueDate) : '-'}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-primary" onclick="viewInvoice(${invoice.id})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn btn-warning" onclick="editInvoice(${invoice.id})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn btn-danger" onclick="deleteInvoice(${invoice.id})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            }
+            
+            // Mobile Tabelle
+            if (mobileTbody) {
+                mobileTbody.innerHTML = '';
+                
+                invoices.slice(0, 10).forEach(invoice => { // Nur 10 anzeigen auf Mobile
+                    const customer = customers.find(c => c.id === invoice.customerId) || {name: 'Unbekannt'};
+                    const statusClass = invoice.status === 'bezahlt' ? 'badge-success' : 
+                                     invoice.status === 'überfällig' ? 'badge-danger' : 'badge-warning';
+                    
+                    const row = `
+                        <tr>
+                            <td>${invoice.number}</td>
+                            <td>${customer.name}</td>
+                            <td>${formatCurrency(invoice.amount)}</td>
+                            <td><span class="badge ${statusClass}">${invoice.status}</span></td>
+                        </tr>
+                    `;
+                    mobileTbody.innerHTML += row;
+                });
+            }
         }
         
         function loadIncomeTable() {
             const tbody = document.getElementById('incomeTableBody');
-            tbody.innerHTML = '';
+            const mobileTbody = document.getElementById('mobileIncomeTableBody');
             
-            incomes.forEach(income => {
-                const row = `
-                    <tr>
-                        <td>${formatDate(income.date)}</td>
-                        <td>${income.description}</td>
-                        <td>${formatCurrency(income.amount)}</td>
-                        <td>${income.category}</td>
-                        <td>${income.paymentMethod}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn btn-warning" onclick="editIncome(${income.id})">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn btn-danger" onclick="deleteIncome(${income.id})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
+            if (!tbody && !mobileTbody) return;
+            
+            // PC Tabelle
+            if (tbody) {
+                tbody.innerHTML = '';
+                
+                incomes.forEach(income => {
+                    const row = `
+                        <tr>
+                            <td>${formatDate(income.date)}</td>
+                            <td>${income.description}</td>
+                            <td>${formatCurrency(income.amount)}</td>
+                            <td>${income.category}</td>
+                            <td>${income.paymentMethod}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-warning" onclick="editIncome(${income.id})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn btn-danger" onclick="deleteIncome(${income.id})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            }
+            
+            // Mobile Tabelle
+            if (mobileTbody) {
+                mobileTbody.innerHTML = '';
+                
+                incomes.slice(0, 10).forEach(income => {
+                    const row = `
+                        <tr>
+                            <td>${formatDate(income.date)}</td>
+                            <td>${income.description.substring(0, 20)}${income.description.length > 20 ? '...' : ''}</td>
+                            <td>${formatCurrency(income.amount)}</td>
+                        </tr>
+                    `;
+                    mobileTbody.innerHTML += row;
+                });
+            }
         }
         
         function loadCustomersTable() {
             const tbody = document.getElementById('customersTableBody');
-            tbody.innerHTML = '';
+            const mobileTbody = document.getElementById('mobileCustomersTableBody');
             
-            customers.forEach(customer => {
-                const customerInvoices = invoices.filter(i => i.customerId === customer.id);
-                const totalInvoices = customerInvoices.length;
-                const pendingAmount = customerInvoices
-                    .filter(i => i.status !== 'bezahlt')
-                    .reduce((sum, i) => sum + i.amount, 0);
+            if (!tbody && !mobileTbody) return;
+            
+            // PC Tabelle
+            if (tbody) {
+                tbody.innerHTML = '';
                 
-                const row = `
-                    <tr>
-                        <td>${customer.name}</td>
-                        <td>${customer.email}</td>
-                        <td>${customer.phone || '-'}</td>
-                        <td>${customer.address || '-'}</td>
-                        <td>${totalInvoices}</td>
-                        <td>${formatCurrency(pendingAmount)}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn btn-primary" onclick="viewCustomer(${customer.id})">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn btn-warning" onclick="editCustomer(${customer.id})">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn btn-danger" onclick="deleteCustomer(${customer.id})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
+                customers.forEach(customer => {
+                    const customerInvoices = invoices.filter(i => i.customerId === customer.id);
+                    const totalInvoices = customerInvoices.length;
+                    const pendingAmount = customerInvoices
+                        .filter(i => i.status !== 'bezahlt')
+                        .reduce((sum, i) => sum + i.amount, 0);
+                    
+                    const row = `
+                        <tr>
+                            <td>${customer.name}</td>
+                            <td>${customer.email}</td>
+                            <td>${customer.phone || '-'}</td>
+                            <td>${customer.address ? customer.address.substring(0, 30) + (customer.address.length > 30 ? '...' : '') : '-'}</td>
+                            <td>${totalInvoices}</td>
+                            <td>${formatCurrency(pendingAmount)}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-primary" onclick="viewCustomer(${customer.id})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn btn-warning" onclick="editCustomer(${customer.id})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn btn-danger" onclick="deleteCustomer(${customer.id})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            }
+            
+            // Mobile Tabelle
+            if (mobileTbody) {
+                mobileTbody.innerHTML = '';
+                
+                customers.slice(0, 10).forEach(customer => {
+                    const row = `
+                        <tr>
+                            <td>${customer.name}</td>
+                            <td>${customer.email}</td>
+                            <td>${customer.phone || '-'}</td>
+                        </tr>
+                    `;
+                    mobileTbody.innerHTML += row;
+                });
+            }
         }
         
         function loadPurchasesTable() {
             const tbody = document.getElementById('purchasesTableBody');
-            tbody.innerHTML = '';
+            const mobileTbody = document.getElementById('mobilePurchasesTableBody');
             
-            purchases.forEach(purchase => {
-                const row = `
-                    <tr>
-                        <td>${formatDate(purchase.date)}</td>
-                        <td>${purchase.supplier}</td>
-                        <td>${purchase.description}</td>
-                        <td>${formatCurrency(purchase.amount)}</td>
-                        <td>${purchase.category}</td>
-                        <td>${purchase.paymentMethod}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn btn-warning" onclick="editPurchase(${purchase.id})">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn btn-danger" onclick="deletePurchase(${purchase.id})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
+            if (!tbody && !mobileTbody) return;
+            
+            // PC Tabelle
+            if (tbody) {
+                tbody.innerHTML = '';
+                
+                purchases.forEach(purchase => {
+                    const row = `
+                        <tr>
+                            <td>${formatDate(purchase.date)}</td>
+                            <td>${purchase.supplier}</td>
+                            <td>${purchase.description || '-'}</td>
+                            <td>${formatCurrency(purchase.amount)}</td>
+                            <td>${purchase.category}</td>
+                            <td>${purchase.paymentMethod}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-warning" onclick="editPurchase(${purchase.id})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn btn-danger" onclick="deletePurchase(${purchase.id})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            }
+            
+            // Mobile Tabelle
+            if (mobileTbody) {
+                mobileTbody.innerHTML = '';
+                
+                purchases.slice(0, 10).forEach(purchase => {
+                    const row = `
+                        <tr>
+                            <td>${formatDate(purchase.date)}</td>
+                            <td>${purchase.supplier}</td>
+                            <td>${formatCurrency(purchase.amount)}</td>
+                        </tr>
+                    `;
+                    mobileTbody.innerHTML += row;
+                });
+            }
         }
         
         function loadInstallmentsTable() {
             const tbody = document.getElementById('installmentsTableBody');
+            if (!tbody) return;
+            
             tbody.innerHTML = '';
             
             installments.forEach(installment => {
                 const invoice = invoices.find(i => i.id === installment.invoiceId);
                 const customer = invoice ? customers.find(c => c.id === invoice.customerId) : null;
                 const totalAmount = invoice ? invoice.amount : 0;
-                const paidAmount = totalAmount * 0.3; // Beispiel: 30% bereits bezahlt
+                
+                // Berechne bezahlten und ausstehenden Betrag (vereinfacht)
+                const monthsPaid = Math.min(installment.months, 3); // Beispiel: 3 von X Monaten bezahlt
+                const paidAmount = totalAmount * (monthsPaid / installment.months);
                 const remainingAmount = totalAmount - paidAmount;
                 
                 const row = `
@@ -2113,6 +2563,8 @@
         
         // ===== DASHBOARD FUNKTIONEN =====
         function updateDashboard() {
+            console.log('Aktualisiere Dashboard...');
+            
             // Berechnungen
             const totalIncome = incomes.reduce((sum, i) => sum + i.amount, 0);
             const totalExpenses = purchases.reduce((sum, p) => sum + p.amount, 0);
@@ -2120,17 +2572,25 @@
             const openInvoices = invoices.filter(i => i.status !== 'bezahlt');
             const openInvoicesAmount = openInvoices.reduce((sum, i) => sum + i.amount, 0);
             
-            // PC Dashboard
-            document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
-            document.getElementById('totalExpenses').textContent = formatCurrency(totalExpenses);
-            document.getElementById('totalProfit').textContent = formatCurrency(totalProfit);
-            document.getElementById('openInvoices').textContent = openInvoices.length;
-            document.getElementById('openInvoicesAmount').textContent = formatCurrency(openInvoicesAmount);
+            console.log('Berechnungen:', {
+                totalIncome,
+                totalExpenses,
+                totalProfit,
+                openInvoices: openInvoices.length,
+                openInvoicesAmount
+            });
             
-            // Mobile Dashboard
-            document.getElementById('mobileTotalIncome').textContent = formatCurrency(totalIncome);
-            document.getElementById('mobileTotalExpenses').textContent = formatCurrency(totalExpenses);
-            document.getElementById('mobileTotalProfit').textContent = formatCurrency(totalProfit);
+            // PC Dashboard aktualisieren
+            updateElement('totalIncome', formatCurrency(totalIncome));
+            updateElement('totalExpenses', formatCurrency(totalExpenses));
+            updateElement('totalProfit', formatCurrency(totalProfit));
+            updateElement('openInvoices', openInvoices.length);
+            updateElement('openInvoicesAmount', formatCurrency(openInvoicesAmount));
+            
+            // Mobile Dashboard aktualisieren
+            updateElement('mobileTotalIncome', formatCurrency(totalIncome));
+            updateElement('mobileTotalExpenses', formatCurrency(totalExpenses));
+            updateElement('mobileTotalProfit', formatCurrency(totalProfit));
             
             // Chart Bars
             const maxValue = Math.max(totalIncome, totalExpenses, 1000);
@@ -2138,86 +2598,53 @@
             const expenseBar = document.getElementById('expenseBar');
             
             if (incomeBar && expenseBar) {
-                incomeBar.style.height = `${(totalIncome / maxValue) * 150}px`;
-                expenseBar.style.height = `${(totalExpenses / maxValue) * 150}px`;
+                const incomeHeight = (totalIncome / maxValue) * 150;
+                const expenseHeight = (totalExpenses / maxValue) * 150;
+                
+                incomeBar.style.height = `${Math.max(20, incomeHeight)}px`;
+                expenseBar.style.height = `${Math.max(20, expenseHeight)}px`;
             }
             
             // Recent Transactions
-            const recent = document.getElementById('recentTransactions');
-            if (recent) {
-                const allTransactions = [
-                    ...invoices.map(i => ({...i, type: 'Rechnung'})),
-                    ...incomes.map(i => ({...i, type: 'Einkommen'})),
-                    ...purchases.map(p => ({...p, type: 'Einkauf'}))
-                ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                 .slice(0, 5);
-                
-                recent.innerHTML = allTransactions.map(t => `
-                    <div style="padding: 0.5rem 0; border-bottom: 1px solid #e2e8f0;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>${t.description || t.type}</span>
-                            <span style="font-weight: bold; color: ${t.type === 'Einkauf' ? '#ef4444' : '#10b981'}">
-                                ${formatCurrency(t.amount)}
-                            </span>
-                        </div>
-                        <small style="color: #64748b;">${formatDate(t.date)} • ${t.type}</small>
-                    </div>
-                `).join('');
+            updateRecentTransactions();
+        }
+        
+        function updateElement(id, value) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
             }
         }
         
-        // ===== HELPER FUNKTIONEN =====
-        function capitalizeFirst(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
-        }
-        
-        function formatDate(dateString) {
-            if (!dateString) return '-';
-            const date = new Date(dateString);
-            return date.toLocaleDateString('de-DE');
-        }
-        
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(amount);
-        }
-        
-        function populateCustomerSelect() {
-            const select = document.getElementById('customerSelect');
-            select.innerHTML = '<option value="">Kunde auswählen...</option>';
-            customers.forEach(customer => {
-                const option = document.createElement('option');
-                option.value = customer.id;
-                option.textContent = `${customer.name} (${customer.company || 'keine Firma'})`;
-                select.appendChild(option);
-            });
-        }
-        
-        function populateInvoiceSelect() {
-            const select = document.getElementById('installmentInvoice');
-            select.innerHTML = '<option value="">Rechnung auswählen...</option>';
-            invoices.filter(i => i.status !== 'bezahlt').forEach(invoice => {
-                const customer = customers.find(c => c.id === invoice.customerId);
-                const option = document.createElement('option');
-                option.value = invoice.id;
-                option.textContent = `${invoice.number} - ${customer?.name || 'Unbekannt'} - ${formatCurrency(invoice.amount)}`;
-                select.appendChild(option);
-            });
-        }
-        
-        function createInstallmentFromInvoice(invoice) {
-            const installment = {
-                id: installments.length + 1,
-                invoiceId: invoice.id,
-                months: invoice.installmentPlan,
-                interest: 0,
-                startDate: new Date().toISOString().split('T')[0],
-                status: 'aktiv',
-                createdAt: new Date().toISOString()
-            };
+        function updateRecentTransactions() {
+            const recent = document.getElementById('recentTransactions');
+            if (!recent) return;
             
-            installments.push(installment);
-            saveInstallments();
-            showNotification('Ratenzahlung automatisch erstellt!', 'info');
+            // Kombiniere alle Transaktionen
+            const allTransactions = [
+                ...invoices.map(i => ({...i, type: 'Rechnung', displayDate: i.date})),
+                ...incomes.map(i => ({...i, type: 'Einkommen', displayDate: i.date})),
+                ...purchases.map(p => ({...p, type: 'Einkauf', displayDate: p.date}))
+            ]
+            .sort((a, b) => new Date(b.displayDate) - new Date(a.displayDate))
+            .slice(0, 5);
+            
+            if (allTransactions.length === 0) {
+                recent.innerHTML = '<p style="color: #64748b; text-align: center;">Keine Transaktionen vorhanden</p>';
+                return;
+            }
+            
+            recent.innerHTML = allTransactions.map(t => `
+                <div style="padding: 0.5rem 0; border-bottom: 1px solid #e2e8f0;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="font-weight: 500;">${t.description || t.type}</span>
+                        <span style="font-weight: bold; color: ${t.type === 'Einkauf' ? '#ef4444' : '#10b981'}">
+                            ${formatCurrency(t.amount)}
+                        </span>
+                    </div>
+                    <small style="color: #64748b;">${formatDate(t.displayDate)} • ${t.type}</small>
+                </div>
+            `).join('');
         }
         
         // ===== DARK MODE =====
@@ -2228,26 +2655,26 @@
             showNotification(darkMode ? 'Dark Mode aktiviert' : 'Dark Mode deaktiviert', 'info');
         }
         
-        function checkDarkMode() {
-            const saved = localStorage.getItem('darkMode');
-            darkMode = saved === 'true';
-            document.body.setAttribute('data-theme', darkMode ? 'dark' : 'light');
-        }
-        
         // ===== NOTIFICATION SYSTEM =====
         function showNotification(message, type = 'success') {
+            console.log(`Notification: ${message} (${type})`);
+            
             const notification = document.getElementById('notification');
             const text = document.getElementById('notificationText');
             
+            if (!notification || !text) return;
+            
             // Typ setzen
-            notification.className = `notification ${type ? `notification-${type}` : ''}`;
+            notification.className = `notification notification-${type}`;
             
             // Icon setzen
             const icon = notification.querySelector('i');
-            icon.className = type === 'error' ? 'fas fa-exclamation-circle' :
-                           type === 'warning' ? 'fas fa-exclamation-triangle' :
-                           type === 'info' ? 'fas fa-info-circle' :
-                           'fas fa-check-circle';
+            if (icon) {
+                icon.className = type === 'error' ? 'fas fa-exclamation-circle' :
+                               type === 'warning' ? 'fas fa-exclamation-triangle' :
+                               type === 'info' ? 'fas fa-info-circle' :
+                               'fas fa-check-circle';
+            }
             
             text.textContent = message;
             notification.classList.add('show');
@@ -2259,9 +2686,15 @@
         
         // ===== MOBILE MENU =====
         function toggleMobileMenu() {
-            document.querySelector('.mobile-nav').classList.toggle('active');
-            document.querySelector('.mobile-overlay').classList.toggle('active');
-            document.body.style.overflow = document.querySelector('.mobile-nav').classList.contains('active') ? 'hidden' : '';
+            const nav = document.querySelector('.mobile-nav');
+            const overlay = document.querySelector('.mobile-overlay');
+            
+            if (nav && overlay) {
+                const isActive = nav.classList.contains('active');
+                nav.classList.toggle('active');
+                overlay.classList.toggle('active');
+                document.body.style.overflow = isActive ? '' : 'hidden';
+            }
         }
         
         // ===== EXPORT FUNKTION =====
@@ -2311,6 +2744,13 @@
         
         function deleteCustomer(id) {
             if (confirm('Kunden wirklich löschen?')) {
+                // Prüfe ob Kunde Rechnungen hat
+                const hasInvoices = invoices.some(i => i.customerId === id);
+                if (hasInvoices) {
+                    showNotification('Kunde hat noch Rechnungen und kann nicht gelöscht werden!', 'error');
+                    return;
+                }
+                
                 customers = customers.filter(c => c.id !== id);
                 saveCustomers();
                 loadCustomersTable();
@@ -2342,10 +2782,16 @@
             // Jahresumsatz
             const currentYear = new Date().getFullYear();
             const yearlyRevenue = incomes
-                .filter(i => new Date(i.date).getFullYear() === currentYear)
+                .filter(i => {
+                    try {
+                        return new Date(i.date).getFullYear() === currentYear;
+                    } catch {
+                        return false;
+                    }
+                })
                 .reduce((sum, i) => sum + i.amount, 0);
             
-            document.getElementById('yearlyRevenue').textContent = formatCurrency(yearlyRevenue);
+            updateElement('yearlyRevenue', formatCurrency(yearlyRevenue));
             
             // Top Kunden
             const customerRevenue = {};
@@ -2359,18 +2805,25 @@
                 }
             });
             
-            const topCustomers = Object.entries(customerRevenue)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 5);
-            
-            document.getElementById('topCustomers').innerHTML = topCustomers.map(([name, amount]) => `
-                <div style="margin-bottom: 0.5rem;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>${name}</span>
-                        <span style="font-weight: bold;">${formatCurrency(amount)}</span>
-                    </div>
-                </div>
-            `).join('');
+            const topCustomersElement = document.getElementById('topCustomers');
+            if (topCustomersElement) {
+                const topCustomers = Object.entries(customerRevenue)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5);
+                
+                if (topCustomers.length === 0) {
+                    topCustomersElement.innerHTML = '<p style="color: #64748b;">Keine Daten</p>';
+                } else {
+                    topCustomersElement.innerHTML = topCustomers.map(([name, amount]) => `
+                        <div style="margin-bottom: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>${name}</span>
+                                <span style="font-weight: bold;">${formatCurrency(amount)}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
         }
         
         function generateMonthlyReport() {
@@ -2383,6 +2836,35 @@
             // Hier könnte Excel-Export implementiert werden
         }
         
+        // ===== EDIT/VIEW FUNKTIONEN (Placeholder) =====
+        function viewInvoice(id) {
+            showNotification(`Rechnung ${id} anzeigen (Demo)`, 'info');
+        }
+        
+        function editInvoice(id) {
+            showNotification(`Rechnung ${id} bearbeiten (Demo)`, 'info');
+        }
+        
+        function editIncome(id) {
+            showNotification(`Einkommen ${id} bearbeiten (Demo)`, 'info');
+        }
+        
+        function viewCustomer(id) {
+            showNotification(`Kunde ${id} anzeigen (Demo)`, 'info');
+        }
+        
+        function editCustomer(id) {
+            showNotification(`Kunde ${id} bearbeiten (Demo)`, 'info');
+        }
+        
+        function editPurchase(id) {
+            showNotification(`Einkauf ${id} bearbeiten (Demo)`, 'info');
+        }
+        
+        function viewInstallment(id) {
+            showNotification(`Ratenzahlung ${id} anzeigen (Demo)`, 'info');
+        }
+        
         // ===== RESPONSIVE UPDATES =====
         window.addEventListener('resize', function() {
             if (isLoggedIn) {
@@ -2390,16 +2872,21 @@
                 detectDeviceType();
                 
                 if (oldDevice !== currentDevice) {
+                    console.log(`Gerätewechsel von ${oldDevice} zu ${currentDevice}`);
+                    
                     showNotification(`Gerätewechsel zu: ${currentDevice === 'pc' ? 'PC' : 'Mobile'}`, 'info');
+                    
+                    // Altes Layout ausblenden
                     document.getElementById('pcApp').classList.remove('active');
                     document.getElementById('mobileApp').classList.remove('active');
+                    
+                    // Neues Layout anzeigen
                     showApp();
-                    setTimeout(() => switchTab(currentTab), 100);
                 }
             }
         });
         
-        // ===== CSS ANIMATION =====
+        // CSS Animation für Shake-Effect
         const style = document.createElement('style');
         style.textContent = `
             @keyframes shake {
@@ -2410,8 +2897,8 @@
         `;
         document.head.appendChild(style);
         
-        // Initiale Daten laden
-        loadData();
+        // Initialisierung abgeschlossen
+        console.log('Buchhaltungssystem Pro - Script geladen und bereit');
     </script>
 </body>
 </html>
