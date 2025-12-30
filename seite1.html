@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Budget & Verträge</title>
+
+<style>
+body {
+    background:#1e1e1e;
+    color:#fff;
+    font-family:Arial, sans-serif;
+}
+h2 {
+    text-align:center;
+    border-bottom:1px solid #444;
+    padding-bottom:5px;
+}
+.grid {
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap:15px;
+    padding:20px;
+}
+.box {
+    background:#2a2a2a;
+    padding:10px;
+    border-radius:6px;
+}
+.row {
+    display:flex;
+    justify-content:space-between;
+    margin:4px 0;
+}
+.total {
+    color:#00ffcc;
+    font-weight:bold;
+}
+.red {
+    color:#ff4d4d;
+}
+input {
+    width:80px;
+    background:#111;
+    color:#fff;
+    border:1px solid #555;
+}
+</style>
+</head>
+
+<body>
+
+<h1 style="text-align:center;">Monatliche Übersicht</h1>
+
+<div class="grid">
+
+<!-- BEZAHLT -->
+<div class="box">
+<h2>Bezahlt</h2>
+<input type="number" id="paidInput" value="0">
+<p class="total">Summe: <span id="paidSum">0 €</span></p>
+</div>
+
+<!-- EINKOMMEN -->
+<div class="box">
+<h2>Einkommen</h2>
+<div class="row"><span>Deutschland Ticket</span><input type="number" class="income" value="49"></div>
+<div class="row"><span>Sonstiges</span><input type="number" class="income" value="0"></div>
+<p class="total">Gesamt: <span id="incomeSum">0 €</span></p>
+</div>
+
+<!-- VERTRÄGE -->
+<div class="box">
+<h2>Verträge</h2>
+<div class="row"><span>PlayStation</span><span class="red">18.50</span></div>
+<div class="row"><span>Eprimo</span><span class="red">80.00</span></div>
+<div class="row"><span>Apple iCloud</span><span class="red">0.99</span></div>
+<div class="row"><span>Spotify</span><span class="red">4.00</span></div>
+<div class="row"><span>iPad</span><span class="red">39.91</span></div>
+<div class="row"><span>Monitor</span><span class="red">20.16</span></div>
+<p class="total">Gesamt: <span id="contractSum">0 €</span></p>
+</div>
+
+<!-- STATUS -->
+<div class="box">
+<h2>Status</h2>
+<p>Übrig: <span id="remaining">0 €</span></p>
+<p>Nicht bezahlt: <span class="red" id="unpaid">0 €</span></p>
+<p id="progress">0% abgeschlossen</p>
+</div>
+
+</div>
+
+<!-- FIREBASE + LOGIK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCw4nadHCIRcouTJJoQ3ElToiVVFr5Rufo",
+  authDomain: "khusland-b7d13.firebaseapp.com",
+  databaseURL: "https://khusland-b7d13-default-rtdb.firebaseio.com",
+  projectId: "khusland-b7d13",
+  storageBucket: "khusland-b7d13.firebasestorage.app",
+  messagingSenderId: "69573193613",
+  appId: "1:69573193613:web:86c4d839281b1e343cd7c4"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const budgetRef = ref(db, "budget_web_v1");
+
+const contractValues = [18.5,80,0.99,4,39.91,20.16];
+
+function sum(arr){ return arr.reduce((a,b)=>a+b,0); }
+
+function update() {
+    const paid = Number(document.getElementById("paidInput").value || 0);
+    const incomes = [...document.querySelectorAll(".income")].map(i=>Number(i.value||0));
+
+    const incomeSum = sum(incomes);
+    const contracts = sum(contractValues);
+    const unpaid = contracts - paid;
+    const remaining = incomeSum - contracts;
+    const progress = incomeSum ? (paid/contracts) : 0;
+
+    document.getElementById("paidSum").textContent = paid.toFixed(2)+" €";
+    document.getElementById("incomeSum").textContent = incomeSum.toFixed(2)+" €";
+    document.getElementById("contractSum").textContent = contracts.toFixed(2)+" €";
+    document.getElementById("unpaid").textContent = unpaid.toFixed(2)+" €";
+    document.getElementById("remaining").textContent = remaining.toFixed(2)+" €";
+    document.getElementById("progress").textContent =
+        (progress*100).toFixed(0) + "% abgeschlossen";
+
+    // Firebase speichern (isoliert)
+    set(budgetRef, {
+        paid,
+        incomeSum,
+        contracts,
+        unpaid,
+        remaining,
+        progress
+    });
+}
+
+document.querySelectorAll("input").forEach(i => i.addEventListener("input", update));
+update();
+</script>
+
+</body>
+</html>
