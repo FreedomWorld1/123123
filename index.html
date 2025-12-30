@@ -19,6 +19,7 @@
             line-height: 1.6;
             min-height: 100vh;
             overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         
         /* ===== LOADING SCREEN ===== */
@@ -208,6 +209,7 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
+            transition: all 0.3s ease;
         }
         
         .pc-header {
@@ -260,6 +262,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.3s ease;
         }
         
         .pc-content {
@@ -298,6 +301,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            transition: all 0.3s ease;
         }
         
         .mobile-menu-btn {
@@ -343,6 +347,7 @@
             gap: 10px;
             cursor: pointer;
             border-left: 3px solid transparent;
+            transition: all 0.3s ease;
         }
         
         .mobile-nav-item.active {
@@ -394,6 +399,7 @@
             border-bottom: 2px solid #e2e8f0;
             flex-wrap: wrap;
             gap: 1rem;
+            transition: border-color 0.3s ease;
         }
         
         .btn {
@@ -423,12 +429,35 @@
             color: white;
         }
         
+        .btn-success:hover {
+            background: #0da271;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #d97706;
+        }
+        
         .table-container {
             overflow-x: auto;
             margin-top: 1rem;
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
         }
         
         table {
@@ -441,6 +470,7 @@
             padding: 0.8rem;
             text-align: left;
             border-bottom: 1px solid #e2e8f0;
+            transition: border-color 0.3s ease;
         }
         
         th {
@@ -448,33 +478,200 @@
             font-weight: 600;
         }
         
-        /* ===== RESPONSIVE DESIGN ===== */
-        @media (max-width: 768px) {
-            .pc-layout {
-                display: none !important;
-            }
-            
-            .mobile-layout {
-                display: block;
-            }
-            
-            .login-container {
-                padding: 2rem;
-                margin: 1rem;
-            }
+        tr:hover {
+            background: #f8fafc;
         }
         
-        @media (min-width: 769px) {
-            .mobile-layout {
-                display: none !important;
-            }
-            
-            .pc-layout {
-                display: flex;
-            }
+        /* ===== MODALS ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
         
-        /* ===== DARK MODE ===== */
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+        
+        /* ===== FORM STYLES ===== */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        /* ===== STATS CARDS ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        /* ===== BADGES ===== */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        /* ===== ACTION BUTTONS ===== */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        /* ===== RATENZINS MODULE ===== */
+        .installment-info {
+            background: #fff7ed;
+            border: 1px solid #fdba74;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .installment-plan {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .installment-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        
+        /* ===== DARK MODE STYLES ===== */
+        [data-theme="dark"] {
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+        
         [data-theme="dark"] .login-container {
             background: #1e293b;
         }
@@ -496,24 +693,147 @@
         [data-theme="dark"] .pc-sidebar,
         [data-theme="dark"] .pc-topbar,
         [data-theme="dark"] .mobile-header,
-        [data-theme="dark"] .mobile-nav {
+        [data-theme="dark"] .mobile-nav,
+        [data-theme="dark"] .modal-content,
+        [data-theme="dark"] .stat-card,
+        [data-theme="dark"] .table-container {
             background: #1e293b;
             border-color: #334155;
             color: #f1f5f9;
         }
         
-        [data-theme="dark"] .table-container,
-        [data-theme="dark"] table {
+        [data-theme="dark"] .modal-content {
             background: #1e293b;
-            color: #f1f5f9;
+        }
+        
+        [data-theme="dark"] .modal-header,
+        [data-theme="dark"] .modal-footer {
+            border-color: #334155;
         }
         
         [data-theme="dark"] th {
             background: #334155;
+            border-color: #475569;
         }
         
         [data-theme="dark"] td {
             border-color: #334155;
+        }
+        
+        [data-theme="dark"] tr:hover {
+            background: #334155;
+        }
+        
+        [data-theme="dark"] .form-group input,
+        [data-theme="dark"] .form-group select,
+        [data-theme="dark"] .form-group textarea {
+            background: #334155;
+            border-color: #475569;
+            color: #f1f5f9;
+        }
+        
+        [data-theme="dark"] .btn {
+            opacity: 0.9;
+        }
+        
+        [data-theme="dark"] .btn:hover {
+            opacity: 1;
+        }
+        
+        [data-theme="dark"] .page-header {
+            border-color: #334155;
+        }
+        
+        [data-theme="dark"] .installment-info {
+            background: #1e293b;
+            border-color: #475569;
+        }
+        
+        [data-theme="dark"] .installment-item {
+            background: #334155;
+            border-color: #475569;
+        }
+        
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .pc-layout {
+                display: none !important;
+            }
+            
+            .mobile-layout {
+                display: block;
+            }
+            
+            .login-container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .mobile-layout {
+                display: none !important;
+            }
+            
+            .pc-layout {
+                display: flex;
+            }
+        }
+        
+        /* ===== NOTIFICATION ===== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 300px;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .notification-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .notification-error {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .notification-info {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .notification-warning {
+            background: #f59e0b;
+            color: white;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -561,6 +881,9 @@
         <div class="pc-sidebar">
             <div class="pc-header">
                 <h1><i class="fas fa-calculator"></i> Buchhaltung</h1>
+                <button class="btn btn-primary btn-sm" onclick="toggleDarkMode()" style="margin-top: 10px;">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
             </div>
             <div class="pc-nav">
                 <div class="pc-nav-item active" data-tab="dashboard">
@@ -578,6 +901,12 @@
                 <div class="pc-nav-item" data-tab="purchases">
                     <i class="fas fa-shopping-cart"></i> Einkäufe
                 </div>
+                <div class="pc-nav-item" data-tab="installments">
+                    <i class="fas fa-calendar-alt"></i> Ratenzahlung
+                </div>
+                <div class="pc-nav-item" data-tab="reports">
+                    <i class="fas fa-chart-pie"></i> Berichte
+                </div>
             </div>
         </div>
 
@@ -587,10 +916,13 @@
             <div class="pc-topbar">
                 <h2 id="pcPageTitle">Dashboard</h2>
                 <div style="display: flex; gap: 1rem; align-items: center;">
-                    <button class="btn btn-primary" onclick="showNotification('PC-Version aktiv')">
-                        <i class="fas fa-desktop"></i> PC Mode
+                    <button class="btn btn-primary" onclick="exportData()">
+                        <i class="fas fa-download"></i> Export
                     </button>
-                    <button class="btn" onclick="logout()">
+                    <button class="btn btn-warning" onclick="openSettingsModal()">
+                        <i class="fas fa-cog"></i> Einstellungen
+                    </button>
+                    <button class="btn btn-danger" onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </button>
                 </div>
@@ -603,33 +935,61 @@
                     <div class="tab-content">
                         <div class="page-header">
                             <h3>Finanzübersicht</h3>
-                            <div>
+                            <div style="display: flex; gap: 1rem;">
                                 <button class="btn btn-primary" onclick="openInvoiceModal()">
                                     <i class="fas fa-plus"></i> Neue Rechnung
                                 </button>
                                 <button class="btn btn-success" onclick="openIncomeModal()">
                                     <i class="fas fa-plus"></i> Einkommen
                                 </button>
+                                <button class="btn btn-warning" onclick="openPurchaseModal()">
+                                    <i class="fas fa-plus"></i> Einkauf
+                                </button>
                             </div>
                         </div>
                         
                         <!-- Stats Grid -->
-                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
-                            <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                                <div style="font-size: 0.9rem; color: #64748b;">Gesamteinnahmen</div>
-                                <div style="font-size: 1.8rem; font-weight: bold; color: #2563eb;">0.00 €</div>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <h3>Gesamteinnahmen</h3>
+                                <div class="value" id="totalIncome">0.00 €</div>
+                                <small>Dieses Jahr</small>
                             </div>
-                            <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                                <div style="font-size: 0.9rem; color: #64748b;">Ausgaben</div>
-                                <div style="font-size: 1.8rem; font-weight: bold; color: #ef4444;">0.00 €</div>
+                            <div class="stat-card">
+                                <h3>Ausgaben</h3>
+                                <div class="value" id="totalExpenses">0.00 €</div>
+                                <small>Dieses Jahr</small>
                             </div>
-                            <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                                <div style="font-size: 0.9rem; color: #64748b;">Gewinn</div>
-                                <div style="font-size: 1.8rem; font-weight: bold; color: #10b981;">0.00 €</div>
+                            <div class="stat-card">
+                                <h3>Gewinn</h3>
+                                <div class="value" id="totalProfit">0.00 €</div>
+                                <small>Netto</small>
                             </div>
-                            <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                                <div style="font-size: 0.9rem; color: #64748b;">Offene Rechnungen</div>
-                                <div style="font-size: 1.8rem; font-weight: bold; color: #f59e0b;">0</div>
+                            <div class="stat-card">
+                                <h3>Offene Rechnungen</h3>
+                                <div class="value" id="openInvoices">0</div>
+                                <small>Summe: <span id="openInvoicesAmount">0.00 €</span></small>
+                            </div>
+                        </div>
+
+                        <!-- Charts -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+                            <div style="background: white; padding: 1.5rem; border-radius: 8px;">
+                                <h3 style="margin-bottom: 1rem;">Einnahmen vs Ausgaben</h3>
+                                <div style="height: 200px; display: flex; align-items: flex-end; gap: 10px;">
+                                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                                        <div style="width: 80%; background: #2563eb; border-radius: 4px;" id="incomeBar"></div>
+                                        <small>Einnahmen</small>
+                                    </div>
+                                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                                        <div style="width: 80%; background: #ef4444; border-radius: 4px;" id="expenseBar"></div>
+                                        <small>Ausgaben</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="background: white; padding: 1.5rem; border-radius: 8px;">
+                                <h3 style="margin-bottom: 1rem;">Letzte Transaktionen</h3>
+                                <div id="recentTransactions"></div>
                             </div>
                         </div>
                     </div>
@@ -654,18 +1014,178 @@
                                         <th>Datum</th>
                                         <th>Betrag</th>
                                         <th>Status</th>
+                                        <th>Fällig am</th>
                                         <th>Aktionen</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <!-- Daten werden geladen -->
+                                <tbody id="invoicesTableBody">
+                                    <!-- Wird durch JavaScript gefüllt -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- Weitere Tabs... -->
+                <!-- Income Tab -->
+                <div class="pc-tab-content" id="pcIncome">
+                    <div class="tab-content">
+                        <div class="page-header">
+                            <h3>Einkommen</h3>
+                            <button class="btn btn-primary" onclick="openIncomeModal()">
+                                <i class="fas fa-plus"></i> Neues Einkommen
+                            </button>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Datum</th>
+                                        <th>Beschreibung</th>
+                                        <th>Betrag</th>
+                                        <th>Kategorie</th>
+                                        <th>Zahlungsmethode</th>
+                                        <th>Aktionen</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="incomeTableBody">
+                                    <!-- Wird durch JavaScript gefüllt -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customers Tab -->
+                <div class="pc-tab-content" id="pcCustomers">
+                    <div class="tab-content">
+                        <div class="page-header">
+                            <h3>Kunden</h3>
+                            <button class="btn btn-primary" onclick="openCustomerModal()">
+                                <i class="fas fa-plus"></i> Neuer Kunde
+                            </button>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>E-Mail</th>
+                                        <th>Telefon</th>
+                                        <th>Adresse</th>
+                                        <th>Rechnungen</th>
+                                        <th>Ausstehend</th>
+                                        <th>Aktionen</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customersTableBody">
+                                    <!-- Wird durch JavaScript gefüllt -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purchases Tab -->
+                <div class="pc-tab-content" id="pcPurchases">
+                    <div class="tab-content">
+                        <div class="page-header">
+                            <h3>Einkäufe</h3>
+                            <button class="btn btn-primary" onclick="openPurchaseModal()">
+                                <i class="fas fa-plus"></i> Neuer Einkauf
+                            </button>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Datum</th>
+                                        <th>Lieferant</th>
+                                        <th>Beschreibung</th>
+                                        <th>Betrag</th>
+                                        <th>Kategorie</th>
+                                        <th>Zahlungsmethode</th>
+                                        <th>Aktionen</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="purchasesTableBody">
+                                    <!-- Wird durch JavaScript gefüllt -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Installments Tab -->
+                <div class="pc-tab-content" id="pcInstallments">
+                    <div class="tab-content">
+                        <div class="page-header">
+                            <h3>Ratenzahlungen</h3>
+                            <button class="btn btn-primary" onclick="openInstallmentModal()">
+                                <i class="fas fa-plus"></i> Neue Ratenzahlung
+                            </button>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Rechnung</th>
+                                        <th>Kunde</th>
+                                        <th>Gesamtbetrag</th>
+                                        <th>Raten</th>
+                                        <th>Bezahlt</th>
+                                        <th>Ausstehend</th>
+                                        <th>Status</th>
+                                        <th>Aktionen</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="installmentsTableBody">
+                                    <!-- Wird durch JavaScript gefüllt -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Tab -->
+                <div class="pc-tab-content" id="pcReports">
+                    <div class="tab-content">
+                        <div class="page-header">
+                            <h3>Berichte</h3>
+                            <div>
+                                <button class="btn btn-primary" onclick="generateMonthlyReport()">
+                                    <i class="fas fa-file-pdf"></i> Monatsbericht
+                                </button>
+                                <button class="btn btn-success" onclick="generateYearlyReport()">
+                                    <i class="fas fa-file-excel"></i> Jahresbericht
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <h3>Umsatz dieses Jahr</h3>
+                                <div class="value" id="yearlyRevenue">0.00 €</div>
+                                <canvas id="revenueChart" height="100"></canvas>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Top Kunden</h3>
+                                <div id="topCustomers"></div>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Ausgaben nach Kategorie</h3>
+                                <div id="expenseCategories"></div>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Zahlungsmethoden</h3>
+                                <div id="paymentMethods"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -678,8 +1198,8 @@
                 <i class="fas fa-bars"></i>
             </button>
             <h2>Buchhaltung</h2>
-            <button class="btn btn-primary" onclick="showNotification('Mobile-Version aktiv')">
-                <i class="fas fa-mobile-alt"></i>
+            <button class="btn btn-primary" onclick="toggleDarkMode()">
+                <i class="fas fa-moon"></i>
             </button>
         </div>
 
@@ -708,6 +1228,15 @@
                 <div class="mobile-nav-item" data-tab="purchases">
                     <i class="fas fa-shopping-cart"></i> Einkäufe
                 </div>
+                <div class="mobile-nav-item" data-tab="installments">
+                    <i class="fas fa-calendar-alt"></i> Ratenzahlung
+                </div>
+                <div class="mobile-nav-item" data-tab="reports">
+                    <i class="fas fa-chart-pie"></i> Berichte
+                </div>
+                <div class="mobile-nav-item" onclick="openSettingsModal()">
+                    <i class="fas fa-cog"></i> Einstellungen
+                </div>
                 <div class="mobile-nav-item" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </div>
@@ -731,75 +1260,320 @@
                 </div>
                 
                 <!-- Mobile Stats -->
-                <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
-                    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                        <div style="font-size: 0.9rem; color: #64748b;">Gesamteinnahmen</div>
-                        <div style="font-size: 1.5rem; font-weight: bold; color: #2563eb;">0.00 €</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Einnahmen</h3>
+                        <div class="value" id="mobileTotalIncome">0.00 €</div>
                     </div>
-                    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                        <div style="font-size: 0.9rem; color: #64748b;">Ausgaben</div>
-                        <div style="font-size: 1.5rem; font-weight: bold; color: #ef4444;">0.00 €</div>
+                    <div class="stat-card">
+                        <h3>Ausgaben</h3>
+                        <div class="value" id="mobileTotalExpenses">0.00 €</div>
                     </div>
-                    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                        <div style="font-size: 0.9rem; color: #64748b;">Gewinn</div>
-                        <div style="font-size: 1.5rem; font-weight: bold; color: #10b981;">0.00 €</div>
+                    <div class="stat-card">
+                        <h3>Gewinn</h3>
+                        <div class="value" id="mobileTotalProfit">0.00 €</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Invoices Tab -->
-            <div class="mobile-tab-content" id="mobileInvoices">
-                <div class="page-header">
-                    <h3>Rechnungen</h3>
-                    <button class="btn btn-primary" onclick="openInvoiceModal()">
-                        <i class="fas fa-plus"></i> Neu
-                    </button>
-                </div>
-                
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Rechnung</th>
-                                <th>Kunde</th>
-                                <th>Betrag</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Daten werden geladen -->
-                        </tbody>
-                    </table>
-                </div>
+            <!-- Weitere Mobile Tabs... -->
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="invoiceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Neue Rechnung</h3>
+                <button class="close-modal" onclick="closeInvoiceModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="invoiceForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceNumber">Rechnungsnummer *</label>
+                            <input type="text" id="invoiceNumber" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="invoiceDate">Rechnungsdatum *</label>
+                            <input type="date" id="invoiceDate" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerSelect">Kunde *</label>
+                        <select id="customerSelect" required>
+                            <option value="">Kunde auswählen...</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceAmount">Betrag (€) *</label>
+                            <input type="number" id="invoiceAmount" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dueDate">Fällig am</label>
+                            <input type="date" id="dueDate">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="invoiceDescription">Beschreibung</label>
+                        <textarea id="invoiceDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="paymentMethod">Zahlungsmethode</label>
+                            <select id="paymentMethod">
+                                <option value="bank">Banküberweisung</option>
+                                <option value="cash">Bar</option>
+                                <option value="card">Kreditkarte</option>
+                                <option value="paypal">PayPal</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="installmentPlan">Ratenzahlung</label>
+                            <select id="installmentPlan">
+                                <option value="0">Keine</option>
+                                <option value="3">3 Monate</option>
+                                <option value="6">6 Monate</option>
+                                <option value="12">12 Monate</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeInvoiceModal()">Abbrechen</button>
+                <button class="btn btn-primary" onclick="saveInvoice()">Rechnung speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Income Modal -->
+    <div class="modal" id="incomeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Neues Einkommen</h3>
+                <button class="close-modal" onclick="closeIncomeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="incomeForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="incomeDate">Datum *</label>
+                            <input type="date" id="incomeDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="incomeAmount">Betrag (€) *</label>
+                            <input type="number" id="incomeAmount" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="incomeDescription">Beschreibung *</label>
+                        <input type="text" id="incomeDescription" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="incomeCategory">Kategorie</label>
+                            <select id="incomeCategory">
+                                <option value="sales">Verkäufe</option>
+                                <option value="service">Dienstleistungen</option>
+                                <option value="other">Sonstiges</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="incomePaymentMethod">Zahlungsmethode</label>
+                            <select id="incomePaymentMethod">
+                                <option value="bank">Banküberweisung</option>
+                                <option value="cash">Bar</option>
+                                <option value="card">Kreditkarte</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeIncomeModal()">Abbrechen</button>
+                <button class="btn btn-primary" onclick="saveIncome()">Einkommen speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Modal -->
+    <div class="modal" id="customerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Neuer Kunde</h3>
+                <button class="close-modal" onclick="closeCustomerModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="customerForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerName">Name *</label>
+                            <input type="text" id="customerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerEmail">E-Mail *</label>
+                            <input type="email" id="customerEmail" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerPhone">Telefon</label>
+                            <input type="tel" id="customerPhone">
+                        </div>
+                        <div class="form-group">
+                            <label for="customerCompany">Firma</label>
+                            <input type="text" id="customerCompany">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerAddress">Adresse</label>
+                        <textarea id="customerAddress" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeCustomerModal()">Abbrechen</button>
+                <button class="btn btn-primary" onclick="saveCustomer()">Kunde speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchase Modal -->
+    <div class="modal" id="purchaseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Neuer Einkauf</h3>
+                <button class="close-modal" onclick="closePurchaseModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="purchaseForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="purchaseDate">Datum *</label>
+                            <input type="date" id="purchaseDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="purchaseAmount">Betrag (€) *</label>
+                            <input type="number" id="purchaseAmount" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="purchaseSupplier">Lieferant *</label>
+                        <input type="text" id="purchaseSupplier" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="purchaseDescription">Beschreibung</label>
+                        <textarea id="purchaseDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="purchaseCategory">Kategorie</label>
+                            <select id="purchaseCategory">
+                                <option value="material">Material</option>
+                                <option value="equipment">Geräte</option>
+                                <option value="software">Software</option>
+                                <option value="office">Büro</option>
+                                <option value="other">Sonstiges</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="purchasePaymentMethod">Zahlungsmethode</label>
+                            <select id="purchasePaymentMethod">
+                                <option value="bank">Banküberweisung</option>
+                                <option value="cash">Bar</option>
+                                <option value="card">Kreditkarte</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closePurchaseModal()">Abbrechen</button>
+                <button class="btn btn-primary" onclick="savePurchase()">Einkauf speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Installment Modal -->
+    <div class="modal" id="installmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Neue Ratenzahlung</h3>
+                <button class="close-modal" onclick="closeInstallmentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="installmentForm">
+                    <div class="form-group">
+                        <label for="installmentInvoice">Rechnung *</label>
+                        <select id="installmentInvoice" required>
+                            <option value="">Rechnung auswählen...</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="installmentMonths">Anzahl Raten *</label>
+                            <select id="installmentMonths" required>
+                                <option value="3">3 Monate</option>
+                                <option value="6">6 Monate</option>
+                                <option value="12">12 Monate</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="installmentInterest">Zinssatz (%)</label>
+                            <input type="number" id="installmentInterest" step="0.1" value="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="installmentStartDate">Startdatum *</label>
+                        <input type="date" id="installmentStartDate" required>
+                    </div>
+                </form>
+                <div id="installmentPreview"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeInstallmentModal()">Abbrechen</button>
+                <button class="btn btn-primary" onclick="saveInstallment()">Ratenzahlung erstellen</button>
             </div>
         </div>
     </div>
 
     <!-- Notification System -->
-    <div id="notification" style="position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 1rem; border-radius: 6px; display: none; z-index: 10000; max-width: 300px;">
-        <i class="fas fa-check-circle"></i> <span id="notificationText"></span>
+    <div id="notification" class="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText"></span>
     </div>
 
     <script>
         // ===== GLOBALE VARIABLEN =====
-        let currentDevice = 'pc'; // 'pc' oder 'mobile'
+        let currentDevice = 'pc';
         let currentTab = 'dashboard';
         let isLoggedIn = false;
-
-        // ===== LOADING & LOGIN SEQUENZ =====
+        let darkMode = false;
+        
+        // ===== DATENSTRUKTUREN =====
+        let invoices = [];
+        let incomes = [];
+        let customers = [];
+        let purchases = [];
+        let installments = [];
+        
+        // ===== INITIALISIERUNG =====
         window.addEventListener('DOMContentLoaded', function() {
-            // Loading Screen anzeigen
+            // Loading Screen
             setTimeout(() => {
                 document.getElementById('loadingScreen').classList.add('hidden');
                 document.getElementById('loginScreen').classList.remove('hidden');
+                loadData();
             }, 1500);
             
-            // Login Form Handler
+            // Login Handler
             document.getElementById('loginForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
                 
-                // Login-Prüfung
                 if (username === 'colin' && password === '11012021') {
                     loginSuccess();
                 } else {
@@ -807,37 +1581,101 @@
                 }
             });
             
-            // Navigation Event Listeners
+            // Heutiges Datum setzen
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('invoiceDate')?.value = today;
+            document.getElementById('incomeDate')?.value = today;
+            document.getElementById('purchaseDate')?.value = today;
+            document.getElementById('installmentStartDate')?.value = today;
+            
+            // Dark Mode prüfen
+            checkDarkMode();
+            
+            // Navigation einrichten
             setupNavigation();
         });
-
+        
+        // ===== DATENVERWALTUNG =====
+        function loadData() {
+            // Daten aus localStorage laden
+            invoices = JSON.parse(localStorage.getItem('invoices')) || [];
+            incomes = JSON.parse(localStorage.getItem('incomes')) || [];
+            customers = JSON.parse(localStorage.getItem('customers')) || [];
+            purchases = JSON.parse(localStorage.getItem('purchases')) || [];
+            installments = JSON.parse(localStorage.getItem('installments')) || [];
+            
+            // Beispielkunden wenn keine vorhanden
+            if (customers.length === 0) {
+                customers = [
+                    {
+                        id: 1,
+                        name: "Max Mustermann",
+                        email: "max@mustermann.de",
+                        phone: "0123456789",
+                        company: "Mustermann GmbH",
+                        address: "Musterstraße 1, 12345 Musterstadt"
+                    },
+                    {
+                        id: 2,
+                        name: "Erika Schmidt",
+                        email: "erika@schmidt.de",
+                        phone: "0987654321",
+                        company: "Schmidt & Co",
+                        address: "Beispielweg 5, 54321 Beispielstadt"
+                    }
+                ];
+                saveCustomers();
+            }
+        }
+        
+        function saveData() {
+            localStorage.setItem('invoices', JSON.stringify(invoices));
+            localStorage.setItem('incomes', JSON.stringify(incomes));
+            localStorage.setItem('customers', JSON.stringify(customers));
+            localStorage.setItem('purchases', JSON.stringify(purchases));
+            localStorage.setItem('installments', JSON.stringify(installments));
+        }
+        
+        function saveInvoices() {
+            localStorage.setItem('invoices', JSON.stringify(invoices));
+        }
+        
+        function saveIncomes() {
+            localStorage.setItem('incomes', JSON.stringify(incomes));
+        }
+        
+        function saveCustomers() {
+            localStorage.setItem('customers', JSON.stringify(customers));
+        }
+        
+        function savePurchases() {
+            localStorage.setItem('purchases', JSON.stringify(purchases));
+        }
+        
+        function saveInstallments() {
+            localStorage.setItem('installments', JSON.stringify(installments));
+        }
+        
         // ===== LOGIN FUNKTIONEN =====
         function loginSuccess() {
             isLoggedIn = true;
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('loginError').classList.remove('show');
             
-            // Gerätetyp erkennen
             detectDeviceType();
-            
-            // App anzeigen
             showApp();
-            
-            // Notification
-            showNotification('Erfolgreich eingeloggt!');
+            updateDashboard();
+            showNotification('Erfolgreich eingeloggt!', 'success');
         }
-
+        
         function showLoginError() {
             const errorEl = document.getElementById('loginError');
             errorEl.classList.add('show');
-            
-            // Fehler-Animation
             errorEl.style.animation = 'none';
             setTimeout(() => {
                 errorEl.style.animation = 'shake 0.5s ease-in-out';
             }, 10);
             
-            // Animation für Inputs
             const inputs = document.querySelectorAll('#loginForm input');
             inputs.forEach(input => {
                 input.style.borderColor = '#ef4444';
@@ -846,44 +1684,36 @@
                 }, 500);
             });
         }
-
+        
         function logout() {
             isLoggedIn = false;
-            
-            // Alle App-Layouts ausblenden
             document.getElementById('pcApp').classList.remove('active');
             document.getElementById('mobileApp').classList.remove('active');
             document.querySelectorAll('.app-container').forEach(el => {
                 el.classList.remove('active');
             });
             
-            // Login Screen anzeigen
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
             
-            showNotification('Erfolgreich ausgeloggt');
+            showNotification('Erfolgreich ausgeloggt', 'success');
         }
-
+        
         // ===== GERÄTEERKENNUNG =====
         function detectDeviceType() {
-            const isMobile = window.innerWidth <= 768;
-            currentDevice = isMobile ? 'mobile' : 'pc';
-            console.log(`Gerät erkannt: ${currentDevice} (Breite: ${window.innerWidth}px)`);
+            currentDevice = window.innerWidth <= 768 ? 'mobile' : 'pc';
         }
-
+        
         function showApp() {
-            // Gerätespezifisches Layout anzeigen
             if (currentDevice === 'pc') {
                 document.getElementById('pcApp').classList.add('active');
             } else {
                 document.getElementById('mobileApp').classList.add('active');
             }
-            
-            // App Container anzeigen
             document.querySelector('.app-container').classList.add('active');
         }
-
+        
         // ===== NAVIGATION =====
         function setupNavigation() {
             // PC Navigation
@@ -891,12 +1721,8 @@
                 item.addEventListener('click', function() {
                     const tab = this.getAttribute('data-tab');
                     switchTab(tab);
-                    
-                    // Active State setzen
                     document.querySelectorAll('.pc-nav-item').forEach(i => i.classList.remove('active'));
                     this.classList.add('active');
-                    
-                    // Page Title aktualisieren
                     document.getElementById('pcPageTitle').textContent = this.textContent.trim();
                 });
             });
@@ -908,15 +1734,13 @@
                         const tab = this.getAttribute('data-tab');
                         switchTab(tab);
                         toggleMobileMenu();
-                        
-                        // Active State setzen
                         document.querySelectorAll('.mobile-nav-item').forEach(i => i.classList.remove('active'));
                         this.classList.add('active');
                     });
                 }
             });
         }
-
+        
         function switchTab(tabName) {
             currentTab = tabName;
             
@@ -931,67 +1755,650 @@
                 document.getElementById(`mobile${capitalizeFirst(tabName)}`).classList.add('active');
             }
             
-            console.log(`Tab gewechselt zu: ${tabName}`);
+            // Tab-spezifische Daten laden
+            switch(tabName) {
+                case 'dashboard':
+                    updateDashboard();
+                    break;
+                case 'invoices':
+                    loadInvoicesTable();
+                    break;
+                case 'income':
+                    loadIncomeTable();
+                    break;
+                case 'customers':
+                    loadCustomersTable();
+                    break;
+                case 'purchases':
+                    loadPurchasesTable();
+                    break;
+                case 'installments':
+                    loadInstallmentsTable();
+                    break;
+                case 'reports':
+                    loadReports();
+                    break;
+            }
         }
-
+        
+        // ===== MODAL FUNKTIONEN =====
+        function openInvoiceModal() {
+            document.getElementById('invoiceModal').classList.add('active');
+            populateCustomerSelect();
+            document.getElementById('invoiceNumber').value = 'INV-' + new Date().getTime();
+        }
+        
+        function closeInvoiceModal() {
+            document.getElementById('invoiceModal').classList.remove('active');
+            document.getElementById('invoiceForm').reset();
+        }
+        
+        function openIncomeModal() {
+            document.getElementById('incomeModal').classList.add('active');
+        }
+        
+        function closeIncomeModal() {
+            document.getElementById('incomeModal').classList.remove('active');
+            document.getElementById('incomeForm').reset();
+        }
+        
+        function openCustomerModal() {
+            document.getElementById('customerModal').classList.add('active');
+        }
+        
+        function closeCustomerModal() {
+            document.getElementById('customerModal').classList.remove('active');
+            document.getElementById('customerForm').reset();
+        }
+        
+        function openPurchaseModal() {
+            document.getElementById('purchaseModal').classList.add('active');
+        }
+        
+        function closePurchaseModal() {
+            document.getElementById('purchaseModal').classList.remove('active');
+            document.getElementById('purchaseForm').reset();
+        }
+        
+        function openInstallmentModal() {
+            document.getElementById('installmentModal').classList.add('active');
+            populateInvoiceSelect();
+        }
+        
+        function closeInstallmentModal() {
+            document.getElementById('installmentModal').classList.remove('active');
+            document.getElementById('installmentForm').reset();
+        }
+        
+        function openSettingsModal() {
+            showNotification('Einstellungen (Demo)', 'info');
+        }
+        
+        // ===== DATEN SPEICHERN =====
+        function saveInvoice() {
+            const invoice = {
+                id: invoices.length + 1,
+                number: document.getElementById('invoiceNumber').value,
+                date: document.getElementById('invoiceDate').value,
+                customerId: parseInt(document.getElementById('customerSelect').value),
+                amount: parseFloat(document.getElementById('invoiceAmount').value),
+                dueDate: document.getElementById('dueDate').value,
+                description: document.getElementById('invoiceDescription').value,
+                paymentMethod: document.getElementById('paymentMethod').value,
+                installmentPlan: parseInt(document.getElementById('installmentPlan').value),
+                status: 'offen',
+                createdAt: new Date().toISOString()
+            };
+            
+            invoices.push(invoice);
+            saveInvoices();
+            closeInvoiceModal();
+            updateDashboard();
+            loadInvoicesTable();
+            
+            // Ratenzahlung erstellen wenn gewählt
+            if (invoice.installmentPlan > 0) {
+                createInstallmentFromInvoice(invoice);
+            }
+            
+            showNotification('Rechnung gespeichert!', 'success');
+        }
+        
+        function saveIncome() {
+            const income = {
+                id: incomes.length + 1,
+                date: document.getElementById('incomeDate').value,
+                amount: parseFloat(document.getElementById('incomeAmount').value),
+                description: document.getElementById('incomeDescription').value,
+                category: document.getElementById('incomeCategory').value,
+                paymentMethod: document.getElementById('incomePaymentMethod').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            incomes.push(income);
+            saveIncomes();
+            closeIncomeModal();
+            updateDashboard();
+            loadIncomeTable();
+            
+            showNotification('Einkommen gespeichert!', 'success');
+        }
+        
+        function saveCustomer() {
+            const customer = {
+                id: customers.length + 1,
+                name: document.getElementById('customerName').value,
+                email: document.getElementById('customerEmail').value,
+                phone: document.getElementById('customerPhone').value,
+                company: document.getElementById('customerCompany').value,
+                address: document.getElementById('customerAddress').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            customers.push(customer);
+            saveCustomers();
+            closeCustomerModal();
+            loadCustomersTable();
+            
+            showNotification('Kunde gespeichert!', 'success');
+        }
+        
+        function savePurchase() {
+            const purchase = {
+                id: purchases.length + 1,
+                date: document.getElementById('purchaseDate').value,
+                amount: parseFloat(document.getElementById('purchaseAmount').value),
+                supplier: document.getElementById('purchaseSupplier').value,
+                description: document.getElementById('purchaseDescription').value,
+                category: document.getElementById('purchaseCategory').value,
+                paymentMethod: document.getElementById('purchasePaymentMethod').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            purchases.push(purchase);
+            savePurchases();
+            closePurchaseModal();
+            updateDashboard();
+            loadPurchasesTable();
+            
+            showNotification('Einkauf gespeichert!', 'success');
+        }
+        
+        function saveInstallment() {
+            const installment = {
+                id: installments.length + 1,
+                invoiceId: parseInt(document.getElementById('installmentInvoice').value),
+                months: parseInt(document.getElementById('installmentMonths').value),
+                interest: parseFloat(document.getElementById('installmentInterest').value),
+                startDate: document.getElementById('installmentStartDate').value,
+                status: 'aktiv',
+                createdAt: new Date().toISOString()
+            };
+            
+            installments.push(installment);
+            saveInstallments();
+            closeInstallmentModal();
+            loadInstallmentsTable();
+            
+            showNotification('Ratenzahlung erstellt!', 'success');
+        }
+        
+        // ===== TABELLEN LADEN =====
+        function loadInvoicesTable() {
+            const tbody = document.getElementById('invoicesTableBody');
+            tbody.innerHTML = '';
+            
+            invoices.forEach(invoice => {
+                const customer = customers.find(c => c.id === invoice.customerId) || {name: 'Unbekannt'};
+                const statusClass = invoice.status === 'bezahlt' ? 'badge-success' : 
+                                   invoice.status === 'überfällig' ? 'badge-danger' : 'badge-warning';
+                
+                const row = `
+                    <tr>
+                        <td>${invoice.number}</td>
+                        <td>${customer.name}</td>
+                        <td>${formatDate(invoice.date)}</td>
+                        <td>${formatCurrency(invoice.amount)}</td>
+                        <td><span class="badge ${statusClass}">${invoice.status}</span></td>
+                        <td>${invoice.dueDate ? formatDate(invoice.dueDate) : '-'}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-primary" onclick="viewInvoice(${invoice.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn btn-warning" onclick="editInvoice(${invoice.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn btn-danger" onclick="deleteInvoice(${invoice.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+        
+        function loadIncomeTable() {
+            const tbody = document.getElementById('incomeTableBody');
+            tbody.innerHTML = '';
+            
+            incomes.forEach(income => {
+                const row = `
+                    <tr>
+                        <td>${formatDate(income.date)}</td>
+                        <td>${income.description}</td>
+                        <td>${formatCurrency(income.amount)}</td>
+                        <td>${income.category}</td>
+                        <td>${income.paymentMethod}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-warning" onclick="editIncome(${income.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn btn-danger" onclick="deleteIncome(${income.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+        
+        function loadCustomersTable() {
+            const tbody = document.getElementById('customersTableBody');
+            tbody.innerHTML = '';
+            
+            customers.forEach(customer => {
+                const customerInvoices = invoices.filter(i => i.customerId === customer.id);
+                const totalInvoices = customerInvoices.length;
+                const pendingAmount = customerInvoices
+                    .filter(i => i.status !== 'bezahlt')
+                    .reduce((sum, i) => sum + i.amount, 0);
+                
+                const row = `
+                    <tr>
+                        <td>${customer.name}</td>
+                        <td>${customer.email}</td>
+                        <td>${customer.phone || '-'}</td>
+                        <td>${customer.address || '-'}</td>
+                        <td>${totalInvoices}</td>
+                        <td>${formatCurrency(pendingAmount)}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-primary" onclick="viewCustomer(${customer.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn btn-warning" onclick="editCustomer(${customer.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn btn-danger" onclick="deleteCustomer(${customer.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+        
+        function loadPurchasesTable() {
+            const tbody = document.getElementById('purchasesTableBody');
+            tbody.innerHTML = '';
+            
+            purchases.forEach(purchase => {
+                const row = `
+                    <tr>
+                        <td>${formatDate(purchase.date)}</td>
+                        <td>${purchase.supplier}</td>
+                        <td>${purchase.description}</td>
+                        <td>${formatCurrency(purchase.amount)}</td>
+                        <td>${purchase.category}</td>
+                        <td>${purchase.paymentMethod}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-warning" onclick="editPurchase(${purchase.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn btn-danger" onclick="deletePurchase(${purchase.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+        
+        function loadInstallmentsTable() {
+            const tbody = document.getElementById('installmentsTableBody');
+            tbody.innerHTML = '';
+            
+            installments.forEach(installment => {
+                const invoice = invoices.find(i => i.id === installment.invoiceId);
+                const customer = invoice ? customers.find(c => c.id === invoice.customerId) : null;
+                const totalAmount = invoice ? invoice.amount : 0;
+                const paidAmount = totalAmount * 0.3; // Beispiel: 30% bereits bezahlt
+                const remainingAmount = totalAmount - paidAmount;
+                
+                const row = `
+                    <tr>
+                        <td>${invoice ? invoice.number : 'Unbekannt'}</td>
+                        <td>${customer ? customer.name : 'Unbekannt'}</td>
+                        <td>${formatCurrency(totalAmount)}</td>
+                        <td>${installment.months} Monate</td>
+                        <td>${formatCurrency(paidAmount)}</td>
+                        <td>${formatCurrency(remainingAmount)}</td>
+                        <td><span class="badge ${installment.status === 'aktiv' ? 'badge-warning' : 'badge-success'}">${installment.status}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-primary" onclick="viewInstallment(${installment.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn btn-danger" onclick="deleteInstallment(${installment.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+        
+        // ===== DASHBOARD FUNKTIONEN =====
+        function updateDashboard() {
+            // Berechnungen
+            const totalIncome = incomes.reduce((sum, i) => sum + i.amount, 0);
+            const totalExpenses = purchases.reduce((sum, p) => sum + p.amount, 0);
+            const totalProfit = totalIncome - totalExpenses;
+            const openInvoices = invoices.filter(i => i.status !== 'bezahlt');
+            const openInvoicesAmount = openInvoices.reduce((sum, i) => sum + i.amount, 0);
+            
+            // PC Dashboard
+            document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+            document.getElementById('totalExpenses').textContent = formatCurrency(totalExpenses);
+            document.getElementById('totalProfit').textContent = formatCurrency(totalProfit);
+            document.getElementById('openInvoices').textContent = openInvoices.length;
+            document.getElementById('openInvoicesAmount').textContent = formatCurrency(openInvoicesAmount);
+            
+            // Mobile Dashboard
+            document.getElementById('mobileTotalIncome').textContent = formatCurrency(totalIncome);
+            document.getElementById('mobileTotalExpenses').textContent = formatCurrency(totalExpenses);
+            document.getElementById('mobileTotalProfit').textContent = formatCurrency(totalProfit);
+            
+            // Chart Bars
+            const maxValue = Math.max(totalIncome, totalExpenses, 1000);
+            const incomeBar = document.getElementById('incomeBar');
+            const expenseBar = document.getElementById('expenseBar');
+            
+            if (incomeBar && expenseBar) {
+                incomeBar.style.height = `${(totalIncome / maxValue) * 150}px`;
+                expenseBar.style.height = `${(totalExpenses / maxValue) * 150}px`;
+            }
+            
+            // Recent Transactions
+            const recent = document.getElementById('recentTransactions');
+            if (recent) {
+                const allTransactions = [
+                    ...invoices.map(i => ({...i, type: 'Rechnung'})),
+                    ...incomes.map(i => ({...i, type: 'Einkommen'})),
+                    ...purchases.map(p => ({...p, type: 'Einkauf'}))
+                ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                 .slice(0, 5);
+                
+                recent.innerHTML = allTransactions.map(t => `
+                    <div style="padding: 0.5rem 0; border-bottom: 1px solid #e2e8f0;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>${t.description || t.type}</span>
+                            <span style="font-weight: bold; color: ${t.type === 'Einkauf' ? '#ef4444' : '#10b981'}">
+                                ${formatCurrency(t.amount)}
+                            </span>
+                        </div>
+                        <small style="color: #64748b;">${formatDate(t.date)} • ${t.type}</small>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        // ===== HELPER FUNKTIONEN =====
+        function capitalizeFirst(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('de-DE');
+        }
+        
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(amount);
+        }
+        
+        function populateCustomerSelect() {
+            const select = document.getElementById('customerSelect');
+            select.innerHTML = '<option value="">Kunde auswählen...</option>';
+            customers.forEach(customer => {
+                const option = document.createElement('option');
+                option.value = customer.id;
+                option.textContent = `${customer.name} (${customer.company || 'keine Firma'})`;
+                select.appendChild(option);
+            });
+        }
+        
+        function populateInvoiceSelect() {
+            const select = document.getElementById('installmentInvoice');
+            select.innerHTML = '<option value="">Rechnung auswählen...</option>';
+            invoices.filter(i => i.status !== 'bezahlt').forEach(invoice => {
+                const customer = customers.find(c => c.id === invoice.customerId);
+                const option = document.createElement('option');
+                option.value = invoice.id;
+                option.textContent = `${invoice.number} - ${customer?.name || 'Unbekannt'} - ${formatCurrency(invoice.amount)}`;
+                select.appendChild(option);
+            });
+        }
+        
+        function createInstallmentFromInvoice(invoice) {
+            const installment = {
+                id: installments.length + 1,
+                invoiceId: invoice.id,
+                months: invoice.installmentPlan,
+                interest: 0,
+                startDate: new Date().toISOString().split('T')[0],
+                status: 'aktiv',
+                createdAt: new Date().toISOString()
+            };
+            
+            installments.push(installment);
+            saveInstallments();
+            showNotification('Ratenzahlung automatisch erstellt!', 'info');
+        }
+        
+        // ===== DARK MODE =====
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            document.body.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+            localStorage.setItem('darkMode', darkMode);
+            showNotification(darkMode ? 'Dark Mode aktiviert' : 'Dark Mode deaktiviert', 'info');
+        }
+        
+        function checkDarkMode() {
+            const saved = localStorage.getItem('darkMode');
+            darkMode = saved === 'true';
+            document.body.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+        }
+        
+        // ===== NOTIFICATION SYSTEM =====
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const text = document.getElementById('notificationText');
+            
+            // Typ setzen
+            notification.className = `notification ${type ? `notification-${type}` : ''}`;
+            
+            // Icon setzen
+            const icon = notification.querySelector('i');
+            icon.className = type === 'error' ? 'fas fa-exclamation-circle' :
+                           type === 'warning' ? 'fas fa-exclamation-triangle' :
+                           type === 'info' ? 'fas fa-info-circle' :
+                           'fas fa-check-circle';
+            
+            text.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
         // ===== MOBILE MENU =====
         function toggleMobileMenu() {
             document.querySelector('.mobile-nav').classList.toggle('active');
             document.querySelector('.mobile-overlay').classList.toggle('active');
             document.body.style.overflow = document.querySelector('.mobile-nav').classList.contains('active') ? 'hidden' : '';
         }
-
-        // ===== BUTTON FUNKTIONEN =====
-        function openInvoiceModal() {
-            showNotification('Rechnungsmodal wird geöffnet (Demo)');
-            // Hier später das Rechnungs-Modal implementieren
-        }
-
-        function openIncomeModal() {
-            showNotification('Einkommensmodal wird geöffnet (Demo)');
-            // Hier später das Einkommens-Modal implementieren
-        }
-
-        // ===== HELPER FUNCTIONS =====
-        function capitalizeFirst(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
-        }
-
-        function showNotification(message) {
-            const notification = document.getElementById('notification');
-            const text = document.getElementById('notificationText');
+        
+        // ===== EXPORT FUNKTION =====
+        function exportData() {
+            const data = {
+                invoices,
+                incomes,
+                customers,
+                purchases,
+                installments,
+                exportDate: new Date().toISOString()
+            };
             
-            text.textContent = message;
-            notification.style.display = 'flex';
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `buchhaltung-backup-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
             
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
+            showNotification('Daten erfolgreich exportiert!', 'success');
         }
-
+        
+        // ===== DELETE FUNKTIONEN =====
+        function deleteInvoice(id) {
+            if (confirm('Rechnung wirklich löschen?')) {
+                invoices = invoices.filter(i => i.id !== id);
+                saveInvoices();
+                loadInvoicesTable();
+                updateDashboard();
+                showNotification('Rechnung gelöscht!', 'success');
+            }
+        }
+        
+        function deleteIncome(id) {
+            if (confirm('Einkommen wirklich löschen?')) {
+                incomes = incomes.filter(i => i.id !== id);
+                saveIncomes();
+                loadIncomeTable();
+                updateDashboard();
+                showNotification('Einkommen gelöscht!', 'success');
+            }
+        }
+        
+        function deleteCustomer(id) {
+            if (confirm('Kunden wirklich löschen?')) {
+                customers = customers.filter(c => c.id !== id);
+                saveCustomers();
+                loadCustomersTable();
+                showNotification('Kunde gelöscht!', 'success');
+            }
+        }
+        
+        function deletePurchase(id) {
+            if (confirm('Einkauf wirklich löschen?')) {
+                purchases = purchases.filter(p => p.id !== id);
+                savePurchases();
+                loadPurchasesTable();
+                updateDashboard();
+                showNotification('Einkauf gelöscht!', 'success');
+            }
+        }
+        
+        function deleteInstallment(id) {
+            if (confirm('Ratenzahlung wirklich löschen?')) {
+                installments = installments.filter(i => i.id !== id);
+                saveInstallments();
+                loadInstallmentsTable();
+                showNotification('Ratenzahlung gelöscht!', 'success');
+            }
+        }
+        
+        // ===== REPORTS =====
+        function loadReports() {
+            // Jahresumsatz
+            const currentYear = new Date().getFullYear();
+            const yearlyRevenue = incomes
+                .filter(i => new Date(i.date).getFullYear() === currentYear)
+                .reduce((sum, i) => sum + i.amount, 0);
+            
+            document.getElementById('yearlyRevenue').textContent = formatCurrency(yearlyRevenue);
+            
+            // Top Kunden
+            const customerRevenue = {};
+            invoices.forEach(invoice => {
+                const customer = customers.find(c => c.id === invoice.customerId);
+                if (customer) {
+                    if (!customerRevenue[customer.name]) {
+                        customerRevenue[customer.name] = 0;
+                    }
+                    customerRevenue[customer.name] += invoice.amount;
+                }
+            });
+            
+            const topCustomers = Object.entries(customerRevenue)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+            
+            document.getElementById('topCustomers').innerHTML = topCustomers.map(([name, amount]) => `
+                <div style="margin-bottom: 0.5rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>${name}</span>
+                        <span style="font-weight: bold;">${formatCurrency(amount)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function generateMonthlyReport() {
+            showNotification('Monatsbericht wird generiert...', 'info');
+            // Hier könnte PDF-Generierung implementiert werden
+        }
+        
+        function generateYearlyReport() {
+            showNotification('Jahresbericht wird generiert...', 'info');
+            // Hier könnte Excel-Export implementiert werden
+        }
+        
         // ===== RESPONSIVE UPDATES =====
         window.addEventListener('resize', function() {
             if (isLoggedIn) {
                 const oldDevice = currentDevice;
                 detectDeviceType();
                 
-                // Wenn Gerätetyp geändert hat
                 if (oldDevice !== currentDevice) {
-                    showNotification(`Gerätewechsel zu: ${currentDevice === 'pc' ? 'PC' : 'Mobile'}`);
-                    
-                    // Altes Layout ausblenden
+                    showNotification(`Gerätewechsel zu: ${currentDevice === 'pc' ? 'PC' : 'Mobile'}`, 'info');
                     document.getElementById('pcApp').classList.remove('active');
                     document.getElementById('mobileApp').classList.remove('active');
-                    
-                    // Neues Layout anzeigen
                     showApp();
-                    
-                    // Tab wiederherstellen
                     setTimeout(() => switchTab(currentTab), 100);
                 }
             }
         });
-
+        
         // ===== CSS ANIMATION =====
         const style = document.createElement('style');
         style.textContent = `
@@ -1002,6 +2409,9 @@
             }
         `;
         document.head.appendChild(style);
+        
+        // Initiale Daten laden
+        loadData();
     </script>
 </body>
 </html>
