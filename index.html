@@ -5,38 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buchhaltungssystem Pro</title>
     <style>
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #64748b;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --light: #f8fafc;
-            --dark: #1e293b;
-            --border: #e2e8f0;
-            --bg-color: #f1f5f9;
-            --card-bg: white;
-            --text-color: #1e293b;
-            --shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        [data-theme="dark"] {
-            --primary: #3b82f6;
-            --primary-dark: #2563eb;
-            --secondary: #94a3b8;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --light: #1e293b;
-            --dark: #f8fafc;
-            --border: #334155;
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-color: #f1f5f9;
-            --shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
+        /* ===== RESET & BASE STYLES ===== */
         * {
             margin: 0;
             padding: 0;
@@ -45,181 +14,375 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: #f1f5f9;
+            color: #1e293b;
             line-height: 1.6;
-            transition: background-color 0.3s ease, color 0.3s ease;
             min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            width: 100%;
-        }
-        
-        header {
-            background: var(--card-bg);
-            padding: 1rem 1.5rem;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            margin-bottom: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .logo h1 {
-            color: var(--primary);
-            font-size: 1.5rem;
-            white-space: nowrap;
-        }
-        
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .theme-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-            background: var(--light);
-            border-radius: 20px;
-            border: 1px solid var(--border);
-        }
-        
-        .theme-toggle i {
-            font-size: 1.2rem;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .stat-card {
-            background: var(--card-bg);
-            padding: 1.2rem;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-        }
-        
-        .income { background: #dbeafe; color: var(--primary); }
-        .expense { background: #fee2e2; color: var(--danger); }
-        .profit { background: #dcfce7; color: var(--success); }
-        .pending { background: #fef3c7; color: var(--warning); }
-        .other-income { background: #e9d5ff; color: #7c3aed; }
-        
-        .stat-info h3 {
-            font-size: 0.85rem;
-            color: var(--secondary);
-            margin-bottom: 0.3rem;
-        }
-        
-        .stat-info .amount {
-            font-size: 1.3rem;
-            font-weight: bold;
-        }
-        
-        .main-content {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 1.5rem;
-            width: 100%;
-        }
-        
-        .mobile-menu-btn {
-            display: none;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.8rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            width: 100%;
-        }
-        
-        .sidebar {
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            height: fit-content;
-            transition: transform 0.3s ease;
-        }
-        
-        .nav-menu {
-            list-style: none;
-        }
-        
-        .nav-item {
-            padding: 0.8rem 1rem;
-            margin-bottom: 0.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .nav-item:hover {
-            background: var(--light);
-        }
-        
-        .nav-item.active {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .content-area {
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            min-height: 500px;
-            width: 100%;
             overflow-x: hidden;
         }
         
-        .tab-content {
-            display: none;
+        /* ===== LOADING SCREEN ===== */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
         }
         
-        .tab-content.active {
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-logo {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .loading-logo i {
+            font-size: 4rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .loading-logo h1 {
+            color: white;
+            font-size: 2.5rem;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ===== LOGIN SCREEN ===== */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9998;
+            transition: opacity 0.5s ease;
+            padding: 20px;
+        }
+        
+        .login-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .login-logo {
+            margin-bottom: 2rem;
+        }
+        
+        .login-logo i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .login-logo h2 {
+            color: #333;
+            font-size: 1.8rem;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            text-align: left;
+        }
+        
+        .form-group label {
             display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .login-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .login-btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .login-error {
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .login-error.show {
+            display: block;
+        }
+        
+        /* ===== MAIN APP CONTAINER ===== */
+        .app-container {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+        }
+        
+        .app-container.active {
+            display: block;
+        }
+        
+        /* ===== PC OPTIMIERTES LAYOUT ===== */
+        .pc-layout {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .pc-layout.active {
+            display: flex;
+        }
+        
+        .pc-sidebar {
+            width: 250px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        .pc-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        
+        .pc-header h1 {
+            color: #2563eb;
+            font-size: 1.5rem;
+        }
+        
+        .pc-nav {
+            flex: 1;
+            padding: 1rem 0;
+        }
+        
+        .pc-nav-item {
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .pc-nav-item:hover {
+            background: #f8fafc;
+        }
+        
+        .pc-nav-item.active {
+            background: #dbeafe;
+            border-left-color: #2563eb;
+            color: #2563eb;
+        }
+        
+        .pc-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .pc-topbar {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .pc-content {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+        
+        .pc-tab-content {
+            display: none;
+        }
+        
+        .pc-tab-content.active {
+            display: block;
+        }
+        
+        /* ===== MOBILE OPTIMIERTES LAYOUT ===== */
+        .mobile-layout {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+            background: #f1f5f9;
+        }
+        
+        .mobile-layout.active {
+            display: block;
+        }
+        
+        .mobile-header {
+            background: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #2563eb;
+            cursor: pointer;
+        }
+        
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .mobile-nav.active {
+            left: 0;
+        }
+        
+        .mobile-nav-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .mobile-nav-items {
+            padding: 1rem 0;
+        }
+        
+        .mobile-nav-item {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+        
+        .mobile-nav-item.active {
+            background: #dbeafe;
+            border-left-color: #2563eb;
+            color: #2563eb;
+        }
+        
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        .mobile-overlay.active {
+            display: block;
+        }
+        
+        .mobile-content {
+            padding: 1rem;
+        }
+        
+        .mobile-tab-content {
+            display: none;
+        }
+        
+        .mobile-tab-content.active {
+            display: block;
+        }
+        
+        /* ===== COMMON APP STYLES ===== */
+        .tab-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
         }
         
         .page-header {
@@ -228,20 +391,9 @@
             align-items: center;
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border);
+            border-bottom: 2px solid #e2e8f0;
             flex-wrap: wrap;
             gap: 1rem;
-            width: 100%;
-        }
-        
-        .page-header h2 {
-            font-size: 1.5rem;
-        }
-        
-        .btn-group {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
         }
         
         .btn {
@@ -255,39 +407,28 @@
             align-items: center;
             gap: 6px;
             font-size: 0.9rem;
-            white-space: nowrap;
         }
         
         .btn-primary {
-            background: var(--primary);
+            background: #2563eb;
             color: white;
         }
         
         .btn-primary:hover {
-            background: var(--primary-dark);
+            background: #1d4ed8;
         }
         
         .btn-success {
-            background: var(--success);
-            color: white;
-        }
-        
-        .btn-warning {
-            background: var(--warning);
-            color: white;
-        }
-        
-        .btn-danger {
-            background: var(--danger);
+            background: #10b981;
             color: white;
         }
         
         .table-container {
             overflow-x: auto;
             margin-top: 1rem;
-            -webkit-overflow-scrolling: touch;
-            width: 100%;
-            max-width: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         table {
@@ -299,676 +440,220 @@
         th, td {
             padding: 0.8rem;
             text-align: left;
-            border-bottom: 1px solid var(--border);
-            white-space: nowrap;
+            border-bottom: 1px solid #e2e8f0;
         }
         
         th {
-            background: var(--light);
-            font-weight: 600;
-            color: var(--text-color);
-        }
-        
-        tr:hover {
-            background: var(--light);
-        }
-        
-        .status {
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: inline-block;
-            white-space: nowrap;
-        }
-        
-        .status-paid { background: #dcfce7; color: #166534; }
-        .status-pending { background: #fef3c7; color: #92400e; }
-        .status-overdue { background: #fee2e2; color: #991b1b; }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-        
-        .modal.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: var(--card-bg);
-            border-radius: 10px;
-            width: 100%;
-            max-width: 700px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow);
-        }
-        
-        .modal-header {
-            padding: 1.2rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .modal-body {
-            padding: 1.2rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1.2rem;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 0.4rem;
-            font-weight: 600;
-            color: var(--text-color);
-            font-size: 0.9rem;
-        }
-        
-        input, select, textarea {
-            width: 100%;
-            padding: 0.7rem;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 0.95rem;
-            background: var(--card-bg);
-            color: var(--text-color);
-        }
-        
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        
-        .invoice-items {
-            margin: 1.2rem 0;
-        }
-        
-        .item-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr auto;
-            gap: 0.8rem;
-            margin-bottom: 0.8rem;
-            align-items: end;
-        }
-        
-        .item-total {
-            padding: 0.7rem;
-            background: var(--light);
-            border-radius: 6px;
+            background: #f8fafc;
             font-weight: 600;
         }
         
-        .remove-item {
-            background: var(--danger);
-            color: white;
-            border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .add-item {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.7rem 1.2rem;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .installment-plan {
-            background: var(--light);
-            padding: 1.2rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
-        
-        .installment-display {
-            background: var(--card-bg);
-            padding: 1rem;
-            border-radius: 6px;
-            margin-top: 1rem;
-            border: 1px solid var(--border);
-        }
-        
-        .installment-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .installment-row:last-child {
-            border-bottom: none;
-        }
-        
-        .alert {
-            padding: 0.8rem 1rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-        }
-        
-        .alert-success { background: #dcfce7; color: #166534; }
-        .alert-warning { background: #fef3c7; color: #92400e; }
-        .alert-danger { background: #fee2e2; color: #991b1b; }
-        .alert-info { background: #dbeafe; color: var(--primary); }
-        
-        .data-actions {
-            display: flex;
-            gap: 0.4rem;
-            flex-wrap: nowrap;
-        }
-        
-        .action-btn {
-            padding: 0.3rem 0.6rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            white-space: nowrap;
-        }
-        
-        .view-btn { background: #dbeafe; color: var(--primary); }
-        .edit-btn { background: #fef3c7; color: var(--warning); }
-        .delete-btn { background: #fee2e2; color: var(--danger); }
-        .payment-btn { background: #dcfce7; color: #166534; }
-        
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 1.5rem;
-        }
-        
-        .chart-container {
-            background: var(--card-bg);
-            padding: 1.2rem;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-        }
-        
-        .recent-activity {
-            background: var(--card-bg);
-            padding: 1.2rem;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-        }
-        
-        .activity-list {
-            list-style: none;
-            margin-top: 1rem;
-        }
-        
-        .activity-item {
-            padding: 0.7rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-        
-        .activity-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        
-        .invoice-summary {
-            background: var(--light);
-            padding: 1.2rem;
-            border-radius: 8px;
-            margin-top: 1.2rem;
-        }
-        
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .summary-row:last-child {
-            border-bottom: none;
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-top: 0.5rem;
-        }
-        
-        .category-badge {
-            padding: 0.3rem 0.6rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: inline-block;
-            white-space: nowrap;
-        }
-        
-        .category-salary { background: #dbeafe; color: #1e40af; }
-        .category-investment { background: #dcfce7; color: #166534; }
-        .category-rental { background: #fef3c7; color: #92400e; }
-        .category-freelance { background: #e9d5ff; color: #7c3aed; }
-        .category-other { background: #f1f5f9; color: #64748b; }
-        
-        /* RESPONSIVE DESIGN FIXES */
-        @media (max-width: 1200px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .main-content {
-                grid-template-columns: 220px 1fr;
-                gap: 1rem;
-            }
-        }
-        
-        @media (max-width: 1024px) {
-            .main-content {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .mobile-menu-btn {
-                display: block;
-            }
-            
-            .sidebar {
-                position: fixed;
-                top: 0;
-                left: -300px;
-                width: 280px;
-                height: 100vh;
-                z-index: 1001;
-                border-radius: 0;
-                padding-top: 4rem;
-                transition: left 0.3s ease;
-                overflow-y: auto;
-            }
-            
-            .sidebar.active {
-                left: 0;
-            }
-            
-            .sidebar-overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.5);
-                z-index: 1000;
-            }
-            
-            .sidebar-overlay.active {
-                display: block;
-            }
-            
-            .content-area {
-                min-height: auto;
-            }
-        }
-        
+        /* ===== RESPONSIVE DESIGN ===== */
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
+            .pc-layout {
+                display: none !important;
             }
             
-            header {
-                padding: 1rem;
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .logo h1 {
-                font-size: 1.3rem;
-            }
-            
-            .header-controls {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 0.8rem;
-            }
-            
-            .stat-card {
-                padding: 1rem;
-            }
-            
-            .stat-icon {
-                width: 45px;
-                height: 45px;
-                font-size: 1.2rem;
-            }
-            
-            .stat-info .amount {
-                font-size: 1.2rem;
-            }
-            
-            .content-area {
-                padding: 1rem;
-            }
-            
-            .page-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .btn-group {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .btn {
-                flex: 1;
-                justify-content: center;
-                padding: 0.7rem;
-                min-width: 120px;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-                gap: 0.8rem;
-            }
-            
-            .item-row {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
-            }
-            
-            th, td {
-                padding: 0.6rem;
-                font-size: 0.9rem;
-            }
-            
-            .modal-content {
-                margin: 1rem;
-                max-height: 85vh;
-            }
-            
-            .modal-header {
-                padding: 1rem;
-            }
-            
-            .modal-body {
-                padding: 1rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .container {
-                padding: 8px;
-            }
-            
-            header {
-                padding: 0.8rem;
-            }
-            
-            .logo h1 {
-                font-size: 1.2rem;
-            }
-            
-            .header-controls {
-                gap: 0.5rem;
-                flex-wrap: wrap;
-            }
-            
-            .theme-toggle {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.9rem;
-            }
-            
-            .btn {
-                font-size: 0.85rem;
-                padding: 0.6rem;
-                min-width: 100px;
-            }
-            
-            .table-container {
-                margin: 0 -8px;
-                width: calc(100% + 16px);
-            }
-            
-            table {
-                min-width: 800px;
-            }
-            
-            .data-actions {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .action-btn {
-                padding: 0.2rem 0.4rem;
-                font-size: 0.75rem;
-            }
-            
-            .status {
-                font-size: 0.75rem;
-                padding: 0.2rem 0.6rem;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            .logo h1 {
-                font-size: 1.1rem;
-            }
-            
-            .btn {
-                font-size: 0.8rem;
-                padding: 0.5rem;
-                min-width: 90px;
-            }
-            
-            .stat-info .amount {
-                font-size: 1.1rem;
-            }
-            
-            input, select, textarea {
-                padding: 0.6rem;
-                font-size: 0.9rem;
-            }
-        }
-        
-        .sync-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-            color: var(--secondary);
-        }
-        
-        .sync-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--secondary);
-        }
-        
-        .sync-indicator.synced {
-            background: var(--success);
-        }
-        
-        .sync-indicator.syncing {
-            background: var(--warning);
-            animation: pulse 1s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        
-        /* Verbesserungen für bessere Darstellung */
-        .mobile-only {
-            display: none;
-        }
-        
-        @media (max-width: 1024px) {
-            .mobile-only {
+            .mobile-layout {
                 display: block;
             }
             
-            .desktop-only {
-                display: none;
+            .login-container {
+                padding: 2rem;
+                margin: 1rem;
             }
+        }
+        
+        @media (min-width: 769px) {
+            .mobile-layout {
+                display: none !important;
+            }
+            
+            .pc-layout {
+                display: flex;
+            }
+        }
+        
+        /* ===== DARK MODE ===== */
+        [data-theme="dark"] .login-container {
+            background: #1e293b;
+        }
+        
+        [data-theme="dark"] .login-logo h2 {
+            color: #f1f5f9;
+        }
+        
+        [data-theme="dark"] .form-group label {
+            color: #f1f5f9;
+        }
+        
+        [data-theme="dark"] .form-group input {
+            background: #334155;
+            border-color: #475569;
+            color: #f1f5f9;
+        }
+        
+        [data-theme="dark"] .pc-sidebar,
+        [data-theme="dark"] .pc-topbar,
+        [data-theme="dark"] .mobile-header,
+        [data-theme="dark"] .mobile-nav {
+            background: #1e293b;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+        
+        [data-theme="dark"] .table-container,
+        [data-theme="dark"] table {
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+        
+        [data-theme="dark"] th {
+            background: #334155;
+        }
+        
+        [data-theme="dark"] td {
+            border-color: #334155;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">
-                <i class="fas fa-calculator fa-2x" style="color: var(--primary);"></i>
-                <h1>Buchhaltung Pro</h1>
-            </div>
-            <div class="header-controls">
-                <div class="theme-toggle" onclick="toggleTheme()">
-                    <i class="fas fa-moon"></i>
-                    <span>Dark Mode</span>
-                </div>
-                <div class="sync-status">
-                    <div class="sync-indicator" id="syncIndicator"></div>
-                    <span id="syncStatus">Bereit</span>
-                </div>
-                <button class="btn btn-primary" onclick="exportData()">
-                    <i class="fas fa-download"></i> Export
-                </button>
-                <button class="btn btn-success" onclick="syncWithFirebase()">
-                    <i class="fas fa-cloud-upload-alt"></i> Sync
-                </button>
-                <button class="btn btn-warning" onclick="loadFromFirebase()">
-                    <i class="fas fa-cloud-download-alt"></i> Laden
-                </button>
-            </div>
-        </header>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">
+            <i class="fas fa-calculator"></i>
+            <h1>Buchhaltung Pro</h1>
+        </div>
+        <div class="loading-spinner"></div>
+        <p style="color: white;">Initialisiere System...</p>
+    </div>
 
-        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-            <i class="fas fa-bars"></i> Menü
-        </button>
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="login-logo">
+                <i class="fas fa-calculator"></i>
+                <h2>Buchhaltung Pro</h2>
+            </div>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="username">Benutzername</label>
+                    <input type="text" id="username" placeholder="colin" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Passwort</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Einloggen
+                </button>
+                <div class="login-error" id="loginError">
+                    Falscher Benutzername oder Passwort!
+                </div>
+            </form>
+        </div>
+    </div>
 
-        <div class="stats-grid" id="statsContainer">
-            <!-- Stats werden von JavaScript geladen -->
+    <!-- PC Optimierte Version -->
+    <div class="app-container pc-layout" id="pcApp">
+        <!-- Sidebar -->
+        <div class="pc-sidebar">
+            <div class="pc-header">
+                <h1><i class="fas fa-calculator"></i> Buchhaltung</h1>
+            </div>
+            <div class="pc-nav">
+                <div class="pc-nav-item active" data-tab="dashboard">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </div>
+                <div class="pc-nav-item" data-tab="invoices">
+                    <i class="fas fa-file-invoice"></i> Rechnungen
+                </div>
+                <div class="pc-nav-item" data-tab="income">
+                    <i class="fas fa-money-bill-wave"></i> Einkommen
+                </div>
+                <div class="pc-nav-item" data-tab="customers">
+                    <i class="fas fa-users"></i> Kunden
+                </div>
+                <div class="pc-nav-item" data-tab="purchases">
+                    <i class="fas fa-shopping-cart"></i> Einkäufe
+                </div>
+            </div>
         </div>
 
-        <div class="main-content">
-            <div class="sidebar-overlay" onclick="toggleMobileMenu()"></div>
-            <div class="sidebar">
-                <ul class="nav-menu">
-                    <li class="nav-item active" onclick="showTab('dashboard')">
-                        <i class="fas fa-chart-line"></i> Dashboard
-                    </li>
-                    <li class="nav-item" onclick="showTab('invoices')">
-                        <i class="fas fa-file-invoice"></i> Rechnungen
-                    </li>
-                    <li class="nav-item" onclick="showTab('installments')">
-                        <i class="fas fa-calendar-alt"></i> Ratenzahlungen
-                    </li>
-                    <li class="nav-item" onclick="showTab('income')">
-                        <i class="fas fa-money-bill-wave"></i> Einkommen
-                    </li>
-                    <li class="nav-item" onclick="showTab('customers')">
-                        <i class="fas fa-users"></i> Kunden
-                    </li>
-                    <li class="nav-item" onclick="showTab('purchases')">
-                        <i class="fas fa-shopping-cart"></i> Einkäufe
-                    </li>
-                </ul>
+        <!-- Main Content -->
+        <div class="pc-main">
+            <!-- Topbar -->
+            <div class="pc-topbar">
+                <h2 id="pcPageTitle">Dashboard</h2>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <button class="btn btn-primary" onclick="showNotification('PC-Version aktiv')">
+                        <i class="fas fa-desktop"></i> PC Mode
+                    </button>
+                    <button class="btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
             </div>
 
-            <div class="content-area">
+            <!-- Content Area -->
+            <div class="pc-content">
                 <!-- Dashboard Tab -->
-                <div id="dashboard" class="tab-content active">
-                    <div class="page-header">
-                        <h2>Dashboard</h2>
-                        <div class="btn-group">
-                            <button class="btn btn-primary" onclick="openInvoiceModal()">
-                                <i class="fas fa-plus"></i> Neue Rechnung
-                            </button>
-                            <button class="btn btn-success" onclick="openIncomeModal()">
-                                <i class="fas fa-plus"></i> Einkommen
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="dashboard-grid">
-                        <div class="chart-container">
+                <div class="pc-tab-content active" id="pcDashboard">
+                    <div class="tab-content">
+                        <div class="page-header">
                             <h3>Finanzübersicht</h3>
-                            <div id="quickStats" style="margin-top: 1rem;">
-                                <!-- Schnellstatistiken -->
+                            <div>
+                                <button class="btn btn-primary" onclick="openInvoiceModal()">
+                                    <i class="fas fa-plus"></i> Neue Rechnung
+                                </button>
+                                <button class="btn btn-success" onclick="openIncomeModal()">
+                                    <i class="fas fa-plus"></i> Einkommen
+                                </button>
                             </div>
                         </div>
                         
-                        <div class="recent-activity">
-                            <h3>Aktuelle Rechnungen</h3>
-                            <ul class="activity-list" id="recentInvoices">
-                                <!-- Aktuelle Rechnungen -->
-                            </ul>
+                        <!-- Stats Grid -->
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                            <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                <div style="font-size: 0.9rem; color: #64748b;">Gesamteinnahmen</div>
+                                <div style="font-size: 1.8rem; font-weight: bold; color: #2563eb;">0.00 €</div>
+                            </div>
+                            <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                <div style="font-size: 0.9rem; color: #64748b;">Ausgaben</div>
+                                <div style="font-size: 1.8rem; font-weight: bold; color: #ef4444;">0.00 €</div>
+                            </div>
+                            <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                <div style="font-size: 0.9rem; color: #64748b;">Gewinn</div>
+                                <div style="font-size: 1.8rem; font-weight: bold; color: #10b981;">0.00 €</div>
+                            </div>
+                            <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                <div style="font-size: 0.9rem; color: #64748b;">Offene Rechnungen</div>
+                                <div style="font-size: 1.8rem; font-weight: bold; color: #f59e0b;">0</div>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div style="margin-top: 1.5rem;">
-                        <h3 style="margin-bottom: 0.8rem;">Überfällige Rechnungen</h3>
+                </div>
+
+                <!-- Invoices Tab -->
+                <div class="pc-tab-content" id="pcInvoices">
+                    <div class="tab-content">
+                        <div class="page-header">
+                            <h3>Rechnungen</h3>
+                            <button class="btn btn-primary" onclick="openInvoiceModal()">
+                                <i class="fas fa-plus"></i> Neue Rechnung
+                            </button>
+                        </div>
+                        
                         <div class="table-container">
-                            <table id="overdueInvoicesTable">
+                            <table>
                                 <thead>
                                     <tr>
                                         <th>Rechnungsnummer</th>
                                         <th>Kunde</th>
-                                        <th>Fälligkeitsdatum</th>
-                                        <th>Offener Betrag</th>
+                                        <th>Datum</th>
+                                        <th>Betrag</th>
+                                        <th>Status</th>
                                         <th>Aktionen</th>
                                     </tr>
                                 </thead>
@@ -980,869 +665,343 @@
                     </div>
                 </div>
 
-                <!-- Rechnungen Tab -->
-                <div id="invoices" class="tab-content">
-                    <div class="page-header">
-                        <h2>Rechnungen</h2>
+                <!-- Weitere Tabs... -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Optimierte Version -->
+    <div class="app-container mobile-layout" id="mobileApp">
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h2>Buchhaltung</h2>
+            <button class="btn btn-primary" onclick="showNotification('Mobile-Version aktiv')">
+                <i class="fas fa-mobile-alt"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+        <div class="mobile-nav">
+            <div class="mobile-nav-header">
+                <h3>Menü</h3>
+                <button onclick="toggleMobileMenu()" style="background: none; border: none; font-size: 1.5rem; color: #2563eb;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mobile-nav-items">
+                <div class="mobile-nav-item active" data-tab="dashboard">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </div>
+                <div class="mobile-nav-item" data-tab="invoices">
+                    <i class="fas fa-file-invoice"></i> Rechnungen
+                </div>
+                <div class="mobile-nav-item" data-tab="income">
+                    <i class="fas fa-money-bill-wave"></i> Einkommen
+                </div>
+                <div class="mobile-nav-item" data-tab="customers">
+                    <i class="fas fa-users"></i> Kunden
+                </div>
+                <div class="mobile-nav-item" data-tab="purchases">
+                    <i class="fas fa-shopping-cart"></i> Einkäufe
+                </div>
+                <div class="mobile-nav-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Content -->
+        <div class="mobile-content">
+            <!-- Dashboard Tab -->
+            <div class="mobile-tab-content active" id="mobileDashboard">
+                <div class="page-header">
+                    <h3>Dashboard</h3>
+                    <div style="display: flex; gap: 0.5rem;">
                         <button class="btn btn-primary" onclick="openInvoiceModal()">
-                            <i class="fas fa-plus"></i> Neue Rechnung
+                            <i class="fas fa-plus"></i> Rechnung
                         </button>
-                    </div>
-                    
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Rechnungsnummer</th>
-                                    <th>Kunde</th>
-                                    <th>Datum</th>
-                                    <th>Fällig am</th>
-                                    <th>Betrag</th>
-                                    <th>Status</th>
-                                    <th>Aktionen</th>
-                                </tr>
-                            </thead>
-                            <tbody id="invoicesTable">
-                                <!-- Daten werden geladen -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Ratenzahlungen Tab -->
-                <div id="installments" class="tab-content">
-                    <div class="page-header">
-                        <h2>Ratenzahlungen</h2>
-                        <div class="btn-group">
-                            <button class="btn btn-primary" onclick="openInvoiceModal()">
-                                <i class="fas fa-plus"></i> Neue Ratenzahlung
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Rechnung</th>
-                                    <th>Kunde</th>
-                                    <th>Gesamtbetrag</th>
-                                    <th>Ratenplan</th>
-                                    <th>Offener Betrag</th>
-                                    <th>Status</th>
-                                    <th>Aktionen</th>
-                                </tr>
-                            </thead>
-                            <tbody id="installmentsTable">
-                                <!-- Daten werden geladen -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Einkommen Tab -->
-                <div id="income" class="tab-content">
-                    <div class="page-header">
-                        <h2>Einkommen</h2>
                         <button class="btn btn-success" onclick="openIncomeModal()">
-                            <i class="fas fa-plus"></i> Neues Einkommen
+                            <i class="fas fa-plus"></i> Einkommen
                         </button>
-                    </div>
-                    
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Datum</th>
-                                    <th>Beschreibung</th>
-                                    <th>Kategorie</th>
-                                    <th>Betrag</th>
-                                    <th>Quelle</th>
-                                    <th>Notizen</th>
-                                    <th>Aktionen</th>
-                                </tr>
-                            </thead>
-                            <tbody id="incomeTable">
-                                <!-- Einkommensdaten werden geladen -->
-                            </tbody>
-                        </table>
                     </div>
                 </div>
-
-                <!-- Kunden Tab -->
-                <div id="customers" class="tab-content">
-                    <div class="page-header">
-                        <h2>Kunden</h2>
-                        <button class="btn btn-primary" onclick="openCustomerModal()">
-                            <i class="fas fa-plus"></i> Neuer Kunde
-                        </button>
+                
+                <!-- Mobile Stats -->
+                <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
+                    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        <div style="font-size: 0.9rem; color: #64748b;">Gesamteinnahmen</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #2563eb;">0.00 €</div>
                     </div>
-                    
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>E-Mail</th>
-                                    <th>Telefon</th>
-                                    <th>Anzahl Rechnungen</th>
-                                    <th>Letzte Aktivität</th>
-                                    <th>Aktionen</th>
-                                </tr>
-                            </thead>
-                            <tbody id="customersTable">
-                                <!-- Daten werden geladen -->
-                            </tbody>
-                        </table>
+                    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        <div style="font-size: 0.9rem; color: #64748b;">Ausgaben</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #ef4444;">0.00 €</div>
+                    </div>
+                    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        <div style="font-size: 0.9rem; color: #64748b;">Gewinn</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #10b981;">0.00 €</div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Einkäufe Tab -->
-                <div id="purchases" class="tab-content">
-                    <div class="page-header">
-                        <h2>Einkäufe</h2>
-                        <button class="btn btn-primary" onclick="openPurchaseModal()">
-                            <i class="fas fa-plus"></i> Neuer Einkauf
-                        </button>
-                    </div>
-                    
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Lieferant</th>
-                                    <th>Datum</th>
-                                    <th>Betrag</th>
-                                    <th>Zahlungsstatus</th>
-                                    <th>Notizen</th>
-                                    <th>Aktionen</th>
-                                </tr>
-                            </thead>
-                            <tbody id="purchasesTable">
-                                <!-- Daten werden geladen -->
-                            </tbody>
-                        </table>
-                    </div>
+            <!-- Invoices Tab -->
+            <div class="mobile-tab-content" id="mobileInvoices">
+                <div class="page-header">
+                    <h3>Rechnungen</h3>
+                    <button class="btn btn-primary" onclick="openInvoiceModal()">
+                        <i class="fas fa-plus"></i> Neu
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rechnung</th>
+                                <th>Kunde</th>
+                                <th>Betrag</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Daten werden geladen -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modals bleiben gleich - aus Platzgründen gekürzt -->
-    <div id="invoiceModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Neue Rechnung erstellen</h3>
-                <button onclick="closeModal('invoiceModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-color);">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="invoiceCustomer">Kunde *</label>
-                    <select id="invoiceCustomer" required>
-                        <option value="">Kunden auswählen...</option>
-                    </select>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="invoiceDate">Rechnungsdatum</label>
-                        <input type="date" id="invoiceDate" value="" readonly style="background: var(--light);">
-                    </div>
-                    <div class="form-group">
-                        <label for="dueDate">Fälligkeitsdatum *</label>
-                        <input type="date" id="dueDate" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Rechnungspositionen</label>
-                    <div class="invoice-items">
-                        <div id="invoiceItems">
-                            <!-- Items werden dynamisch hinzugefügt -->
-                        </div>
-                        <button type="button" class="add-item" onclick="addInvoiceItem()">
-                            <i class="fas fa-plus"></i> Position hinzufügen
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="invoice-summary">
-                    <div class="summary-row">
-                        <span>Gesamtbetrag:</span>
-                        <span id="totalAmountDisplay">0.00 €</span>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="paymentMethod">Zahlungsmethode *</label>
-                    <select id="paymentMethod" onchange="toggleInstallmentOptions()" required>
-                        <option value="">Bitte auswählen</option>
-                        <option value="Karte">Karte</option>
-                        <option value="Überweisung">Überweisung</option>
-                        <option value="BAR">BAR</option>
-                        <option value="Ratenzahlung">Ratenzahlung</option>
-                    </select>
-                </div>
-                
-                <div id="installmentOptions" style="display: none;">
-                    <div class="installment-plan">
-                        <h4>Ratenzahlungsplan</h4>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="installmentCount">Anzahl Raten *</label>
-                                <select id="installmentCount" onchange="calculateInstallments()" required>
-                                    <option value="2">2 Raten</option>
-                                    <option value="3">3 Raten</option>
-                                    <option value="6">6 Raten</option>
-                                    <option value="12" selected>12 Raten</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="installmentFrequency">Ratenintervall *</label>
-                                <select id="installmentFrequency" onchange="calculateInstallments()" required>
-                                    <option value="monthly" selected>Monatlich</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div id="installmentDisplay" class="installment-display">
-                            <p>Bitte geben Sie zuerst den Gesamtbetrag ein.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="invoiceNotes">Notizen</label>
-                    <textarea id="invoiceNotes" rows="3" placeholder="Optional: Notizen zur Rechnung"></textarea>
-                </div>
-                
-                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
-                    <button type="button" class="btn" onclick="closeModal('invoiceModal')" style="background: var(--secondary); color: white;">Abbrechen</button>
-                    <button type="button" class="btn btn-primary" onclick="saveInvoice()">Rechnung speichern</button>
-                </div>
-            </div>
-        </div>
+    <!-- Notification System -->
+    <div id="notification" style="position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 1rem; border-radius: 6px; display: none; z-index: 10000; max-width: 300px;">
+        <i class="fas fa-check-circle"></i> <span id="notificationText"></span>
     </div>
-
-    <!-- Alert Container -->
-    <div id="alertContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 90vw;"></div>
-
-    <!-- Firebase Import - OHNE Auto-Load -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
-
-        // Firebase Konfiguration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCw4nadHCIRcouTJJoQ3ElToiVVFr5Rufo",
-            authDomain: "khusland-b7d13.firebaseapp.com",
-            databaseURL: "https://khusland-b7d13-default-rtdb.firebaseio.com",
-            projectId: "khusland-b7d13",
-            storageBucket: "khusland-b7d13.firebasestorage.app",
-            messagingSenderId: "69573193613",
-            appId: "1:69573193613:web:86c4d839281b1e343cd7c4",
-            measurementId: "G-JSCWR4207G"
-        };
-
-        // Firebase initialisieren
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        
-        // Globale Firebase-Variablen
-        window.firebaseDB = db;
-        
-        // Firebase Manager Klasse - OHNE Auto-Load
-        class FirebaseManager {
-            constructor() {
-                this.isSyncing = false;
-                this.lastSync = null;
-            }
-            
-            async syncToFirebase() {
-                this.isSyncing = true;
-                this.updateSyncStatus('Wird synchronisiert...', 'syncing');
-                
-                try {
-                    // Alle lokalen Daten sammeln
-                    const allData = {
-                        customers: await accountingSystem.getAll('customers'),
-                        invoices: await accountingSystem.getAll('invoices'),
-                        income: await accountingSystem.getAll('income'),
-                        purchases: await accountingSystem.getAll('purchases'),
-                        installmentPlans: await accountingSystem.getAll('installmentPlans'),
-                        installments: await accountingSystem.getAll('installments'),
-                        payments: await accountingSystem.getAll('payments'),
-                        invoiceItems: await accountingSystem.getAll('invoiceItems')
-                    };
-                    
-                    // Zu Firebase hochladen
-                    for (const [path, data] of Object.entries(allData)) {
-                        if (data.length > 0) {
-                            const firebaseData = {};
-                            data.forEach((item, index) => {
-                                const key = `item_${Date.now()}_${index}`;
-                                firebaseData[key] = item;
-                            });
-                            
-                            await set(ref(db, path), firebaseData);
-                        }
-                    }
-                    
-                    this.lastSync = new Date();
-                    this.updateSyncStatus(`Zuletzt: ${this.lastSync.toLocaleTimeString()}`, 'synced');
-                    accountingSystem.showAlert('Alle Daten erfolgreich zu Firebase synchronisiert!', 'success');
-                    
-                } catch (error) {
-                    console.error('Fehler beim Synchronisieren zu Firebase:', error);
-                    this.updateSyncStatus('Fehler beim Synchronisieren', 'error');
-                    accountingSystem.showAlert('Fehler beim Synchronisieren: ' + error.message, 'danger');
-                } finally {
-                    this.isSyncing = false;
-                    setTimeout(() => {
-                        this.updateSyncStatus(`Zuletzt: ${this.lastSync ? this.lastSync.toLocaleTimeString() : 'Nie'}`, 'synced');
-                    }, 2000);
-                }
-            }
-            
-            async loadFromFirebase() {
-                this.isSyncing = true;
-                this.updateSyncStatus('Lädt von Firebase...', 'syncing');
-                
-                try {
-                    // Daten von Firebase laden
-                    const paths = ['customers', 'invoices', 'income', 'purchases', 'installmentPlans', 'installments', 'payments', 'invoiceItems'];
-                    
-                    for (const path of paths) {
-                        const dbRef = ref(db, path);
-                        const snapshot = await new Promise((resolve) => {
-                            onValue(dbRef, resolve, { onlyOnce: true });
-                        });
-                        
-                        const data = snapshot.val();
-                        if (data) {
-                            await this.syncFromFirebase(path, data);
-                        }
-                    }
-                    
-                    this.lastSync = new Date();
-                    this.updateSyncStatus(`Zuletzt: ${this.lastSync.toLocaleTimeString()}`, 'synced');
-                    accountingSystem.showAlert('Alle Daten erfolgreich von Firebase geladen!', 'success');
-                    
-                } catch (error) {
-                    console.error('Fehler beim Laden von Firebase:', error);
-                    this.updateSyncStatus('Fehler beim Laden', 'error');
-                    accountingSystem.showAlert('Fehler beim Laden: ' + error.message, 'danger');
-                } finally {
-                    this.isSyncing = false;
-                }
-            }
-            
-            async syncFromFirebase(path, firebaseData) {
-                try {
-                    // Konvertiere Firebase-Daten in Array
-                    const dataArray = firebaseData ? Object.values(firebaseData) : [];
-                    
-                    // Lösche alte lokale Daten
-                    const oldData = await accountingSystem.getAll(path);
-                    for (const item of oldData) {
-                        await accountingSystem.delete(path, item.id);
-                    }
-                    
-                    // Füge neue Daten hinzu
-                    for (const item of dataArray) {
-                        await accountingSystem.add(path, item);
-                    }
-                    
-                    console.log(`Daten von Firebase synchronisiert: ${path} (${dataArray.length} Einträge)`);
-                    
-                    // UI aktualisieren
-                    this.updateUI();
-                    
-                } catch (error) {
-                    console.error(`Fehler beim Synchronisieren von ${path}:`, error);
-                }
-            }
-            
-            updateSyncStatus(text, state) {
-                const indicator = document.getElementById('syncIndicator');
-                const statusText = document.getElementById('syncStatus');
-                
-                if (indicator) {
-                    indicator.className = 'sync-indicator';
-                    if (state === 'syncing') indicator.classList.add('syncing');
-                    if (state === 'synced') indicator.classList.add('synced');
-                }
-                
-                if (statusText) {
-                    statusText.textContent = text;
-                }
-            }
-            
-            updateUI() {
-                // Alle UI-Komponenten aktualisieren
-                accountingSystem.updateDashboard();
-                accountingSystem.loadInvoices();
-                accountingSystem.loadIncome();
-                accountingSystem.loadCustomers();
-                accountingSystem.loadPurchases();
-                accountingSystem.loadInstallments();
-            }
-        }
-
-        // Globale FirebaseManager Instanz
-        window.firebaseManager = new FirebaseManager();
-
-        // Globale Funktionen für Buttons
-        window.syncWithFirebase = async function() {
-            await firebaseManager.syncToFirebase();
-        };
-
-        window.loadFromFirebase = async function() {
-            await firebaseManager.loadFromFirebase();
-        };
-
-    </script>
 
     <script>
-        // Theme Management
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateThemeToggle();
-        }
+        // ===== GLOBALE VARIABLEN =====
+        let currentDevice = 'pc'; // 'pc' oder 'mobile'
+        let currentTab = 'dashboard';
+        let isLoggedIn = false;
 
-        function updateThemeToggle() {
-            const theme = document.documentElement.getAttribute('data-theme');
-            const toggle = document.querySelector('.theme-toggle');
-            if (toggle) {
-                if (theme === 'dark') {
-                    toggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
+        // ===== LOADING & LOGIN SEQUENZ =====
+        window.addEventListener('DOMContentLoaded', function() {
+            // Loading Screen anzeigen
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('loginScreen').classList.remove('hidden');
+            }, 1500);
+            
+            // Login Form Handler
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                // Login-Prüfung
+                if (username === 'colin' && password === '11012021') {
+                    loginSuccess();
                 } else {
-                    toggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+                    showLoginError();
                 }
-            }
-        }
-
-        function initTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateThemeToggle();
-        }
-
-        // Mobile Menu Management
-        function toggleMobileMenu() {
-            const sidebar = document.querySelector('.sidebar');
-            const overlay = document.querySelector('.sidebar-overlay');
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
-        }
-
-        function closeMobileMenu() {
-            const sidebar = document.querySelector('.sidebar');
-            const overlay = document.querySelector('.sidebar-overlay');
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        // Hauptklasse für das Buchhaltungssystem - OHNE Auto-Load von Firebase
-        class AccountingSystem {
-            constructor() {
-                this.dbName = 'accounting_db';
-                this.dbVersion = 4;
-                this.db = null;
-                this.initDatabase();
-                
-                this.currentInvoiceId = null;
-                this.currentPaymentInvoiceId = null;
-                this.editingCustomerId = null;
-                this.editingIncomeId = null;
-                
-                this.defaultInstallmentDueDate = '2026-01-01';
-            }
-            
-            async initDatabase() {
-                return new Promise((resolve, reject) => {
-                    const request = indexedDB.open(this.dbName, this.dbVersion);
-                    
-                    request.onerror = (event) => {
-                        console.error('Datenbankfehler:', event.target.error);
-                        reject(event.target.error);
-                    };
-                    
-                    request.onsuccess = (event) => {
-                        this.db = event.target.result;
-                        console.log('Datenbank initialisiert');
-                        this.loadInitialData();
-                        resolve();
-                    };
-                    
-                    request.onupgradeneeded = (event) => {
-                        const db = event.target.result;
-                        
-                        if (!db.objectStoreNames.contains('customers')) {
-                            const customerStore = db.createObjectStore('customers', { keyPath: 'id', autoIncrement: true });
-                            customerStore.createIndex('name', 'name', { unique: false });
-                        }
-                        
-                        if (!db.objectStoreNames.contains('invoices')) {
-                            const invoiceStore = db.createObjectStore('invoices', { keyPath: 'id', autoIncrement: true });
-                            invoiceStore.createIndex('customerId', 'customerId', { unique: false });
-                            invoiceStore.createIndex('invoiceNumber', 'invoiceNumber', { unique: true });
-                            invoiceStore.createIndex('status', 'status', { unique: false });
-                            invoiceStore.createIndex('dueDate', 'dueDate', { unique: false });
-                        }
-                        
-                        if (!db.objectStoreNames.contains('invoiceItems')) {
-                            const itemStore = db.createObjectStore('invoiceItems', { keyPath: 'id', autoIncrement: true });
-                            itemStore.createIndex('invoiceId', 'invoiceId', { unique: false });
-                        }
-                        
-                        if (!db.objectStoreNames.contains('income')) {
-                            const incomeStore = db.createObjectStore('income', { keyPath: 'id', autoIncrement: true });
-                            incomeStore.createIndex('date', 'date', { unique: false });
-                            incomeStore.createIndex('category', 'category', { unique: false });
-                        }
-                        
-                        if (!db.objectStoreNames.contains('installmentPlans')) {
-                            const planStore = db.createObjectStore('installmentPlans', { keyPath: 'id', autoIncrement: true });
-                            planStore.createIndex('invoiceId', 'invoiceId', { unique: false });
-                        }
-                        
-                        if (!db.objectStoreNames.contains('installments')) {
-                            const installmentStore = db.createObjectStore('installments', { keyPath: 'id', autoIncrement: true });
-                            installmentStore.createIndex('planId', 'planId', { unique: false });
-                            installmentStore.createIndex('invoiceId', 'invoiceId', { unique: false });
-                            installmentStore.createIndex('status', 'status', { unique: false });
-                            installmentStore.createIndex('dueDate', 'dueDate', { unique: false });
-                        }
-                        
-                        if (!db.objectStoreNames.contains('purchases')) {
-                            const purchaseStore = db.createObjectStore('purchases', { keyPath: 'id', autoIncrement: true });
-                            purchaseStore.createIndex('supplier', 'supplier', { unique: false });
-                        }
-                        
-                        if (!db.objectStoreNames.contains('payments')) {
-                            const paymentStore = db.createObjectStore('payments', { keyPath: 'id', autoIncrement: true });
-                            paymentStore.createIndex('invoiceId', 'invoiceId', { unique: false });
-                        }
-                    };
-                });
-            }
-            
-            async loadInitialData() {
-                // Keine Firebase-Abfrage beim Start!
-                const customers = await this.getAll('customers');
-                if (customers.length === 0) {
-                    // Nur lokale Beispieldaten, wenn keine vorhanden
-                    await this.addSampleData();
-                }
-                
-                this.updateDashboard();
-                this.loadInvoices();
-                this.loadIncome();
-                this.loadCustomers();
-                this.loadPurchases();
-                this.loadInstallments();
-            }
-            
-            async addSampleData() {
-                // Nur Beispiel-Daten
-                const customers = await this.getAll('customers');
-                if (customers.length === 0) {
-                    const sampleCustomers = [
-                        { name: 'Max Mustermann', email: 'max@example.com', phone: '0123 456789', address: 'Musterstraße 1, 12345 Musterstadt' },
-                        { name: 'Erika Musterfrau', email: 'erika@example.com', phone: '0987 654321', address: 'Beispielweg 2, 54321 Beispielstadt' }
-                    ];
-                    
-                    for (const customer of sampleCustomers) {
-                        await this.add('customers', customer);
-                    }
-                    
-                    await this.add('income', {
-                        description: 'Gehalt Januar',
-                        amount: 3500.00,
-                        date: new Date().toISOString().split('T')[0],
-                        category: 'Gehalt',
-                        source: 'Firma XYZ',
-                        paymentMethod: 'Überweisung',
-                        notes: 'Monatsgehalt',
-                        createdAt: new Date().toISOString()
-                    });
-                    
-                    await this.add('purchases', {
-                        supplier: 'Bürobedarf Müller',
-                        date: new Date().toISOString().split('T')[0],
-                        totalAmount: 450.00,
-                        paymentMethod: 'Überweisung',
-                        notes: 'Büromaterial für Q1',
-                        status: 'paid'
-                    });
-                }
-            }
-            
-            // CRUD-Operationen
-            async add(storeName, data) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction([storeName], 'readwrite');
-                    const store = transaction.objectStore(storeName);
-                    const request = store.add(data);
-                    
-                    request.onsuccess = (event) => resolve(event.target.result);
-                    request.onerror = (event) => reject(event.target.error);
-                });
-            }
-            
-            async get(storeName, id) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction([storeName], 'readonly');
-                    const store = transaction.objectStore(storeName);
-                    const request = store.get(id);
-                    
-                    request.onsuccess = (event) => resolve(event.target.result);
-                    request.onerror = (event) => reject(event.target.error);
-                });
-            }
-            
-            async getAll(storeName, indexName = null, range = null) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction([storeName], 'readonly');
-                    const store = transaction.objectStore(storeName);
-                    const target = indexName ? store.index(indexName) : store;
-                    const request = range ? target.getAll(range) : target.getAll();
-                    
-                    request.onsuccess = (event) => resolve(event.target.result);
-                    request.onerror = (event) => reject(event.target.error);
-                });
-            }
-            
-            async update(storeName, id, data) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction([storeName], 'readwrite');
-                    const store = transaction.objectStore(storeName);
-                    const request = store.put({ ...data, id });
-                    
-                    request.onsuccess = (event) => resolve(event.target.result);
-                    request.onerror = (event) => reject(event.target.error);
-                });
-            }
-            
-            async delete(storeName, id) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction([storeName], 'readwrite');
-                    const store = transaction.objectStore(storeName);
-                    const request = store.delete(id);
-                    
-                    request.onsuccess = (event) => resolve(true);
-                    request.onerror = (event) => reject(event.target.error);
-                });
-            }
-            
-            async generateInvoiceNumber() {
-                const invoices = await this.getAll('invoices');
-                const year = new Date().getFullYear();
-                const count = invoices.filter(inv => inv.invoiceNumber?.includes(year.toString())).length + 1;
-                return `R-${year}-${count.toString().padStart(4, '0')}`;
-            }
-            
-            async createInvoice(invoiceData, items) {
-                invoiceData.invoiceNumber = invoiceData.invoiceNumber || await this.generateInvoiceNumber();
-                invoiceData.createdAt = new Date().toISOString();
-                
-                const invoiceId = await this.add('invoices', invoiceData);
-                
-                for (const item of items) {
-                    await this.add('invoiceItems', {
-                        ...item,
-                        invoiceId: invoiceId,
-                        createdAt: new Date().toISOString()
-                    });
-                }
-                
-                if (invoiceData.paymentMethod === 'Ratenzahlung') {
-                    const installmentCount = parseInt(invoiceData.installmentCount) || 12;
-                    const installmentAmount = invoiceData.totalAmount / installmentCount;
-                    
-                    const planId = await this.add('installmentPlans', {
-                        invoiceId: invoiceId,
-                        totalInstallments: installmentCount,
-                        installmentAmount: installmentAmount,
-                        frequency: 'monthly',
-                        startDate: invoiceData.issueDate,
-                        totalAmount: invoiceData.totalAmount,
-                        createdAt: new Date().toISOString()
-                    });
-                    
-                    for (let i = 0; i < installmentCount; i++) {
-                        const dueDate = new Date(this.defaultInstallmentDueDate);
-                        if (i > 0) {
-                            dueDate.setMonth(dueDate.getMonth() + i);
-                        }
-                        
-                        await this.add('installments', {
-                            planId: planId,
-                            invoiceId: invoiceId,
-                            installmentNumber: i + 1,
-                            dueDate: dueDate.toISOString().split('T')[0],
-                            amount: installmentAmount,
-                            status: 'pending',
-                            createdAt: new Date().toISOString()
-                        });
-                    }
-                }
-                
-                return invoiceId;
-            }
-            
-            // Restliche Methoden bleiben gleich...
-            async getFinancialOverview() {
-                const invoices = await this.getAll('invoices');
-                const purchases = await this.getAll('purchases');
-                const income = await this.getAll('income');
-                
-                const totalInvoiceIncome = invoices.reduce((sum, inv) => sum + inv.totalAmount, 0);
-                const totalOtherIncome = income.reduce((sum, inc) => sum + inc.amount, 0);
-                const totalIncome = totalInvoiceIncome + totalOtherIncome;
-                const paidAmount = invoices.reduce((sum, inv) => sum + (inv.paidAmount || 0), 0);
-                const openInvoices = invoices.filter(inv => inv.status !== 'paid');
-                const openAmount = openInvoices.reduce((sum, inv) => sum + (inv.totalAmount - (inv.paidAmount || 0)), 0);
-                const totalExpenses = purchases.reduce((sum, purchase) => sum + purchase.totalAmount, 0);
-                const today = new Date().toISOString().split('T')[0];
-                const overdueInvoices = openInvoices.filter(inv => inv.dueDate < today);
-                const overdueAmount = overdueInvoices.reduce((sum, inv) => sum + (inv.totalAmount - (inv.paidAmount || 0)), 0);
-                
-                return {
-                    totalIncome,
-                    totalInvoiceIncome,
-                    totalOtherIncome,
-                    paidAmount,
-                    openAmount,
-                    totalExpenses,
-                    profit: totalIncome - totalExpenses,
-                    overdueCount: overdueInvoices.length,
-                    overdueAmount
-                };
-            }
-            
-            showAlert(message, type = 'success') {
-                const container = document.getElementById('alertContainer');
-                const alert = document.createElement('div');
-                alert.className = `alert alert-${type}`;
-                alert.innerHTML = `
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'}"></i>
-                    <span>${message}</span>
-                `;
-                
-                container.appendChild(alert);
-                
-                setTimeout(() => {
-                    alert.style.opacity = '0';
-                    setTimeout(() => alert.remove(), 300);
-                }, 3000);
-            }
-            
-            async updateDashboard() {
-                const overview = await this.getFinancialOverview();
-                
-                const statsContainer = document.getElementById('statsContainer');
-                if (statsContainer) {
-                    statsContainer.innerHTML = `
-                        <div class="stat-card">
-                            <div class="stat-icon income">
-                                <i class="fas fa-euro-sign"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>Gesamteinnahmen</h3>
-                                <div class="amount">${overview.totalIncome.toFixed(2)} €</div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon other-income">
-                                <i class="fas fa-money-bill-wave"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>Sonstiges Einkommen</h3>
-                                <div class="amount">${overview.totalOtherIncome.toFixed(2)} €</div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon expense">
-                                <i class="fas fa-shopping-cart"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>Ausgaben</h3>
-                                <div class="amount">${overview.totalExpenses.toFixed(2)} €</div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon pending">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>Offene Rechnungen</h3>
-                                <div class="amount">${overview.openAmount.toFixed(2)} €</div>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-        }
-
-        // Globale Instanz
-        const accountingSystem = new AccountingSystem();
-
-        // UI-Funktionen
-        function showTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
             });
             
-            const tabElement = document.getElementById(tabName);
-            if (tabElement) {
-                tabElement.classList.add('active');
-            }
-            
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            const clickedItem = event.target.closest('.nav-item');
-            if (clickedItem) {
-                clickedItem.classList.add('active');
-            }
-            
-            closeMobileMenu();
-        }
-
-        // Initialisierung
-        document.addEventListener('DOMContentLoaded', function() {
-            initTheme();
-            
-            // Theme wiederherstellen
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            
-            // Event Listener für Buttons
-            const paymentMethodSelect = document.getElementById('paymentMethod');
-            if (paymentMethodSelect) {
-                paymentMethodSelect.addEventListener('change', toggleInstallmentOptions);
-            }
-            
-            // Setze Dashboard als aktiven Tab
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.getElementById('dashboard').classList.add('active');
-            
-            // Aktiviere ersten Nav-Item
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.querySelector('.nav-item').classList.add('active');
+            // Navigation Event Listeners
+            setupNavigation();
         });
+
+        // ===== LOGIN FUNKTIONEN =====
+        function loginSuccess() {
+            isLoggedIn = true;
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('loginError').classList.remove('show');
+            
+            // Gerätetyp erkennen
+            detectDeviceType();
+            
+            // App anzeigen
+            showApp();
+            
+            // Notification
+            showNotification('Erfolgreich eingeloggt!');
+        }
+
+        function showLoginError() {
+            const errorEl = document.getElementById('loginError');
+            errorEl.classList.add('show');
+            
+            // Fehler-Animation
+            errorEl.style.animation = 'none';
+            setTimeout(() => {
+                errorEl.style.animation = 'shake 0.5s ease-in-out';
+            }, 10);
+            
+            // Animation für Inputs
+            const inputs = document.querySelectorAll('#loginForm input');
+            inputs.forEach(input => {
+                input.style.borderColor = '#ef4444';
+                setTimeout(() => {
+                    input.style.borderColor = '#e2e8f0';
+                }, 500);
+            });
+        }
+
+        function logout() {
+            isLoggedIn = false;
+            
+            // Alle App-Layouts ausblenden
+            document.getElementById('pcApp').classList.remove('active');
+            document.getElementById('mobileApp').classList.remove('active');
+            document.querySelectorAll('.app-container').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Login Screen anzeigen
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            
+            showNotification('Erfolgreich ausgeloggt');
+        }
+
+        // ===== GERÄTEERKENNUNG =====
+        function detectDeviceType() {
+            const isMobile = window.innerWidth <= 768;
+            currentDevice = isMobile ? 'mobile' : 'pc';
+            console.log(`Gerät erkannt: ${currentDevice} (Breite: ${window.innerWidth}px)`);
+        }
+
+        function showApp() {
+            // Gerätespezifisches Layout anzeigen
+            if (currentDevice === 'pc') {
+                document.getElementById('pcApp').classList.add('active');
+            } else {
+                document.getElementById('mobileApp').classList.add('active');
+            }
+            
+            // App Container anzeigen
+            document.querySelector('.app-container').classList.add('active');
+        }
+
+        // ===== NAVIGATION =====
+        function setupNavigation() {
+            // PC Navigation
+            document.querySelectorAll('.pc-nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const tab = this.getAttribute('data-tab');
+                    switchTab(tab);
+                    
+                    // Active State setzen
+                    document.querySelectorAll('.pc-nav-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Page Title aktualisieren
+                    document.getElementById('pcPageTitle').textContent = this.textContent.trim();
+                });
+            });
+            
+            // Mobile Navigation
+            document.querySelectorAll('.mobile-nav-item').forEach(item => {
+                if (item.getAttribute('data-tab')) {
+                    item.addEventListener('click', function() {
+                        const tab = this.getAttribute('data-tab');
+                        switchTab(tab);
+                        toggleMobileMenu();
+                        
+                        // Active State setzen
+                        document.querySelectorAll('.mobile-nav-item').forEach(i => i.classList.remove('active'));
+                        this.classList.add('active');
+                    });
+                }
+            });
+        }
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Alle Tabs ausblenden
+            document.querySelectorAll('.pc-tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active'));
+            
+            // Gewählten Tab anzeigen
+            if (currentDevice === 'pc') {
+                document.getElementById(`pc${capitalizeFirst(tabName)}`).classList.add('active');
+            } else {
+                document.getElementById(`mobile${capitalizeFirst(tabName)}`).classList.add('active');
+            }
+            
+            console.log(`Tab gewechselt zu: ${tabName}`);
+        }
+
+        // ===== MOBILE MENU =====
+        function toggleMobileMenu() {
+            document.querySelector('.mobile-nav').classList.toggle('active');
+            document.querySelector('.mobile-overlay').classList.toggle('active');
+            document.body.style.overflow = document.querySelector('.mobile-nav').classList.contains('active') ? 'hidden' : '';
+        }
+
+        // ===== BUTTON FUNKTIONEN =====
+        function openInvoiceModal() {
+            showNotification('Rechnungsmodal wird geöffnet (Demo)');
+            // Hier später das Rechnungs-Modal implementieren
+        }
+
+        function openIncomeModal() {
+            showNotification('Einkommensmodal wird geöffnet (Demo)');
+            // Hier später das Einkommens-Modal implementieren
+        }
+
+        // ===== HELPER FUNCTIONS =====
+        function capitalizeFirst(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const text = document.getElementById('notificationText');
+            
+            text.textContent = message;
+            notification.style.display = 'flex';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // ===== RESPONSIVE UPDATES =====
+        window.addEventListener('resize', function() {
+            if (isLoggedIn) {
+                const oldDevice = currentDevice;
+                detectDeviceType();
+                
+                // Wenn Gerätetyp geändert hat
+                if (oldDevice !== currentDevice) {
+                    showNotification(`Gerätewechsel zu: ${currentDevice === 'pc' ? 'PC' : 'Mobile'}`);
+                    
+                    // Altes Layout ausblenden
+                    document.getElementById('pcApp').classList.remove('active');
+                    document.getElementById('mobileApp').classList.remove('active');
+                    
+                    // Neues Layout anzeigen
+                    showApp();
+                    
+                    // Tab wiederherstellen
+                    setTimeout(() => switchTab(currentTab), 100);
+                }
+            }
+        });
+
+        // ===== CSS ANIMATION =====
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
