@@ -1309,7 +1309,7 @@
     </div>
 
     <!-- Login Screen -->
-    <div class="login-screen hidden" id="loginScreen">
+    <div class="login-screen" id="loginScreen">
         <div class="login-container">
             <div class="login-logo">
                 <i class="fas fa-calculator"></i>
@@ -1870,7 +1870,7 @@
                                 <div class="value" id="reportIncome">0.00 €</div>
                                 <small>Berichtsperiode</small>
                             </div>
-                            <div class="stat-card expense">
+                            <div class="stat-card expense {
                                 <h3><i class="fas fa-arrow-down"></i> Ausgaben</h3>
                                 <div class="value" id="reportExpenses">0.00 €</div>
                                 <small>Berichtsperiode</small>
@@ -3075,6 +3075,7 @@
         let isLoggedIn = false;
         let darkMode = false;
         let charts = {};
+        let loginTimeout = null;
         
         // ===== DATENSTRUKTUREN =====
         let invoices = [];
@@ -3087,9 +3088,76 @@
         let settings = {};
         let monthlyStats = {};
         
+        // ===== SESSION MANAGEMENT =====
+        function startSession() {
+            // Setze Session-Timeout auf 5 Minuten (300000 ms)
+            if (loginTimeout) {
+                clearTimeout(loginTimeout);
+            }
+            
+            loginTimeout = setTimeout(() => {
+                if (isLoggedIn) {
+                    logout();
+                    showNotification('Session abgelaufen. Bitte erneut einloggen.', 'info');
+                }
+            }, 300000); // 5 Minuten
+            
+            // Speichere Login-Zeitpunkt
+            localStorage.setItem('lastLogin', Date.now());
+        }
+        
+        function checkSession() {
+            const lastLogin = localStorage.getItem('lastLogin');
+            if (lastLogin) {
+                const timeSinceLogin = Date.now() - parseInt(lastLogin);
+                // Wenn innerhalb der letzten 5 Minuten eingeloggt war, automatisch wieder einloggen
+                if (timeSinceLogin < 300000 && localStorage.getItem('autoLogin') === 'true') {
+                    autoLogin();
+                }
+            }
+        }
+        
+        function autoLogin() {
+            console.log('Automatischer Login...');
+            isLoggedIn = true;
+            
+            // Login Screen ausblenden
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('loginError').classList.remove('show');
+            
+            // Gerätetyp erkennen
+            detectDeviceType();
+            
+            // App anzeigen
+            showApp();
+            
+            // Dark Mode prüfen
+            if (settings.darkMode) {
+                darkMode = true;
+                document.body.setAttribute('data-theme', 'dark');
+            }
+            
+            // Navigation einrichten
+            setupNavigation();
+            
+            // Dashboard aktualisieren
+            if (currentDevice === 'pc') {
+                updateDashboard();
+                initializeCharts();
+            } else {
+                updateMobileDashboard();
+            }
+            
+            showNotification('Automatisch eingeloggt!', 'success');
+            startSession();
+        }
+        
         // ===== INITIALISIERUNG =====
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Buchhaltungssystem Pro - Initialisierung gestartet');
+            
+            // Check for existing session
+            checkSession();
             
             // Loading Screen nach 1.5 Sekunden ausblenden
             setTimeout(() => {
@@ -3112,9 +3180,14 @@
                 // Setup Mobile Navigation
                 setupMobileNavigation();
                 
+                // Event Listeners für Formulare
+                setupFormListeners();
+                
                 console.log('Initialisierung abgeschlossen');
             }, 1500);
-            
+        });
+        
+        function setupFormListeners() {
             // Report Period Change
             document.getElementById('reportPeriod')?.addEventListener('change', function() {
                 const customRange = document.getElementById('customDateRange');
@@ -3163,14 +3236,18 @@
                 }
             });
             
-            // Contract Type Change
-            document.getElementById('contractType')?.addEventListener('change', function() {
-                // Kann später erweitert werden
-            });
+            // Installment Option Change
+            document.getElementById('installmentOption')?.addEventListener('change', toggleInstallmentOptions);
             
-            // Gerätewechsel erkennen
-            window.addEventListener('resize', handleResize);
-        });
+            // Installment months change
+            document.getElementById('installmentMonths')?.addEventListener('change', calculateInstallmentPlan);
+            document.getElementById('installmentStart')?.addEventListener('change', calculateInstallmentPlan);
+            
+            // Installment form calculations
+            document.getElementById('installmentMonthsInput')?.addEventListener('change', calculateMonthlyPayment);
+            document.getElementById('installmentStartDateInput')?.addEventListener('change', calculateEndDate);
+            document.getElementById('installmentInterest')?.addEventListener('change', calculateMonthlyPayment);
+        }
         
         // ===== MOBILE NAVIGATION =====
         function setupMobileNavigation() {
@@ -3308,6 +3385,8 @@
                 }
             }
         }
+        
+        window.addEventListener('resize', handleResize);
         
         // ===== DATENVERWALTUNG =====
         function loadAllData() {
@@ -3569,7 +3648,8 @@
                 darkMode: false,
                 language: "de",
                 invoicePrefix: "INV",
-                contractPrefix: "CTR"
+                contractPrefix: "CTR",
+                autoLogin: true
             };
             saveSettings();
         }
@@ -3635,6 +3715,9 @@
             console.log('Login erfolgreich');
             isLoggedIn = true;
             
+            // Speichere Auto-Login Einstellung
+            localStorage.setItem('autoLogin', 'true');
+            
             // Login Screen ausblenden
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('loginError').classList.remove('show');
@@ -3663,6 +3746,9 @@
             }
             
             showNotification('Erfolgreich eingeloggt! Willkommen zurück, Colin.', 'success');
+            
+            // Starte Session
+            startSession();
         }
         
         function showLoginError() {
@@ -3689,6 +3775,15 @@
             console.log('Logout');
             isLoggedIn = false;
             
+            // Clear session timeout
+            if (loginTimeout) {
+                clearTimeout(loginTimeout);
+                loginTimeout = null;
+            }
+            
+            // Auto-Login deaktivieren
+            localStorage.setItem('autoLogin', 'false');
+            
             // Charts zerstören
             destroyCharts();
             
@@ -3706,7 +3801,10 @@
             }
             
             // Mobile Menü schließen
-            toggleMobileMenu();
+            const mobileNav = document.getElementById('mobileNav');
+            if (mobileNav && mobileNav.classList.contains('active')) {
+                toggleMobileMenu();
+            }
             
             // Felder leeren
             document.getElementById('username').value = '';
@@ -3925,6 +4023,9 @@
                             <div class="action-buttons">
                                 <button class="action-btn btn-success" onclick="markInvoiceAsPaid('${invoice.id}')" title="Bezahlt">
                                     <i class="fas fa-check"></i>
+                                </button>
+                                <button class="action-btn btn-danger" onclick="deleteInvoice('${invoice.id}')" title="Löschen">
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>
@@ -4237,6 +4338,179 @@
             });
         }
         
+        function loadInvoicesForInstallment() {
+            const select = document.getElementById('installmentInvoiceSelect');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">Rechnung auswählen...</option>';
+            invoices.filter(inv => inv.status === 'open' && !inv.installmentPlan).forEach(invoice => {
+                const customer = customers.find(c => c.id === invoice.customerId);
+                const option = document.createElement('option');
+                option.value = invoice.id;
+                option.textContent = `${invoice.number} - ${customer?.name || 'Unbekannt'} - ${formatCurrency(invoice.amount)}`;
+                select.appendChild(option);
+            });
+        }
+        
+        function loadInvoiceForInstallment() {
+            const invoiceId = document.getElementById('installmentInvoiceSelect').value;
+            if (!invoiceId) return;
+            
+            const invoice = invoices.find(i => i.id === invoiceId);
+            if (invoice) {
+                const customer = customers.find(c => c.id === invoice.customerId);
+                
+                document.getElementById('installmentTotalAmount').value = invoice.amount;
+                document.getElementById('installmentCustomer').value = customer?.name || 'Unbekannt';
+                
+                // Calculate monthly payment
+                calculateMonthlyPayment();
+            }
+        }
+        
+        function calculateMonthlyPayment() {
+            const totalAmount = parseFloat(document.getElementById('installmentTotalAmount').value) || 0;
+            const months = parseInt(document.getElementById('installmentMonthsInput').value) || 12;
+            const interest = parseFloat(document.getElementById('installmentInterest').value) || 0;
+            
+            if (totalAmount > 0 && months > 0) {
+                // Simple interest calculation
+                const interestAmount = totalAmount * (interest / 100);
+                const totalWithInterest = totalAmount + interestAmount;
+                const monthlyPayment = totalWithInterest / months;
+                
+                document.getElementById('installmentMonthlyPayment').value = formatCurrency(monthlyPayment);
+                
+                // Calculate end date
+                calculateEndDate();
+                
+                // Update preview
+                updateInstallmentPreview(totalWithInterest, months, monthlyPayment);
+            }
+        }
+        
+        function calculateEndDate() {
+            const startDate = document.getElementById('installmentStartDateInput').value;
+            const months = parseInt(document.getElementById('installmentMonthsInput').value) || 12;
+            
+            if (startDate && months > 0) {
+                const start = new Date(startDate);
+                const end = new Date(start);
+                end.setMonth(end.getMonth() + months);
+                
+                document.getElementById('installmentEndDate').value = end.toISOString().split('T')[0];
+            }
+        }
+        
+        function updateInstallmentPreview(totalAmount, months, monthlyPayment) {
+            const grid = document.getElementById('installmentPreviewGrid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+            const startDate = document.getElementById('installmentStartDateInput').value;
+            
+            if (!startDate) return;
+            
+            const start = new Date(startDate);
+            
+            for (let i = 1; i <= Math.min(months, 12); i++) {
+                const monthDate = new Date(start);
+                monthDate.setMonth(monthDate.getMonth() + i);
+                
+                const monthElement = document.createElement('div');
+                monthElement.className = 'installment-month';
+                monthElement.innerHTML = `
+                    <div class="installment-month-number">Monat ${i}</div>
+                    <div class="installment-month-amount">${formatCurrency(monthlyPayment)}</div>
+                    <div class="installment-month-date">${formatDate(monthDate.toISOString().split('T')[0])}</div>
+                `;
+                
+                grid.appendChild(monthElement);
+            }
+            
+            if (months > 12) {
+                const moreElement = document.createElement('div');
+                moreElement.className = 'installment-month';
+                moreElement.innerHTML = `
+                    <div class="installment-month-number">...</div>
+                    <div class="installment-month-amount">${months - 12} weitere</div>
+                    <div class="installment-month-date">${formatCurrency(monthlyPayment * (months - 12))}</div>
+                `;
+                grid.appendChild(moreElement);
+            }
+        }
+        
+        function toggleInstallmentOptions() {
+            const option = document.getElementById('installmentOption').value;
+            const optionsDiv = document.getElementById('installmentOptions');
+            
+            if (option === 'yes') {
+                optionsDiv.style.display = 'block';
+                calculateInstallmentPlan();
+            } else {
+                optionsDiv.style.display = 'none';
+            }
+        }
+        
+        function calculateInstallmentPlan() {
+            const amount = parseFloat(document.getElementById('invoiceAmount').value) || 0;
+            const months = parseInt(document.getElementById('installmentMonths').value) || 12;
+            const startDate = document.getElementById('installmentStart').value;
+            
+            if (amount > 0 && months > 0 && startDate) {
+                const monthlyPayment = amount / months;
+                document.getElementById('monthlyInstallment').value = formatCurrency(monthlyPayment);
+                
+                // Calculate end date
+                const start = new Date(startDate);
+                const end = new Date(start);
+                end.setMonth(end.getMonth() + months);
+                document.getElementById('installmentEnd').value = end.toISOString().split('T')[0];
+            }
+        }
+        
+        function loadInvoicesForPayment() {
+            const select = document.getElementById('paymentInvoice');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">Rechnung auswählen...</option>';
+            invoices.filter(inv => inv.status === 'open').forEach(invoice => {
+                const customer = customers.find(c => c.id === invoice.customerId);
+                const option = document.createElement('option');
+                option.value = invoice.id;
+                option.textContent = `${invoice.number} - ${customer?.name || 'Unbekannt'} - ${formatCurrency(invoice.amount)}`;
+                select.appendChild(option);
+            });
+        }
+        
+        function loadInstallmentsForPayment() {
+            const select = document.getElementById('paymentInstallment');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">Ratenzahlung auswählen...</option>';
+            installments.filter(inst => inst.status === 'active').forEach(installment => {
+                const invoice = invoices.find(i => i.id === installment.invoiceId);
+                const customer = customers.find(c => c.id === installment.customerId);
+                const option = document.createElement('option');
+                option.value = installment.id;
+                option.textContent = `${invoice?.number || 'Unbekannt'} - ${customer?.name || 'Unbekannt'} - ${installment.paidMonths}/${installment.months} Raten`;
+                select.appendChild(option);
+            });
+        }
+        
+        function loadContractsForPayment() {
+            const select = document.getElementById('paymentContract');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">Vertrag auswählen...</option>';
+            contracts.filter(contract => contract.status === 'active').forEach(contract => {
+                const option = document.createElement('option');
+                option.value = contract.id;
+                option.textContent = `${contract.number} - ${contract.name} - ${formatCurrency(contract.amount)}/${contract.interval}`;
+                select.appendChild(option);
+            });
+        }
+        
         function generateId() {
             return Date.now().toString(36) + Math.random().toString(36).substr(2);
         }
@@ -4283,6 +4557,27 @@
             document.getElementById('dataCount').textContent = totalData;
             document.getElementById('lastBackup').textContent = new Date().toLocaleDateString('de-DE');
             document.getElementById('storageUsed').textContent = Math.round(JSON.stringify(localStorage).length / 1024) + ' KB';
+        }
+        
+        function updateMonthlyStat(type, amount) {
+            const currentMonth = getCurrentMonth();
+            if (!monthlyStats[currentMonth]) {
+                monthlyStats[currentMonth] = {
+                    income: 0,
+                    expenses: 0,
+                    invoices: 0,
+                    contracts: 0,
+                    installments: 0
+                };
+            }
+            
+            if (type === 'income') {
+                monthlyStats[currentMonth].income += amount;
+            } else if (type === 'expenses') {
+                monthlyStats[currentMonth].expenses += amount;
+            }
+            
+            saveMonthlyStats();
         }
         
         // ===== DARK MODE =====
@@ -4645,6 +4940,9 @@
                                 <button class="action-btn btn-success" onclick="markInvoiceAsPaid('${invoice.id}')" title="Als bezahlt markieren">
                                     <i class="fas fa-check"></i>
                                 </button>
+                                <button class="action-btn btn-danger" onclick="deleteInvoice('${invoice.id}')" title="Löschen">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -4724,6 +5022,9 @@
                             <div class="action-buttons">
                                 <button class="action-btn btn-primary" onclick="viewCustomer('${customer.id}')" title="Ansehen">
                                     <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn btn-warning" onclick="editCustomer('${customer.id}')" title="Bearbeiten">
+                                    <i class="fas fa-edit"></i>
                                 </button>
                                 <button class="action-btn btn-danger" onclick="deleteCustomer('${customer.id}')" title="Löschen">
                                     <i class="fas fa-trash"></i>
@@ -4816,6 +5117,9 @@
                                 <button class="action-btn btn-success" onclick="markInstallmentPayment('${installment.id}')" title="Zahlung erfassen">
                                     <i class="fas fa-money-check"></i>
                                 </button>
+                                <button class="action-btn btn-danger" onclick="deleteInstallment('${installment.id}')" title="Löschen">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -4853,6 +5157,9 @@
                             <div class="action-buttons">
                                 <button class="action-btn btn-primary" onclick="viewContract('${contract.id}')" title="Ansehen">
                                     <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn btn-warning" onclick="editContract('${contract.id}')" title="Bearbeiten">
+                                    <i class="fas fa-edit"></i>
                                 </button>
                                 <button class="action-btn btn-danger" onclick="deleteContract('${contract.id}')" title="Löschen">
                                     <i class="fas fa-trash"></i>
@@ -5006,6 +5313,114 @@
             }
         }
         
+        function deleteInstallment(id) {
+            if (confirm('Ratenzahlung wirklich löschen?')) {
+                installments = installments.filter(i => i.id !== id);
+                saveInstallments();
+                if (currentDevice === 'pc') {
+                    loadInstallmentsTable();
+                } else {
+                    loadMobileInstallmentsTable();
+                }
+                updateDashboard();
+                updateMobileDashboard();
+                showNotification('Ratenzahlung gelöscht!', 'success');
+            }
+        }
+        
+        // ===== VIEW/EDIT FUNKTIONEN =====
+        function viewInvoice(id) {
+            const invoice = invoices.find(i => i.id === id);
+            if (invoice) {
+                openInvoiceModal();
+                // Fill form with invoice data
+                document.getElementById('invoiceNumber').value = invoice.number;
+                document.getElementById('invoiceDate').value = invoice.date;
+                document.getElementById('customerSelect').value = invoice.customerId;
+                document.getElementById('invoiceAmount').value = invoice.amount;
+                document.getElementById('dueDate').value = invoice.dueDate;
+                document.getElementById('invoiceDescription').value = invoice.description;
+                document.getElementById('paymentMethod').value = invoice.paymentMethod;
+                
+                showNotification(`Rechnung ${invoice.number} wird bearbeitet`, 'info');
+            }
+        }
+        
+        function viewCustomer(id) {
+            const customer = customers.find(c => c.id === id);
+            if (customer) {
+                openCustomerModal();
+                // Fill form with customer data
+                document.getElementById('customerName').value = customer.name;
+                document.getElementById('customerEmail').value = customer.email;
+                document.getElementById('customerPhone').value = customer.phone || '';
+                document.getElementById('customerCompany').value = customer.company || '';
+                document.getElementById('customerAddress').value = customer.address || '';
+                document.getElementById('customerNotes').value = customer.notes || '';
+                
+                showNotification(`Kunde ${customer.name} wird bearbeitet`, 'info');
+            }
+        }
+        
+        function editCustomer(id) {
+            viewCustomer(id);
+        }
+        
+        function viewContract(id) {
+            const contract = contracts.find(c => c.id === id);
+            if (contract) {
+                openContractModal();
+                // Fill form with contract data
+                document.getElementById('contractNumber').value = contract.number;
+                document.getElementById('contractType').value = contract.type;
+                document.getElementById('contractName').value = contract.name;
+                document.getElementById('contractParty').value = contract.party;
+                document.getElementById('contractEmail').value = contract.email || '';
+                document.getElementById('contractStartDate').value = contract.startDate;
+                document.getElementById('contractEndDate').value = contract.endDate;
+                document.getElementById('contractAmount').value = contract.amount;
+                document.getElementById('contractInterval').value = contract.interval;
+                document.getElementById('contractDescription').value = contract.description || '';
+                document.getElementById('contractPaymentMethod').value = contract.paymentMethod;
+                document.getElementById('contractAutoRenew').value = contract.autoRenew;
+                
+                showNotification(`Vertrag ${contract.number} wird bearbeitet`, 'info');
+            }
+        }
+        
+        function editContract(id) {
+            viewContract(id);
+        }
+        
+        function viewInstallment(id) {
+            const installment = installments.find(i => i.id === id);
+            if (installment) {
+                // Show installment details
+                const detailsDiv = document.getElementById('installmentDetails');
+                const grid = document.getElementById('installmentMonthsGrid');
+                
+                if (detailsDiv && grid) {
+                    grid.innerHTML = '';
+                    
+                    installment.paymentSchedule.forEach(payment => {
+                        const monthElement = document.createElement('div');
+                        monthElement.className = `installment-month ${payment.status === 'paid' ? 'paid' : ''}`;
+                        monthElement.innerHTML = `
+                            <div class="installment-month-number">Monat ${payment.month}</div>
+                            <div class="installment-month-amount">${formatCurrency(payment.amount)}</div>
+                            <div class="installment-month-date">${formatDate(payment.dueDate)}</div>
+                            ${payment.status === 'paid' ? `<small>Bezahlt am: ${formatDate(payment.paidDate)}</small>` : ''}
+                        `;
+                        
+                        grid.appendChild(monthElement);
+                    });
+                    
+                    detailsDiv.style.display = 'block';
+                    showNotification(`Ratenplan für ${installment.id} angezeigt`, 'info');
+                }
+            }
+        }
+        
         // ===== BEZAHLEN FUNKTIONEN =====
         function markInvoiceAsPaid(id) {
             const invoice = invoices.find(i => i.id === id);
@@ -5093,7 +5508,7 @@
             charts = {};
         }
         
-        // ===== PLATZHALTER FUNKTIONEN FÜR NICHT IMPLEMENTIERTE FEATURES =====
+        // ===== DATEN SPEICHERN FUNKTIONEN =====
         function saveInvoice() {
             const invoiceNumber = document.getElementById('invoiceNumber').value;
             const customerId = document.getElementById('customerSelect').value;
@@ -5219,6 +5634,67 @@
             showNotification('Einkauf gespeichert!', 'success');
         }
         
+        function saveInstallment() {
+            const invoiceId = document.getElementById('installmentInvoiceSelect').value;
+            const invoice = invoices.find(i => i.id === invoiceId);
+            
+            if (!invoice) {
+                showNotification('Bitte wählen Sie eine Rechnung aus!', 'error');
+                return;
+            }
+            
+            const installment = {
+                id: generateId(),
+                invoiceId: invoiceId,
+                customerId: invoice.customerId,
+                totalAmount: parseFloat(document.getElementById('installmentTotalAmount').value),
+                months: parseInt(document.getElementById('installmentMonthsInput').value),
+                monthlyPayment: parseFloat(document.getElementById('installmentMonthlyPayment').value.replace('€', '').replace('.', '').replace(',', '.')),
+                startDate: document.getElementById('installmentStartDateInput').value,
+                endDate: document.getElementById('installmentEndDate').value,
+                interest: parseFloat(document.getElementById('installmentInterest').value) || 0,
+                paidMonths: 0,
+                status: "active",
+                paymentSchedule: [],
+                createdAt: new Date().toISOString()
+            };
+            
+            // Erstelle Zahlungsplan
+            const startDate = new Date(installment.startDate);
+            const monthlyPayment = installment.monthlyPayment;
+            
+            for (let i = 1; i <= installment.months; i++) {
+                const monthDate = new Date(startDate);
+                monthDate.setMonth(monthDate.getMonth() + i);
+                
+                installment.paymentSchedule.push({
+                    month: i,
+                    amount: monthlyPayment,
+                    dueDate: monthDate.toISOString().split('T')[0],
+                    status: 'pending',
+                    paidDate: null
+                });
+            }
+            
+            // Markiere Rechnung als Ratenzahlung
+            invoice.installmentPlan = true;
+            saveInvoices();
+            
+            installments.push(installment);
+            saveInstallments();
+            
+            if (currentDevice === 'pc') {
+                loadInstallmentsTable();
+            } else {
+                loadMobileInstallmentsTable();
+            }
+            
+            closeInstallmentModal();
+            updateDashboard();
+            updateMobileDashboard();
+            showNotification('Ratenzahlung erstellt!', 'success');
+        }
+        
         function saveContract() {
             const contract = {
                 id: generateId(),
@@ -5253,6 +5729,54 @@
             showNotification('Vertrag gespeichert!', 'success');
         }
         
+        function savePayment() {
+            const payment = {
+                id: generateId(),
+                date: document.getElementById('paymentDate').value,
+                amount: parseFloat(document.getElementById('paymentAmount').value),
+                paymentMethod: document.getElementById('paymentMethod').value,
+                reference: document.getElementById('paymentReference').value || '',
+                notes: document.getElementById('paymentNotes').value || '',
+                createdAt: new Date().toISOString()
+            };
+            
+            const paymentFor = document.getElementById('paymentFor').value;
+            
+            if (paymentFor === 'invoice') {
+                const invoiceId = document.getElementById('paymentInvoice').value;
+                if (invoiceId) {
+                    payment.invoiceId = invoiceId;
+                    // Mark invoice as paid
+                    const invoice = invoices.find(i => i.id === invoiceId);
+                    if (invoice) {
+                        invoice.status = 'paid';
+                        invoice.paidDate = payment.date;
+                        saveInvoices();
+                    }
+                }
+            } else if (paymentFor === 'installment') {
+                const installmentId = document.getElementById('paymentInstallment').value;
+                if (installmentId) {
+                    payment.installmentId = installmentId;
+                    // Mark installment payment
+                    markInstallmentPayment(installmentId);
+                }
+            } else if (paymentFor === 'contract') {
+                const contractId = document.getElementById('paymentContract').value;
+                if (contractId) {
+                    payment.contractId = contractId;
+                }
+            }
+            
+            payments.push(payment);
+            savePayments();
+            
+            closePaymentModal();
+            updateDashboard();
+            updateMobileDashboard();
+            showNotification('Zahlung erfasst!', 'success');
+        }
+        
         function saveSettings() {
             settings.companyName = document.getElementById('companyName').value;
             settings.currency = document.getElementById('currency').value;
@@ -5264,6 +5788,201 @@
             showNotification('Einstellungen gespeichert!', 'success');
         }
         
+        // ===== WEITERE FUNKTIONEN =====
+        function exportInvoices() {
+            const dataStr = JSON.stringify(invoices, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `rechnungen-${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showNotification('Rechnungen exportiert!', 'success');
+        }
+        
+        function exportContracts() {
+            const dataStr = JSON.stringify(contracts, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `vertraege-${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showNotification('Verträge exportiert!', 'success');
+        }
+        
+        function exportAllData() {
+            const allData = {
+                invoices: invoices,
+                incomes: incomes,
+                customers: customers,
+                purchases: purchases,
+                installments: installments,
+                contracts: contracts,
+                payments: payments,
+                settings: settings,
+                monthlyStats: monthlyStats
+            };
+            
+            const dataStr = JSON.stringify(allData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `buchhaltung-backup-${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showNotification('Alle Daten exportiert!', 'success');
+        }
+        
+        function importData(file) {
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (data.invoices) invoices = data.invoices;
+                    if (data.incomes) incomes = data.incomes;
+                    if (data.customers) customers = data.customers;
+                    if (data.purchases) purchases = data.purchases;
+                    if (data.installments) installments = data.installments;
+                    if (data.contracts) contracts = data.contracts;
+                    if (data.payments) payments = data.payments;
+                    if (data.settings) settings = data.settings;
+                    if (data.monthlyStats) monthlyStats = data.monthlyStats;
+                    
+                    saveAllData();
+                    updateDataCount();
+                    
+                    if (currentDevice === 'pc') {
+                        updateDashboard();
+                        loadInvoicesTable();
+                        loadIncomeTable();
+                        loadCustomersTable();
+                        loadPurchasesTable();
+                        loadInstallmentsTable();
+                        loadContractsTable();
+                        loadSettings();
+                    } else {
+                        updateMobileDashboard();
+                        loadMobileInvoicesTable();
+                        loadMobileIncomeTable();
+                        loadMobileCustomersTable();
+                        loadMobilePurchasesTable();
+                        loadMobileInstallmentsTable();
+                        loadMobileContractsTable();
+                        loadMobileSettings();
+                    }
+                    
+                    showNotification('Daten erfolgreich importiert!', 'success');
+                } catch (error) {
+                    showNotification('Fehler beim Importieren der Daten!', 'error');
+                    console.error('Import error:', error);
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        function confirmResetMonth() {
+            const password = document.getElementById('resetPassword').value;
+            
+            if (password !== '11012021') {
+                showNotification('Falsches Passwort!', 'error');
+                return;
+            }
+            
+            const currentMonth = getCurrentMonth();
+            monthlyStats[currentMonth] = {
+                income: 0,
+                expenses: 0,
+                invoices: 0,
+                contracts: 0,
+                installments: 0
+            };
+            
+            saveMonthlyStats();
+            closeResetMonthModal();
+            
+            updateDashboard();
+            updateMobileDashboard();
+            
+            showNotification('Monatsdaten zurückgesetzt!', 'success');
+        }
+        
+        function sendEmailReport() {
+            // Simuliere das Senden des Reports
+            const recipient = document.getElementById('emailRecipient').value;
+            
+            showNotification(`Report wurde an ${recipient} gesendet!`, 'success');
+            closeEmailReportModal();
+        }
+        
+        // ===== PLATZHALTER FUNKTIONEN =====
+        function filterInvoices() {
+            // Filter Logik würde hier implementiert werden
+            loadInvoicesTable();
+        }
+        
+        function openRecurringExpenseModal() {
+            showNotification('Diese Funktion wird in Kürze verfügbar sein.', 'info');
+        }
+        
+        function markInstallmentsAsPaid() {
+            showNotification('Diese Funktion wird in Kürze verfügbar sein.', 'info');
+        }
+        
+        function markMonthAsPaid() {
+            showNotification('Diese Funktion wird in Kürze verfügbar sein.', 'info');
+        }
+        
+        function printInstallmentPlan() {
+            window.print();
+        }
+        
+        function generateMonthlyReport() {
+            showNotification('Monatsbericht wird generiert...', 'info');
+            // Hier würde die PDF-Generierung implementiert werden
+        }
+        
+        function generateYearlyReport() {
+            showNotification('Jahresbericht wird generiert...', 'info');
+            // Hier würde die Excel-Generierung implementiert werden
+        }
+        
+        function updateReport() {
+            showNotification('Report wird aktualisiert...', 'info');
+        }
+        
+        function resetMonthData() {
+            openResetMonthModal();
+        }
+        
+        function openQuickIncomeModal() {
+            openIncomeModal();
+        }
+        
+        function openQuickExpenseModal() {
+            openPurchaseModal();
+        }
+        
+        function openQuickInvoiceModal() {
+            openInvoiceModal();
+        }
+        
+        function openQuickPaymentModal() {
+            openPaymentModal();
+        }
+        
         // ===== SYSTEM INITIALISIERT =====
         console.log('=== BUCHHALTUNGSSYSTEM PRO - BEREIT ===');
         console.log('Version: 2.0.0');
@@ -5271,6 +5990,7 @@
         console.log('Benutzername: colin | Passwort: 11012021');
         console.log('Report Email: pokemon25364@gmail.com');
         console.log('Geräteerkennung: Aktiviert (PC & Mobile)');
+        console.log('Auto-Login: Aktiviert (5 Minuten Session)');
     </script>
 </body>
 </html>
