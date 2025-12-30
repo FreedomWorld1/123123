@@ -3,1384 +3,910 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanz-Tabelle | Google Sheets-ähnlich</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Vertrags- und Rechnungsverwaltung</title>
     <style>
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background-color: #f0f2f5;
-            color: #202124;
-            line-height: 1.5;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
             padding: 20px;
-            min-height: 100vh;
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        header {
-            background: linear-gradient(135deg, #1a73e8, #0d47a1);
-            color: white;
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .logo-placeholder {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        
-        h1 {
-            font-size: 24px;
-            font-weight: 500;
-        }
-        
-        .header-controls {
-            display: flex;
-            gap: 15px;
-        }
-        
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn-primary {
-            background-color: #34a853;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: #2d9248;
-        }
-        
-        .btn-secondary {
-            background-color: rgba(255,255,255,0.2);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-        }
-        
-        .btn-secondary:hover {
-            background-color: rgba(255,255,255,0.3);
-        }
-        
-        .content {
-            display: flex;
-            min-height: 600px;
-        }
-        
-        .sidebar {
-            width: 250px;
-            background-color: #f8f9fa;
-            border-right: 1px solid #e0e0e0;
-            padding: 20px;
-        }
-        
-        .sidebar h3 {
-            color: #5f6368;
-            font-size: 14px;
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            letter-spacing: 0.5px;
-        }
-        
-        .nav-list {
-            list-style: none;
-        }
-        
-        .nav-item {
-            padding: 12px 15px;
-            border-radius: 6px;
-            margin-bottom: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #3c4043;
-            transition: all 0.2s;
-        }
-        
-        .nav-item:hover, .nav-item.active {
-            background-color: #e8f0fe;
-            color: #1a73e8;
-        }
-        
-        .main-content {
-            flex: 1;
-            padding: 25px;
-            overflow: auto;
-        }
-        
-        .sheet-container {
-            overflow-x: auto;
-            border: 1px solid #dadce0;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        
-        .sheet-header {
             display: grid;
-            grid-template-columns: 80px repeat(5, 200px);
-            border-bottom: 2px solid #dadce0;
-            background-color: #f8f9fa;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        
-        .sheet-row {
-            display: grid;
-            grid-template-columns: 80px repeat(5, 200px);
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .sheet-row:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .cell {
-            padding: 12px 15px;
-            border-right: 1px solid #e0e0e0;
-            min-height: 45px;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-        }
-        
-        .header-cell {
-            font-weight: 600;
-            color: #5f6368;
-            user-select: none;
-        }
-        
-        .row-header {
-            font-weight: 500;
-            color: #5f6368;
-            background-color: #f8f9fa;
-        }
-        
-        .editable-cell {
-            cursor: text;
-            outline: none;
-        }
-        
-        .editable-cell:focus {
-            background-color: #e8f0fe;
-            border: 2px solid #1a73e8;
-            border-radius: 2px;
-            padding: 10px 13px;
-        }
-        
-        .formula-bar {
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid #dadce0;
-            padding: 10px 15px;
-            background-color: white;
-        }
-        
-        .formula-label {
-            font-weight: 500;
-            color: #5f6368;
-            margin-right: 10px;
-            min-width: 60px;
-        }
-        
-        .formula-input {
-            flex: 1;
-            border: 1px solid #dadce0;
-            border-radius: 4px;
-            padding: 8px 12px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-        }
-        
-        .formula-input:focus {
-            outline: none;
-            border-color: #1a73e8;
-        }
-        
-        .formula-result {
-            margin-left: 15px;
-            color: #5f6368;
-            font-weight: 500;
-            min-width: 100px;
-        }
-        
-        .firebase-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            margin-left: 15px;
-        }
-        
-        .status-connected {
-            background-color: #e6f4ea;
-            color: #137333;
-        }
-        
-        .status-disconnected {
-            background-color: #fce8e6;
-            color: #c5221f;
-        }
-        
-        .totals-section {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
-            margin-top: 30px;
-        }
-        
-        .total-card {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #e0e0e0;
-        }
-        
-        .total-card h3 {
-            font-size: 14px;
-            color: #5f6368;
-            margin-bottom: 10px;
-        }
-        
-        .total-value {
-            font-size: 28px;
-            font-weight: 500;
-        }
-        
-        .total-income {
-            color: #137333;
-        }
-        
-        .total-expenses {
-            color: #c5221f;
-        }
-        
-        .total-balance {
-            color: #1a73e8;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-content {
-            background-color: white;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            overflow: hidden;
-        }
-        
-        .modal-header {
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dadce0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .modal-body {
-            padding: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #3c4043;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #dadce0;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        
-        .modal-footer {
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-top: 1px solid #dadce0;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-        
-        .contract-list {
-            margin-top: 30px;
-        }
-        
-        .contract-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            border-left: 4px solid #1a73e8;
-        }
-        
-        .contract-item.paid {
-            border-left-color: #34a853;
-        }
-        
-        .contract-item.unpaid {
-            border-left-color: #ea4335;
-        }
-        
-        .contract-info h4 {
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-        
-        .contract-info p {
-            font-size: 14px;
-            color: #5f6368;
-        }
-        
-        .contract-amount {
-            font-weight: 600;
-            font-size: 18px;
-        }
-        
-        .paid-badge {
-            background-color: #e6f4ea;
-            color: #137333;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .unpaid-badge {
-            background-color: #fce8e6;
-            color: #c5221f;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: #5f6368;
-            font-size: 14px;
-            border-top: 1px solid #e0e0e0;
-            margin-top: 30px;
-        }
-        
-        @media (max-width: 1200px) {
-            .content {
-                flex-direction: column;
-            }
-            
-            .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid #e0e0e0;
-            }
-            
-            .sheet-header, .sheet-row {
-                grid-template-columns: 60px repeat(5, 180px);
-            }
         }
         
         @media (max-width: 768px) {
-            .totals-section {
+            .container {
                 grid-template-columns: 1fr;
             }
-            
-            .sheet-header, .sheet-row {
-                grid-template-columns: 50px repeat(5, 150px);
-            }
-            
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .header-controls {
-                width: 100%;
-                justify-content: space-between;
-            }
+        }
+        
+        .header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        h1 {
+            color: white;
+        }
+        
+        .finance-overview {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .finance-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .positive {
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 1.8rem;
+        }
+        
+        .negative {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 1.8rem;
+        }
+        
+        .neutral {
+            color: #3498db;
+            font-weight: bold;
+            font-size: 1.8rem;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-success {
+            background-color: #27ae60;
+        }
+        
+        .btn-success:hover {
+            background-color: #219653;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status-open {
+            color: #e67e22;
+            font-weight: bold;
+        }
+        
+        .status-paid {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .status-overdue {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .summary {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid #3498db;
+            color: #3498db;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <div class="logo-section">
-                <div class="logo-placeholder" id="logoContainer">
-                    <i class="fas fa-table"></i>
-                </div>
-                <div>
-                    <h1>Finanz-Tabelle</h1>
-                    <div class="firebase-status" id="firebaseStatus">
-                        <i class="fas fa-circle"></i> Verbindung wird hergestellt...
-                    </div>
-                </div>
-            </div>
-            <div class="header-controls">
-                <button class="btn btn-secondary" id="saveBtn">
-                    <i class="fas fa-cloud-upload-alt"></i> Speichern
-                </button>
-                <button class="btn btn-primary" id="addRowBtn">
-                    <i class="fas fa-plus"></i> Zeile hinzufügen
-                </button>
-            </div>
-        </header>
-        
-        <div class="content">
-            <nav class="sidebar">
-                <h3>Navigation</h3>
-                <ul class="nav-list">
-                    <li class="nav-item active" data-section="sheet">
-                        <i class="fas fa-table"></i> Tabelle
-                    </li>
-                    <li class="nav-item" data-section="contracts">
-                        <i class="fas fa-file-contract"></i> Verträge
-                    </li>
-                    <li class="nav-item" data-section="overview">
-                        <i class="fas fa-chart-pie"></i> Übersicht
-                    </li>
-                    <li class="nav-item" data-section="settings">
-                        <i class="fas fa-cog"></i> Einstellungen
-                    </li>
-                </ul>
-                
-                <h3 style="margin-top: 30px;">Schnellformeln</h3>
-                <div style="background-color: #e8f0fe; padding: 15px; border-radius: 6px; font-size: 14px;">
-                    <p><strong>=SUMME(C7)</strong> - Summe von C7</p>
-                    <p><strong>=TEXT(J25/I25;"0%")</strong> - Prozentsatz formatieren</p>
-                    <p><strong>=SUMME(C8)+F6+I5+L8</strong> - Mehrfachsumme</p>
-                </div>
-            </nav>
-            
-            <main class="main-content">
-                <div class="formula-bar">
-                    <div class="formula-label">Formel:</div>
-                    <input type="text" class="formula-input" id="formulaInput" placeholder="z.B. =SUMME(C7:C12)" value="=SUMME(C7)">
-                    <div class="formula-result" id="formulaResult">0,00 €</div>
-                </div>
-                
-                <!-- Sheet View -->
-                <div id="sheetView" class="section-view">
-                    <h2>Tabelle</h2>
-                    <p>Bearbeite deine Finanzdaten wie in Google Sheets. Änderungen werden automatisch gespeichert.</p>
-                    
-                    <div class="sheet-container">
-                        <div class="sheet-header">
-                            <div class="cell header-cell">#</div>
-                            <div class="cell header-cell">Beschreibung</div>
-                            <div class="cell header-cell">Betrag (€)</div>
-                            <div class="cell header-cell">Kategorie</div>
-                            <div class="cell header-cell">Datum</div>
-                            <div class="cell header-cell">Status</div>
-                        </div>
-                        
-                        <div id="sheetBody">
-                            <!-- Rows will be dynamically generated -->
-                        </div>
-                    </div>
-                    
-                    <div class="totals-section">
-                        <div class="total-card">
-                            <h3>Gesamteinkommen</h3>
-                            <div class="total-value total-income" id="totalIncome">0,00 €</div>
-                        </div>
-                        <div class="total-card">
-                            <h3>Gesamtausgaben</h3>
-                            <div class="total-value total-expenses" id="totalExpenses">0,00 €</div>
-                        </div>
-                        <div class="total-card">
-                            <h3>Verfügbar</h3>
-                            <div class="total-value total-balance" id="totalBalance">0,00 €</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Contracts View -->
-                <div id="contractsView" class="section-view" style="display: none;">
-                    <h2>Verträge</h2>
-                    <p>Übersicht aller Verträge und Zahlungsstatus</p>
-                    
-                    <div class="contract-list" id="contractsList">
-                        <!-- Contracts will be dynamically generated -->
-                    </div>
-                    
-                    <button class="btn btn-primary" id="addContractBtn" style="margin-top: 20px;">
-                        <i class="fas fa-plus"></i> Neuen Vertrag hinzufügen
-                    </button>
-                </div>
-                
-                <!-- Overview View -->
-                <div id="overviewView" class="section-view" style="display: none;">
-                    <h2>Übersicht</h2>
-                    <p>Finanzübersicht basierend auf deinen Daten</p>
-                    
-                    <div class="totals-section">
-                        <div class="total-card">
-                            <h3>Bü</h3>
-                            <div class="total-value total-income" id="buValue">800,66 €</div>
-                        </div>
-                        <div class="total-card">
-                            <h3>Downloadsnet Ticket</h3>
-                            <div class="total-value total-expenses" id="ticketValue">0,00 €</div>
-                        </div>
-                        <div class="total-card">
-                            <h3>Übrig</h3>
-                            <div class="total-value total-balance" id="remainingValue">0,00 €</div>
-                        </div>
-                    </div>
-                    
-                    <h3 style="margin-top: 30px;">Zahlungsstatus</h3>
-                    <div id="paymentStatus">
-                        <!-- Payment status will be dynamically generated -->
-                    </div>
-                </div>
-                
-                <!-- Settings View -->
-                <div id="settingsView" class="section-view" style="display: none;">
-                    <h2>Einstellungen</h2>
-                    <p>Verwalte Firebase-Einstellungen und Daten</p>
-                    
-                    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px;">
-                        <h3>Firebase Konfiguration</h3>
-                        <p>Verbundene Datenbank: <strong id="dbName">khusland-b7d13</strong></p>
-                        <p>Storage Bucket: <strong id="storageBucket">khusland-b7d13.firebasestorage.app</strong></p>
-                        
-                        <div style="margin-top: 20px;">
-                            <button class="btn btn-secondary" id="exportDataBtn">
-                                <i class="fas fa-download"></i> Daten exportieren
-                            </button>
-                            <button class="btn btn-secondary" id="clearDataBtn">
-                                <i class="fas fa-trash"></i> Lokale Daten löschen
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </main>
+        <div class="header">
+            <h1>Vertrags- und Rechnungsverwaltung</h1>
+            <p>Überblick über deine Finanzen, Verträge und Rechnungen</p>
         </div>
         
-        <footer>
-            <p>Finanz-Tabelle | Ähnlich zu Google Sheets mit Firebase-Integration</p>
-            <p style="font-size: 12px; margin-top: 5px;">Daten werden sicher in Firebase gespeichert</p>
-        </footer>
-    </div>
-    
-    <!-- Modal for adding contracts -->
-    <div class="modal" id="contractModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Vertrag hinzufügen</h2>
-                <button class="btn btn-secondary" id="closeModalBtn">&times;</button>
+        <div class="finance-overview">
+            <div class="finance-box">
+                <h3>Aktueller Kontostand</h3>
+                <div id="currentBalance" class="neutral">€ 0,00</div>
             </div>
-            <div class="modal-body">
+            <div class="finance-box">
+                <h3>Verfügbares Budget</h3>
+                <div id="availableBudget" class="positive">€ 0,00</div>
+            </div>
+            <div class="finance-box">
+                <h3>Offene Forderungen</h3>
+                <div id="openInvoices" class="positive">€ 0,00</div>
+            </div>
+            <div class="finance-box">
+                <h3>Offene Rechnungen</h3>
+                <div id="openBills" class="negative">€ 0,00</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Finanzübersicht</h2>
+            <div class="form-group">
+                <label for="initialBalance">Anfangskontostand (Monatsbeginn)</label>
+                <input type="number" id="initialBalance" step="0.01" placeholder="0,00">
+            </div>
+            <div class="form-group">
+                <label for="currentAccount">Aktueller Kontostand</label>
+                <input type="number" id="currentAccount" step="0.01" placeholder="0,00">
+            </div>
+            <button onclick="updateFinance()">Finanzen aktualisieren</button>
+            <div class="summary">
+                <p>Das verfügbare Budget wird berechnet aus: Aktueller Kontostand - Offene Rechnungen + Offene Forderungen</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('contract')">Vertrag hinzufügen</div>
+                <div class="tab" onclick="switchTab('invoice')">Rechnung hinzufügen</div>
+                <div class="tab" onclick="switchTab('purchase')">Einkauf hinzufügen</div>
+            </div>
+            
+            <div id="contract-form" class="tab-content active">
+                <h3>Neuen Vertrag erfassen</h3>
                 <div class="form-group">
-                    <label for="contractName">Vertragsname</label>
-                    <input type="text" id="contractName" class="form-control" placeholder="z.B. PlayStation Vertrag">
+                    <label for="contractName">Vertragsbezeichnung</label>
+                    <input type="text" id="contractName" placeholder="z.B. Internetvertrag">
                 </div>
                 <div class="form-group">
-                    <label for="contractAmount">Betrag (€)</label>
-                    <input type="number" id="contractAmount" class="form-control" placeholder="0,00" step="0.01">
+                    <label for="contractAmount">Betrag (monatlich)</label>
+                    <input type="number" id="contractAmount" step="0.01" placeholder="0,00">
                 </div>
                 <div class="form-group">
-                    <label for="contractStatus">Status</label>
-                    <select id="contractStatus" class="form-control">
-                        <option value="paid">Bezahlt</option>
-                        <option value="unpaid" selected>Nicht bezahlt</option>
-                        <option value="pending">Ausstehend</option>
+                    <label for="contractStart">Startdatum</label>
+                    <input type="date" id="contractStart">
+                </div>
+                <div class="form-group">
+                    <label for="contractDuration">Vertragslaufzeit (Monate)</label>
+                    <input type="number" id="contractDuration" placeholder="12">
+                </div>
+                <button onclick="addContract()" class="btn-success">Vertrag speichern</button>
+            </div>
+            
+            <div id="invoice-form" class="tab-content">
+                <h3>Rechnung erfassen</h3>
+                <div class="form-group">
+                    <label for="invoiceType">Rechnungstyp</label>
+                    <select id="invoiceType">
+                        <option value="outgoing">Ausgehende Rechnung (Forderung)</option>
+                        <option value="incoming">Eingehende Rechnung (Verbindlichkeit)</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="invoiceDescription">Beschreibung</label>
+                    <input type="text" id="invoiceDescription" placeholder="z.B. Webdesign für Kunde XY">
+                </div>
+                <div class="form-group">
+                    <label for="invoiceAmount">Betrag</label>
+                    <input type="number" id="invoiceAmount" step="0.01" placeholder="0,00">
+                </div>
+                <div class="form-group">
+                    <label for="invoiceDate">Rechnungsdatum</label>
+                    <input type="date" id="invoiceDate">
+                </div>
+                <div class="form-group">
+                    <label for="invoiceDueDate">Fälligkeitsdatum (30 Tage nach Rechnungsdatum)</label>
+                    <input type="date" id="invoiceDueDate">
+                </div>
+                <button onclick="addInvoice()" class="btn-success">Rechnung speichern</button>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelModalBtn">Abbrechen</button>
-                <button class="btn btn-primary" id="saveContractBtn">Speichern</button>
+            
+            <div id="purchase-form" class="tab-content">
+                <h3>Einkauf erfassen</h3>
+                <div class="form-group">
+                    <label for="purchaseDescription">Beschreibung</label>
+                    <input type="text" id="purchaseDescription" placeholder="z.B. Büromaterial">
+                </div>
+                <div class="form-group">
+                    <label for="purchaseAmount">Betrag</label>
+                    <input type="number" id="purchaseAmount" step="0.01" placeholder="0,00">
+                </div>
+                <div class="form-group">
+                    <label for="purchaseDate">Datum</label>
+                    <input type="date" id="purchaseDate">
+                </div>
+                <div class="form-group">
+                    <label for="purchaseCategory">Kategorie</label>
+                    <select id="purchaseCategory">
+                        <option value="office">Bürobedarf</option>
+                        <option value="material">Material</option>
+                        <option value="equipment">Geräte</option>
+                        <option value="other">Sonstiges</option>
+                    </select>
+                </div>
+                <button onclick="addPurchase()" class="btn-success">Einkauf speichern</button>
             </div>
+        </div>
+        
+        <div class="card">
+            <h2>Verträge</h2>
+            <table id="contractsTable">
+                <thead>
+                    <tr>
+                        <th>Bezeichnung</th>
+                        <th>Betrag (monatlich)</th>
+                        <th>Startdatum</th>
+                        <th>Laufzeit</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody id="contractsBody">
+                    <!-- Verträge werden hier eingefügt -->
+                </tbody>
+            </table>
+            <p class="summary" id="contractSummary">Keine Verträge vorhanden</p>
+        </div>
+        
+        <div class="card">
+            <h2>Rechnungen</h2>
+            <div class="form-group">
+                <label for="invoiceFilter">Filter:</label>
+                <select id="invoiceFilter" onchange="filterInvoices()">
+                    <option value="all">Alle Rechnungen</option>
+                    <option value="outgoing">Ausgehende Rechnungen (Forderungen)</option>
+                    <option value="incoming">Eingehende Rechnungen (Verbindlichkeiten)</option>
+                    <option value="open">Offen</option>
+                    <option value="paid">Bezahlt</option>
+                    <option value="overdue">Überfällig</option>
+                </select>
+            </div>
+            <table id="invoicesTable">
+                <thead>
+                    <tr>
+                        <th>Typ</th>
+                        <th>Beschreibung</th>
+                        <th>Betrag</th>
+                        <th>Rechnungsdatum</th>
+                        <th>Fällig am</th>
+                        <th>Status</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody id="invoicesBody">
+                    <!-- Rechnungen werden hier eingefügt -->
+                </tbody>
+            </table>
+            <p class="summary" id="invoiceSummary">Keine Rechnungen vorhanden</p>
+        </div>
+        
+        <div class="card">
+            <h2>Einkäufe</h2>
+            <table id="purchasesTable">
+                <thead>
+                    <tr>
+                        <th>Beschreibung</th>
+                        <th>Betrag</th>
+                        <th>Datum</th>
+                        <th>Kategorie</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody id="purchasesBody">
+                    <!-- Einkäufe werden hier eingefügt -->
+                </tbody>
+            </table>
+            <p class="summary" id="purchaseSummary">Keine Einkäufe vorhanden</p>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        // Firebase Import und Konfiguration
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
-        import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
-        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-storage.js";
-
-        // Firebase Konfiguration (aus deinem Code)
-        const firebaseConfig = {
-            apiKey: "AIzaSyCw4nadHCIRcouTJJoQ3ElToiVVFr5Rufo",
-            authDomain: "khusland-b7d13.firebaseapp.com",
-            databaseURL: "https://khusland-b7d13-default-rtdb.firebaseio.com",
-            projectId: "khusland-b7d13",
-            storageBucket: "khusland-b7d13.firebasestorage.app",
-            messagingSenderId: "69573193613",
-            appId: "1:69573193613:web:86c4d839281b1e343cd7c4",
-            measurementId: "G-JSCWR4207G"
-        };
-
-        // Firebase initialisieren
-        const app = initializeApp(firebaseConfig, "FinanzApp");
-        const analytics = getAnalytics(app);
-        const db = getDatabase(app);
-        const storage = getStorage(app);
-        
-        // Referenzen zu deiner bestehenden Firebase-Datenbank
-        const entriesRef = ref(db, 'weed_entries');
-        const discountsRef = ref(db, 'discount_settings');
-        const logoSettingsRef = ref(db, 'logo_settings');
-        const logoImageRef = storageRef(storage, 'global_logo.png');
-        
-        // Eigene Referenzen für die Finanz-App
-        const financeEntriesRef = ref(db, 'finance_entries');
-        const contractsRef = ref(db, 'finance_contracts');
-        
-        // Firebase Status aktualisieren
-        const firebaseStatus = document.getElementById('firebaseStatus');
-        firebaseStatus.innerHTML = '<i class="fas fa-circle"></i> Mit Firebase verbunden';
-        firebaseStatus.className = 'firebase-status status-connected';
-        
-        // App-Zustand
-        const state = {
-            sheetData: [],
-            contracts: [],
-            currentFormula: "=SUMME(C7)",
-            selectedCell: null
+    <script>
+        // Datenstruktur
+        let finances = {
+            initialBalance: 0,
+            currentAccount: 0
         };
         
-        // Initialisiere die App
+        let contracts = [];
+        let invoices = [];
+        let purchases = [];
+        
+        // Initialisierung bei Seitenladung
         document.addEventListener('DOMContentLoaded', function() {
-            initApp();
+            // Heutiges Datum für Datumsfelder setzen
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('contractStart').value = today;
+            document.getElementById('invoiceDate').value = today;
+            document.getElementById('purchaseDate').value = today;
+            
+            // Fälligkeitsdatum automatisch auf 30 Tage setzen
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            document.getElementById('invoiceDueDate').value = dueDate.toISOString().split('T')[0];
+            
+            // Gespeicherte Daten laden
+            loadData();
+            
+            // Finanzen berechnen
+            updateFinance();
+            
+            // Tabellen aktualisieren
+            updateContractsTable();
+            updateInvoicesTable();
+            updatePurchasesTable();
         });
         
-        function initApp() {
-            // Navigation einrichten
-            setupNavigation();
-            
-            // Sheet initialisieren
-            initSheet();
-            
-            // Formel-Leiste einrichten
-            setupFormulaBar();
-            
-            // Buttons einrichten
-            setupButtons();
-            
-            // Firebase-Daten laden
-            loadFinanceData();
-            loadContracts();
-            
-            // Beispiel-Daten hinzufügen, wenn keine vorhanden sind
-            setTimeout(() => {
-                if (state.sheetData.length === 0) {
-                    addExampleData();
-                }
-                if (state.contracts.length === 0) {
-                    addExampleContracts();
-                }
-            }, 1000);
-        }
-        
-        function setupNavigation() {
-            const navItems = document.querySelectorAll('.nav-item');
-            const sectionViews = document.querySelectorAll('.section-view');
-            
-            navItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const section = this.getAttribute('data-section');
-                    
-                    // Aktive Navigation aktualisieren
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Section anzeigen
-                    sectionViews.forEach(view => view.style.display = 'none');
-                    document.getElementById(`${section}View`).style.display = 'block';
-                });
-            });
-        }
-        
-        function initSheet() {
-            const sheetBody = document.getElementById('sheetBody');
-            
-            // Initiale Zeilen erstellen
-            for (let i = 0; i < 10; i++) {
-                addSheetRow(i);
-            }
-            
-            // Event Listener für Zellen
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('editable-cell')) {
-                    state.selectedCell = e.target;
-                    updateFormulaBar();
-                }
-            });
-        }
-        
-        function addSheetRow(index) {
-            const sheetBody = document.getElementById('sheetBody');
-            const row = document.createElement('div');
-            row.className = 'sheet-row';
-            row.id = `row-${index}`;
-            
-            const rowNum = index + 1;
-            const categories = ['Einkommen', 'Verträge', 'Sonstiges', 'Investitionen'];
-            const statuses = ['Bezahlt', 'Ausstehend', 'Überfällig'];
-            
-            row.innerHTML = `
-                <div class="cell row-header">${rowNum}</div>
-                <div class="cell editable-cell" data-row="${index}" data-col="B" contenteditable="true">Neuer Eintrag</div>
-                <div class="cell editable-cell" data-row="${index}" data-col="C" contenteditable="true">0,00</div>
-                <div class="cell editable-cell" data-row="${index}" data-col="D" contenteditable="true">${categories[index % categories.length]}</div>
-                <div class="cell editable-cell" data-row="${index}" data-col="E" contenteditable="true">${new Date().toLocaleDateString('de-DE')}</div>
-                <div class="cell editable-cell" data-row="${index}" data-col="F" contenteditable="true">${statuses[index % statuses.length]}</div>
-            `;
-            
-            sheetBody.appendChild(row);
-            
-            // Event Listener für Zellenänderungen
-            const cells = row.querySelectorAll('.editable-cell');
-            cells.forEach(cell => {
-                cell.addEventListener('input', function() {
-                    updateTotals();
-                    saveToLocalStorage();
-                });
-                
-                cell.addEventListener('blur', function() {
-                    // Formatierung für Betragszellen
-                    if (this.getAttribute('data-col') === 'C') {
-                        const value = parseFloat(this.textContent.replace(',', '.'));
-                        if (!isNaN(value)) {
-                            this.textContent = value.toFixed(2).replace('.', ',');
-                        }
-                    }
-                });
+        // Funktionen für Tabs
+        function switchTab(tabName) {
+            // Tabs deaktivieren
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
             });
             
-            state.sheetData[index] = {
-                id: index,
-                description: 'Neuer Eintrag',
-                amount: 0,
-                category: categories[index % categories.length],
-                date: new Date().toLocaleDateString('de-DE'),
-                status: statuses[index % statuses.length]
-            };
-            
-            updateTotals();
-        }
-        
-        function setupFormulaBar() {
-            const formulaInput = document.getElementById('formulaInput');
-            const formulaResult = document.getElementById('formulaResult');
-            
-            formulaInput.value = state.currentFormula;
-            
-            formulaInput.addEventListener('input', function() {
-                state.currentFormula = this.value;
-                evaluateFormula();
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
             });
             
-            formulaInput.addEventListener('keyup', function(e) {
-                if (e.key === 'Enter') {
-                    evaluateFormula();
-                }
-            });
-            
-            // Initiale Formel auswerten
-            evaluateFormula();
-        }
-        
-        function evaluateFormula() {
-            const formula = state.currentFormula;
-            const formulaResult = document.getElementById('formulaResult');
-            
-            try {
-                if (formula.startsWith('=SUMME(')) {
-                    // Einfache SUMME-Formel auswerten
-                    const rangeMatch = formula.match(/=SUMME\(([^)]+)\)/);
-                    if (rangeMatch) {
-                        const range = rangeMatch[1];
-                        
-                        // Einzelne Zelle (z.B. C7)
-                        if (range.match(/^[A-Z]+\d+$/)) {
-                            const cellRef = range;
-                            const cell = document.querySelector(`[data-col="${cellRef.substring(0,1)}"][data-row="${parseInt(cellRef.substring(1))-1}"]`);
-                            if (cell) {
-                                const value = parseFloat(cell.textContent.replace(',', '.')) || 0;
-                                formulaResult.textContent = value.toFixed(2).replace('.', ',') + ' €';
-                                return;
-                            }
-                        }
-                        
-                        // Bereich (z.B. C7:C12)
-                        if (range.includes(':')) {
-                            const [start, end] = range.split(':');
-                            const startCol = start.match(/[A-Z]+/)[0];
-                            const startRow = parseInt(start.match(/\d+/)[0]) - 1;
-                            const endCol = end.match(/[A-Z]+/)[0];
-                            const endRow = parseInt(end.match(/\d+/)[0]) - 1;
-                            
-                            let sum = 0;
-                            for (let row = startRow; row <= endRow; row++) {
-                                const cell = document.querySelector(`[data-col="${startCol}"][data-row="${row}"]`);
-                                if (cell) {
-                                    const value = parseFloat(cell.textContent.replace(',', '.')) || 0;
-                                    sum += value;
-                                }
-                            }
-                            
-                            formulaResult.textContent = sum.toFixed(2).replace('.', ',') + ' €';
-                            return;
-                        }
-                        
-                        // Mehrere Zellen (z.B. C7+C8+...)
-                        if (range.includes('+')) {
-                            const cells = range.split('+');
-                            let sum = 0;
-                            
-                            cells.forEach(cellRef => {
-                                const cell = document.querySelector(`[data-col="${cellRef.substring(0,1)}"][data-row="${parseInt(cellRef.substring(1))-1}"]`);
-                                if (cell) {
-                                    const value = parseFloat(cell.textContent.replace(',', '.')) || 0;
-                                    sum += value;
-                                }
-                            });
-                            
-                            formulaResult.textContent = sum.toFixed(2).replace('.', ',') + ' €';
-                            return;
-                        }
-                    }
-                } else if (formula.startsWith('=TEXT(')) {
-                    // TEXT-Formel auswerten (für Prozentsätze)
-                    const textMatch = formula.match(/=TEXT\(([^;]+);"([^"]+)"\)/);
-                    if (textMatch) {
-                        const expression = textMatch[1];
-                        const format = textMatch[2];
-                        
-                        // Einfache Division (z.B. J25/I25)
-                        if (expression.includes('/')) {
-                            const [numRef, denRef] = expression.split('/');
-                            const numCell = document.querySelector(`[data-col="${numRef.substring(0,1)}"][data-row="${parseInt(numRef.substring(1))-1}"]`);
-                            const denCell = document.querySelector(`[data-col="${denRef.substring(0,1)}"][data-row="${parseInt(denRef.substring(1))-1}"]`);
-                            
-                            if (numCell && denCell) {
-                                const numerator = parseFloat(numCell.textContent.replace(',', '.')) || 0;
-                                const denominator = parseFloat(denCell.textContent.replace(',', '.')) || 1;
-                                const percentage = (numerator / denominator) * 100;
-                                
-                                if (format === '0%') {
-                                    formulaResult.textContent = Math.round(percentage) + '%';
-                                } else {
-                                    formulaResult.textContent = percentage.toFixed(2) + '%';
-                                }
-                                return;
-                            }
-                        }
-                    }
-                }
-                
-                // Wenn keine spezielle Formel erkannt wurde
-                formulaResult.textContent = 'Formel wird ausgewertet...';
-                
-            } catch (error) {
-                formulaResult.textContent = 'Fehler in der Formel';
-                console.error('Formel-Fehler:', error);
+            // Aktiven Tab setzen
+            if (tabName === 'contract') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('contract-form').classList.add('active');
+            } else if (tabName === 'invoice') {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('invoice-form').classList.add('active');
+            } else if (tabName === 'purchase') {
+                document.querySelectorAll('.tab')[2].classList.add('active');
+                document.getElementById('purchase-form').classList.add('active');
             }
         }
         
-        function updateFormulaBar() {
-            if (state.selectedCell) {
-                const col = state.selectedCell.getAttribute('data-col');
-                const row = parseInt(state.selectedCell.getAttribute('data-row')) + 1;
-                const formulaInput = document.getElementById('formulaInput');
-                formulaInput.value = `=${col}${row}`;
-                evaluateFormula();
+        // Finanzen aktualisieren
+        function updateFinance() {
+            // Werte aus Formular lesen
+            finances.initialBalance = parseFloat(document.getElementById('initialBalance').value) || 0;
+            finances.currentAccount = parseFloat(document.getElementById('currentAccount').value) || 0;
+            
+            // Berechnungen durchführen
+            const openInvoicesAmount = calculateOpenInvoices();
+            const openBillsAmount = calculateOpenBills();
+            const availableBudget = finances.currentAccount - openBillsAmount + openInvoicesAmount;
+            
+            // Anzeige aktualisieren
+            document.getElementById('currentBalance').textContent = `€ ${finances.currentAccount.toFixed(2)}`;
+            document.getElementById('availableBudget').textContent = `€ ${availableBudget.toFixed(2)}`;
+            document.getElementById('openInvoices').textContent = `€ ${openInvoicesAmount.toFixed(2)}`;
+            document.getElementById('openBills').textContent = `€ ${openBillsAmount.toFixed(2)}`;
+            
+            // Farben basierend auf Wert setzen
+            document.getElementById('availableBudget').className = availableBudget >= 0 ? 'positive' : 'negative';
+            
+            // Daten speichern
+            saveData();
+        }
+        
+        function calculateOpenInvoices() {
+            // Summe aller offenen ausgehenden Rechnungen (Forderungen)
+            return invoices
+                .filter(invoice => invoice.type === 'outgoing' && invoice.status === 'open')
+                .reduce((sum, invoice) => sum + invoice.amount, 0);
+        }
+        
+        function calculateOpenBills() {
+            // Summe aller offenen eingehenden Rechnungen (Verbindlichkeiten)
+            return invoices
+                .filter(invoice => invoice.type === 'incoming' && invoice.status === 'open')
+                .reduce((sum, invoice) => sum + invoice.amount, 0);
+        }
+        
+        // Vertrag hinzufügen
+        function addContract() {
+            const name = document.getElementById('contractName').value;
+            const amount = parseFloat(document.getElementById('contractAmount').value);
+            const start = document.getElementById('contractStart').value;
+            const duration = parseInt(document.getElementById('contractDuration').value);
+            
+            if (!name || isNaN(amount) || !start || isNaN(duration)) {
+                alert('Bitte fülle alle Felder korrekt aus.');
+                return;
             }
-        }
-        
-        function updateTotals() {
-            let totalIncome = 0;
-            let totalExpenses = 0;
             
-            // Alle Betragszellen durchgehen (Spalte C)
-            const amountCells = document.querySelectorAll('[data-col="C"]');
-            amountCells.forEach(cell => {
-                const rowElement = cell.closest('.sheet-row');
-                if (rowElement) {
-                    const categoryCell = rowElement.querySelector('[data-col="D"]');
-                    const amount = parseFloat(cell.textContent.replace(',', '.')) || 0;
-                    
-                    if (categoryCell && categoryCell.textContent.includes('Einkommen')) {
-                        totalIncome += amount;
-                    } else {
-                        totalExpenses += amount;
-                    }
-                }
-            });
-            
-            // Totals aktualisieren
-            document.getElementById('totalIncome').textContent = totalIncome.toFixed(2).replace('.', ',') + ' €';
-            document.getElementById('totalExpenses').textContent = totalExpenses.toFixed(2).replace('.', ',') + ' €';
-            document.getElementById('totalBalance').textContent = (totalIncome - totalExpenses).toFixed(2).replace('.', ',') + ' €';
-            
-            // Übersicht aktualisieren
-            document.getElementById('buValue').textContent = '800,66 €';
-            document.getElementById('remainingValue').textContent = (800.66 - totalExpenses).toFixed(2).replace('.', ',') + ' €';
-            
-            // Zahlungsstatus aktualisieren
-            updatePaymentStatus();
-        }
-        
-        function updatePaymentStatus() {
-            const paymentStatus = document.getElementById('paymentStatus');
-            const unpaidContracts = state.contracts.filter(c => c.status === 'unpaid');
-            const paidContracts = state.contracts.filter(c => c.status === 'paid');
-            const totalContracts = state.contracts.length;
-            
-            if (totalContracts > 0) {
-                const percentage = Math.round((paidContracts.length / totalContracts) * 100);
-                paymentStatus.innerHTML = `
-                    <div style="margin-top: 15px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                            <span>Bezahlte Verträge: ${paidContracts.length}/${totalContracts}</span>
-                            <span>${percentage}%</span>
-                        </div>
-                        <div style="height: 10px; background-color: #e0e0e0; border-radius: 5px; overflow: hidden;">
-                            <div style="height: 100%; width: ${percentage}%; background-color: #34a853;"></div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                paymentStatus.innerHTML = '<p>Keine Verträge vorhanden.</p>';
-            }
-        }
-        
-        function setupButtons() {
-            // Zeile hinzufügen Button
-            document.getElementById('addRowBtn').addEventListener('click', function() {
-                const newIndex = state.sheetData.length;
-                addSheetRow(newIndex);
-                saveToFirebase();
-            });
-            
-            // Speichern Button
-            document.getElementById('saveBtn').addEventListener('click', function() {
-                saveToFirebase();
-                showMessage('Daten gespeichert!', 'success');
-            });
-            
-            // Vertrag hinzufügen Button
-            document.getElementById('addContractBtn').addEventListener('click', function() {
-                document.getElementById('contractModal').style.display = 'flex';
-            });
-            
-            // Modal Buttons
-            document.getElementById('closeModalBtn').addEventListener('click', closeModal);
-            document.getElementById('cancelModalBtn').addEventListener('click', closeModal);
-            
-            // Vertrag speichern Button
-            document.getElementById('saveContractBtn').addEventListener('click', function() {
-                const name = document.getElementById('contractName').value;
-                const amount = parseFloat(document.getElementById('contractAmount').value);
-                const status = document.getElementById('contractStatus').value;
-                
-                if (name && !isNaN(amount)) {
-                    addContract(name, amount, status);
-                    closeModal();
-                    showMessage('Vertrag hinzugefügt!', 'success');
-                }
-            });
-            
-            // Daten exportieren Button
-            document.getElementById('exportDataBtn').addEventListener('click', function() {
-                exportData();
-            });
-            
-            // Daten löschen Button
-            document.getElementById('clearDataBtn').addEventListener('click', function() {
-                if (confirm('Sind Sie sicher, dass Sie alle lokalen Daten löschen möchten?')) {
-                    clearLocalData();
-                    showMessage('Lokale Daten gelöscht!', 'info');
-                }
-            });
-        }
-        
-        function closeModal() {
-            document.getElementById('contractModal').style.display = 'none';
-            // Modal zurücksetzen
-            document.getElementById('contractName').value = '';
-            document.getElementById('contractAmount').value = '';
-            document.getElementById('contractStatus').value = 'unpaid';
-        }
-        
-        function addContract(name, amount, status) {
             const contract = {
                 id: Date.now(),
                 name: name,
                 amount: amount,
-                status: status,
-                date: new Date().toLocaleDateString('de-DE')
+                start: start,
+                duration: duration,
+                active: true
             };
             
-            state.contracts.push(contract);
-            renderContracts();
-            saveContractsToFirebase();
+            contracts.push(contract);
+            updateContractsTable();
+            saveData();
+            
+            // Formular zurücksetzen
+            document.getElementById('contractName').value = '';
+            document.getElementById('contractAmount').value = '';
+            document.getElementById('contractStart').value = new Date().toISOString().split('T')[0];
+            document.getElementById('contractDuration').value = '';
+            
+            alert('Vertrag erfolgreich hinzugefügt.');
         }
         
-        function renderContracts() {
-            const contractsList = document.getElementById('contractsList');
-            contractsList.innerHTML = '';
+        // Rechnung hinzufügen
+        function addInvoice() {
+            const type = document.getElementById('invoiceType').value;
+            const description = document.getElementById('invoiceDescription').value;
+            const amount = parseFloat(document.getElementById('invoiceAmount').value);
+            const date = document.getElementById('invoiceDate').value;
+            const dueDate = document.getElementById('invoiceDueDate').value;
             
-            // Verträge aus deiner Notiz
-            const noteContracts = [
-                { name: 'PlayStation Vertrag', amount: 15.99, status: 'unpaid' },
-                { name: 'Epimax Vertrag', amount: 9.99, status: 'unpaid' },
-                { name: 'Apple BOGB Cloud Mountain', amount: 2.99, status: 'unpaid' },
-                { name: 'Black Gosilla', amount: 4.99, status: 'unpaid' },
-                { name: 'Speedup Pascal', amount: 12.99, status: 'unpaid' },
-                { name: 'Intel Vertrag', amount: 19.99, status: 'unpaid' },
-                { name: 'Monster Vertrag', amount: 14.99, status: 'unpaid' },
-                { name: 'Deutschland Sicher mentalen', amount: 8.99, status: 'unpaid' },
-                { name: 'Stahl Vertrag', amount: 6.99, status: 'paid' },
-                { name: 'Wien Zuhause vertrag Monasteri SS', amount: 22.99, status: 'paid' },
-                { name: 'c3 Mobile Vertrag', amount: 11.99, status: 'paid' },
-                { name: 'Grafikkarte vertrag', amount: 29.99, status: 'paid' }
-            ];
+            if (!description || isNaN(amount) || !date || !dueDate) {
+                alert('Bitte fülle alle Felder korrekt aus.');
+                return;
+            }
             
-            // Kombiniere Notiz-Verträge mit hinzugefügten Verträgen
-            const allContracts = [...noteContracts, ...state.contracts];
+            // Status basierend auf Fälligkeitsdatum bestimmen
+            let status = 'open';
+            const today = new Date();
+            const due = new Date(dueDate);
             
-            allContracts.forEach(contract => {
-                const contractItem = document.createElement('div');
-                contractItem.className = `contract-item ${contract.status}`;
+            if (due < today) {
+                status = 'overdue';
+            }
+            
+            const invoice = {
+                id: Date.now(),
+                type: type,
+                description: description,
+                amount: amount,
+                date: date,
+                dueDate: dueDate,
+                status: status
+            };
+            
+            invoices.push(invoice);
+            updateInvoicesTable();
+            updateFinance();
+            saveData();
+            
+            // Formular zurücksetzen
+            document.getElementById('invoiceDescription').value = '';
+            document.getElementById('invoiceAmount').value = '';
+            document.getElementById('invoiceDate').value = new Date().toISOString().split('T')[0];
+            
+            // Fälligkeitsdatum auf 30 Tage setzen
+            const newDueDate = new Date();
+            newDueDate.setDate(newDueDate.getDate() + 30);
+            document.getElementById('invoiceDueDate').value = newDueDate.toISOString().split('T')[0];
+            
+            alert('Rechnung erfolgreich hinzugefügt.');
+        }
+        
+        // Einkauf hinzufügen
+        function addPurchase() {
+            const description = document.getElementById('purchaseDescription').value;
+            const amount = parseFloat(document.getElementById('purchaseAmount').value);
+            const date = document.getElementById('purchaseDate').value;
+            const category = document.getElementById('purchaseCategory').value;
+            
+            if (!description || isNaN(amount) || !date) {
+                alert('Bitte fülle alle Felder korrekt aus.');
+                return;
+            }
+            
+            const purchase = {
+                id: Date.now(),
+                description: description,
+                amount: amount,
+                date: date,
+                category: category
+            };
+            
+            purchases.push(purchase);
+            updatePurchasesTable();
+            saveData();
+            
+            // Formular zurücksetzen
+            document.getElementById('purchaseDescription').value = '';
+            document.getElementById('purchaseAmount').value = '';
+            document.getElementById('purchaseDate').value = new Date().toISOString().split('T')[0];
+            
+            alert('Einkauf erfolgreich hinzugefügt.');
+        }
+        
+        // Vertrag als bezahlt markieren oder löschen
+        function markContractPaid(id) {
+            const contract = contracts.find(c => c.id === id);
+            if (contract) {
+                contract.active = false;
+                updateContractsTable();
+                saveData();
+            }
+        }
+        
+        function deleteContract(id) {
+            if (confirm('Möchtest du diesen Vertrag wirklich löschen?')) {
+                contracts = contracts.filter(c => c.id !== id);
+                updateContractsTable();
+                saveData();
+            }
+        }
+        
+        // Rechnung als bezahlt markieren oder löschen
+        function markInvoicePaid(id) {
+            const invoice = invoices.find(i => i.id === id);
+            if (invoice) {
+                invoice.status = 'paid';
+                updateInvoicesTable();
+                updateFinance();
+                saveData();
+            }
+        }
+        
+        function deleteInvoice(id) {
+            if (confirm('Möchtest du diese Rechnung wirklich löschen?')) {
+                invoices = invoices.filter(i => i.id !== id);
+                updateInvoicesTable();
+                updateFinance();
+                saveData();
+            }
+        }
+        
+        // Einkauf löschen
+        function deletePurchase(id) {
+            if (confirm('Möchtest du diesen Einkauf wirklich löschen?')) {
+                purchases = purchases.filter(p => p.id !== id);
+                updatePurchasesTable();
+                saveData();
+            }
+        }
+        
+        // Rechnungen filtern
+        function filterInvoices() {
+            updateInvoicesTable();
+        }
+        
+        // Tabellen aktualisieren
+        function updateContractsTable() {
+            const tbody = document.getElementById('contractsBody');
+            tbody.innerHTML = '';
+            
+            if (contracts.length === 0) {
+                document.getElementById('contractSummary').textContent = 'Keine Verträge vorhanden';
+                return;
+            }
+            
+            let activeContracts = 0;
+            let monthlyTotal = 0;
+            
+            contracts.forEach(contract => {
+                const row = document.createElement('tr');
                 
-                const badge = contract.status === 'paid' ? 
-                    '<span class="paid-badge">Bezahlt</span>' : 
-                    '<span class="unpaid-badge">Nicht bezahlt</span>';
-                
-                contractItem.innerHTML = `
-                    <div class="contract-info">
-                        <h4>${contract.name}</h4>
-                        <p>Hinzugefügt am: ${contract.date || new Date().toLocaleDateString('de-DE')}</p>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <div class="contract-amount">${contract.amount.toFixed(2).replace('.', ',')} €</div>
-                        ${badge}
-                    </div>
+                row.innerHTML = `
+                    <td>${contract.name}</td>
+                    <td>€ ${contract.amount.toFixed(2)}</td>
+                    <td>${formatDate(contract.start)}</td>
+                    <td>${contract.duration} Monate</td>
+                    <td>
+                        <div class="actions">
+                            ${contract.active ? 
+                                `<button onclick="markContractPaid(${contract.id})" class="action-btn btn-success">Bezahlt</button>` : 
+                                `<span style="color:#27ae60; font-weight:bold">Beendet</span>`
+                            }
+                            <button onclick="deleteContract(${contract.id})" class="action-btn btn-danger">Löschen</button>
+                        </div>
+                    </td>
                 `;
                 
-                contractsList.appendChild(contractItem);
+                tbody.appendChild(row);
+                
+                if (contract.active) {
+                    activeContracts++;
+                    monthlyTotal += contract.amount;
+                }
             });
             
-            updatePaymentStatus();
+            document.getElementById('contractSummary').textContent = 
+                `${activeContracts} aktive Verträge, monatliche Gesamtkosten: € ${monthlyTotal.toFixed(2)}`;
         }
         
-        function addExampleData() {
-            const exampleData = [
-                { description: 'Gehalt', amount: 2450.00, category: 'Einkommen', date: '01.11.2023', status: 'Bezahlt' },
-                { description: 'Miete', amount: 850.00, category: 'Verträge', date: '05.11.2023', status: 'Bezahlt' },
-                { description: 'Strom', amount: 89.50, category: 'Verträge', date: '10.11.2023', status: 'Bezahlt' },
-                { description: 'Internet', amount: 39.99, category: 'Verträge', date: '12.11.2023', status: 'Bezahlt' },
-                { description: 'Lebensmittel', amount: 220.30, category: 'Sonstiges', date: '15.11.2023', status: 'Bezahlt' },
-                { description: 'Freelance Arbeit', amount: 450.00, category: 'Einkommen', date: '20.11.2023', status: 'Ausstehend' },
-                { description: 'Versicherung', amount: 120.00, category: 'Verträge', date: '25.11.2023', status: 'Überfällig' }
-            ];
+        function updateInvoicesTable() {
+            const tbody = document.getElementById('invoicesBody');
+            tbody.innerHTML = '';
             
-            const rows = document.querySelectorAll('.sheet-row');
-            exampleData.forEach((data, index) => {
-                if (rows[index]) {
-                    const cells = rows[index].querySelectorAll('.editable-cell');
-                    if (cells.length >= 5) {
-                        cells[0].textContent = data.description;
-                        cells[1].textContent = data.amount.toFixed(2).replace('.', ',');
-                        cells[2].textContent = data.category;
-                        cells[3].textContent = data.date;
-                        cells[4].textContent = data.status;
-                        
-                        // State aktualisieren
-                        state.sheetData[index] = {
-                            id: index,
-                            ...data
-                        };
+            const filter = document.getElementById('invoiceFilter').value;
+            
+            // Rechnungen basierend auf Filter filtern
+            let filteredInvoices = invoices;
+            
+            if (filter === 'outgoing') {
+                filteredInvoices = invoices.filter(invoice => invoice.type === 'outgoing');
+            } else if (filter === 'incoming') {
+                filteredInvoices = invoices.filter(invoice => invoice.type === 'incoming');
+            } else if (filter === 'open') {
+                filteredInvoices = invoices.filter(invoice => invoice.status === 'open');
+            } else if (filter === 'paid') {
+                filteredInvoices = invoices.filter(invoice => invoice.status === 'paid');
+            } else if (filter === 'overdue') {
+                filteredInvoices = invoices.filter(invoice => invoice.status === 'overdue');
+            }
+            
+            if (filteredInvoices.length === 0) {
+                document.getElementById('invoiceSummary').textContent = 'Keine Rechnungen vorhanden';
+                return;
+            }
+            
+            let outgoingTotal = 0;
+            let incomingTotal = 0;
+            let openTotal = 0;
+            
+            filteredInvoices.forEach(invoice => {
+                const row = document.createElement('tr');
+                
+                // Status-Klasse bestimmen
+                let statusClass = '';
+                if (invoice.status === 'open') statusClass = 'status-open';
+                if (invoice.status === 'paid') statusClass = 'status-paid';
+                if (invoice.status === 'overdue') statusClass = 'status-overdue';
+                
+                row.innerHTML = `
+                    <td>${invoice.type === 'outgoing' ? 'Forderung' : 'Verbindlichkeit'}</td>
+                    <td>${invoice.description}</td>
+                    <td>€ ${invoice.amount.toFixed(2)}</td>
+                    <td>${formatDate(invoice.date)}</td>
+                    <td>${formatDate(invoice.dueDate)}</td>
+                    <td class="${statusClass}">${getStatusText(invoice.status)}</td>
+                    <td>
+                        <div class="actions">
+                            ${invoice.status !== 'paid' ? 
+                                `<button onclick="markInvoicePaid(${invoice.id})" class="action-btn btn-success">Bezahlt</button>` : 
+                                ''
+                            }
+                            <button onclick="deleteInvoice(${invoice.id})" class="action-btn btn-danger">Löschen</button>
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+                
+                // Summen berechnen
+                if (invoice.type === 'outgoing') outgoingTotal += invoice.amount;
+                if (invoice.type === 'incoming') incomingTotal += invoice.amount;
+                if (invoice.status === 'open') openTotal += invoice.amount;
+            });
+            
+            document.getElementById('invoiceSummary').textContent = 
+                `${filteredInvoices.length} Rechnungen (Forderungen: € ${outgoingTotal.toFixed(2)}, Verbindlichkeiten: € ${incomingTotal.toFixed(2)}, Offen: € ${openTotal.toFixed(2)})`;
+        }
+        
+        function updatePurchasesTable() {
+            const tbody = document.getElementById('purchasesBody');
+            tbody.innerHTML = '';
+            
+            if (purchases.length === 0) {
+                document.getElementById('purchaseSummary').textContent = 'Keine Einkäufe vorhanden';
+                return;
+            }
+            
+            let totalAmount = 0;
+            
+            purchases.forEach(purchase => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${purchase.description}</td>
+                    <td>€ ${purchase.amount.toFixed(2)}</td>
+                    <td>${formatDate(purchase.date)}</td>
+                    <td>${getCategoryText(purchase.category)}</td>
+                    <td>
+                        <button onclick="deletePurchase(${purchase.id})" class="action-btn btn-danger">Löschen</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+                totalAmount += purchase.amount;
+            });
+            
+            document.getElementById('purchaseSummary').textContent = 
+                `${purchases.length} Einkäufe, Gesamtbetrag: € ${totalAmount.toFixed(2)}`;
+        }
+        
+        // Hilfsfunktionen
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('de-DE');
+        }
+        
+        function getStatusText(status) {
+            const statusMap = {
+                'open': 'Offen',
+                'paid': 'Bezahlt',
+                'overdue': 'Überfällig'
+            };
+            return statusMap[status] || status;
+        }
+        
+        function getCategoryText(category) {
+            const categoryMap = {
+                'office': 'Bürobedarf',
+                'material': 'Material',
+                'equipment': 'Geräte',
+                'other': 'Sonstiges'
+            };
+            return categoryMap[category] || category;
+        }
+        
+        // Daten speichern und laden (lokaler Speicher)
+        function saveData() {
+            const data = {
+                finances: finances,
+                contracts: contracts,
+                invoices: invoices,
+                purchases: purchases
+            };
+            
+            localStorage.setItem('accountingData', JSON.stringify(data));
+        }
+        
+        function loadData() {
+            const savedData = localStorage.getItem('accountingData');
+            
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                
+                finances = data.finances || finances;
+                contracts = data.contracts || contracts;
+                invoices = data.invoices || invoices;
+                purchases = data.purchases || purchases;
+                
+                // Formularfelder mit gespeicherten Werten füllen
+                document.getElementById('initialBalance').value = finances.initialBalance;
+                document.getElementById('currentAccount').value = finances.currentAccount;
+                
+                // Status der Rechnungen aktualisieren (überprüfen ob überfällig)
+                updateInvoiceStatuses();
+            }
+        }
+        
+        function updateInvoiceStatuses() {
+            const today = new Date();
+            
+            invoices.forEach(invoice => {
+                if (invoice.status !== 'paid') {
+                    const dueDate = new Date(invoice.dueDate);
+                    if (dueDate < today) {
+                        invoice.status = 'overdue';
                     }
                 }
             });
-            
-            updateTotals();
-            saveToLocalStorage();
         }
-        
-        function addExampleContracts() {
-            // Verträge aus deiner Notiz werden bereits in renderContracts() angezeigt
-            renderContracts();
-        }
-        
-        function loadFinanceData() {
-            // Versuche, Daten aus LocalStorage zu laden
-            const savedData = localStorage.getItem('financeSheetData');
-            if (savedData) {
-                try {
-                    const data = JSON.parse(savedData);
-                    state.sheetData = data;
-                    
-                    // Daten in das Sheet laden
-                    const rows = document.querySelectorAll('.sheet-row');
-                    data.forEach((item, index) => {
-                        if (rows[index] && item) {
-                            const cells = rows[index].querySelectorAll('.editable-cell');
-                            if (cells.length >= 5 && item.description) {
-                                cells[0].textContent = item.description;
-                                cells[1].textContent = (item.amount || 0).toFixed(2).replace('.', ',');
-                                cells[2].textContent = item.category || 'Sonstiges';
-                                cells[3].textContent = item.date || new Date().toLocaleDateString('de-DE');
-                                cells[4].textContent = item.status || 'Bezahlt';
-                            }
-                        }
-                    });
-                    
-                    updateTotals();
-                    console.log('Daten aus LocalStorage geladen');
-                } catch (error) {
-                    console.error('Fehler beim Laden der Daten:', error);
-                }
-            }
-            
-            // Versuche, Daten aus Firebase zu laden
-            onValue(financeEntriesRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    console.log('Daten aus Firebase geladen:', data);
-                    // Hier könntest du die Firebase-Daten mit den lokalen Daten mergen
-                }
-            });
-        }
-        
-        function loadContracts() {
-            // Versuche, Verträge aus LocalStorage zu laden
-            const savedContracts = localStorage.getItem('financeContracts');
-            if (savedContracts) {
-                try {
-                    state.contracts = JSON.parse(savedContracts);
-                    renderContracts();
-                    console.log('Verträge aus LocalStorage geladen');
-                } catch (error) {
-                    console.error('Fehler beim Laden der Verträge:', error);
-                }
-            }
-            
-            // Versuche, Verträge aus Firebase zu laden
-            onValue(contractsRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    console.log('Verträge aus Firebase geladen:', data);
-                    // Hier könntest du die Firebase-Verträge mit den lokalen Verträgen mergen
-                }
-            });
-        }
-        
-        function saveToLocalStorage() {
-            // Sheet-Daten sammeln
-            const rows = document.querySelectorAll('.sheet-row');
-            const sheetData = [];
-            
-            rows.forEach((row, index) => {
-                const cells = row.querySelectorAll('.editable-cell');
-                if (cells.length >= 5) {
-                    sheetData[index] = {
-                        id: index,
-                        description: cells[0].textContent,
-                        amount: parseFloat(cells[1].textContent.replace(',', '.')) || 0,
-                        category: cells[2].textContent,
-                        date: cells[3].textContent,
-                        status: cells[4].textContent
-                    };
-                }
-            });
-            
-            state.sheetData = sheetData;
-            localStorage.setItem('financeSheetData', JSON.stringify(sheetData));
-            localStorage.setItem('financeContracts', JSON.stringify(state.contracts));
-        }
-        
-        function saveToFirebase() {
-            // Sheet-Daten zu Firebase senden
-            const sheetData = state.sheetData;
-            set(financeEntriesRef, sheetData)
-                .then(() => {
-                    console.log('Daten zu Firebase gespeichert');
-                })
-                .catch((error) => {
-                    console.error('Fehler beim Speichern zu Firebase:', error);
-                });
-        }
-        
-        function saveContractsToFirebase() {
-            // Verträge zu Firebase senden
-            set(contractsRef, state.contracts)
-                .then(() => {
-                    console.log('Verträge zu Firebase gespeichert');
-                })
-                .catch((error) => {
-                    console.error('Fehler beim Speichern der Verträge zu Firebase:', error);
-                });
-        }
-        
-        function exportData() {
-            const data = {
-                sheetData: state.sheetData,
-                contracts: state.contracts,
-                totals: {
-                    income: document.getElementById('totalIncome').textContent,
-                    expenses: document.getElementById('totalExpenses').textContent,
-                    balance: document.getElementById('totalBalance').textContent
-                },
-                exportDate: new Date().toISOString()
-            };
-            
-            const dataStr = JSON.stringify(data, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = 'finanz-daten-export.json';
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-            
-            showMessage('Daten exportiert!', 'success');
-        }
-        
-        function clearLocalData() {
-            localStorage.removeItem('financeSheetData');
-            localStorage.removeItem('financeContracts');
-            state.sheetData = [];
-            state.contracts = [];
-            
-            // Sheet zurücksetzen
-            const rows = document.querySelectorAll('.sheet-row');
-            rows.forEach((row, index) => {
-                const cells = row.querySelectorAll('.editable-cell');
-                if (cells.length >= 5) {
-                    cells[0].textContent = 'Neuer Eintrag';
-                    cells[1].textContent = '0,00';
-                    cells[2].textContent = ['Einkommen', 'Verträge', 'Sonstiges', 'Investitionen'][index % 4];
-                    cells[3].textContent = new Date().toLocaleDateString('de-DE');
-                    cells[4].textContent = ['Bezahlt', 'Ausstehend', 'Überfällig'][index % 3];
-                }
-            });
-            
-            updateTotals();
-            renderContracts();
-        }
-        
-        function showMessage(text, type) {
-            // Einfache Benachrichtigung anzeigen
-            const message = document.createElement('div');
-            message.textContent = text;
-            message.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 15px 20px;
-                border-radius: 6px;
-                color: white;
-                font-weight: 500;
-                z-index: 1000;
-                box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-                animation: fadeIn 0.3s;
-            `;
-            
-            if (type === 'success') {
-                message.style.backgroundColor = '#34a853';
-            } else if (type === 'error') {
-                message.style.backgroundColor = '#ea4335';
-            } else {
-                message.style.backgroundColor = '#1a73e8';
-            }
-            
-            document.body.appendChild(message);
-            
-            setTimeout(() => {
-                message.style.animation = 'fadeOut 0.3s';
-                setTimeout(() => {
-                    document.body.removeChild(message);
-                }, 300);
-            }, 3000);
-        }
-        
-        // CSS für Animationen hinzufügen
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(-10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            
-            @keyframes fadeOut {
-                from { opacity: 1; transform: translateY(0); }
-                to { opacity: 0; transform: translateY(-10px); }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
