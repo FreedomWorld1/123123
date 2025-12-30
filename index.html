@@ -89,6 +89,7 @@
         .expense { background: #fee2e2; color: var(--danger); }
         .profit { background: #dcfce7; color: var(--success); }
         .pending { background: #fef3c7; color: var(--warning); }
+        .other-income { background: #e9d5ff; color: #7c3aed; }
         
         .stat-info h3 {
             font-size: 0.9rem;
@@ -474,6 +475,20 @@
             margin-top: 0.5rem;
         }
         
+        .category-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .category-salary { background: #dbeafe; color: #1e40af; }
+        .category-investment { background: #dcfce7; color: #166534; }
+        .category-rental { background: #fef3c7; color: #92400e; }
+        .category-freelance { background: #e9d5ff; color: #7c3aed; }
+        .category-other { background: #f1f5f9; color: #64748b; }
+        
         @media (max-width: 1024px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -520,6 +535,9 @@
                 <button class="btn btn-primary" onclick="exportData()">
                     <i class="fas fa-download"></i> Export
                 </button>
+                <button class="btn btn-success" onclick="syncWithFirebase()">
+                    <i class="fas fa-cloud-upload-alt"></i> Sync
+                </button>
             </div>
         </header>
 
@@ -539,6 +557,9 @@
                     <li class="nav-item" onclick="showTab('installments')">
                         <i class="fas fa-calendar-alt"></i> Ratenzahlungen
                     </li>
+                    <li class="nav-item" onclick="showTab('income')">
+                        <i class="fas fa-money-bill-wave"></i> Einkommen
+                    </li>
                     <li class="nav-item" onclick="showTab('customers')">
                         <i class="fas fa-users"></i> Kunden
                     </li>
@@ -556,6 +577,9 @@
                         <div>
                             <button class="btn btn-primary" onclick="openInvoiceModal()">
                                 <i class="fas fa-plus"></i> Neue Rechnung
+                            </button>
+                            <button class="btn btn-success" onclick="openIncomeModal()" style="margin-left: 10px;">
+                                <i class="fas fa-plus"></i> Einkommen
                             </button>
                         </div>
                     </div>
@@ -652,6 +676,35 @@
                             </thead>
                             <tbody id="installmentsTable">
                                 <!-- Daten werden geladen -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Einkommen Tab -->
+                <div id="income" class="tab-content">
+                    <div class="page-header">
+                        <h2>Einkommen</h2>
+                        <button class="btn btn-success" onclick="openIncomeModal()">
+                            <i class="fas fa-plus"></i> Neues Einkommen
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Datum</th>
+                                    <th>Beschreibung</th>
+                                    <th>Kategorie</th>
+                                    <th>Betrag</th>
+                                    <th>Quelle</th>
+                                    <th>Notizen</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="incomeTable">
+                                <!-- Einkommensdaten werden geladen -->
                             </tbody>
                         </table>
                     </div>
@@ -857,6 +910,73 @@
         </div>
     </div>
 
+    <!-- Modal für Einkommen -->
+    <div id="incomeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="incomeModalTitle">Neues Einkommen erfassen</h3>
+                <button onclick="closeModal('incomeModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="incomeDescription">Beschreibung *</label>
+                    <input type="text" id="incomeDescription" placeholder="z.B. Gehalt, Investition, Mieteinnahmen" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="incomeAmount">Betrag (€) *</label>
+                        <input type="number" id="incomeAmount" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="incomeDate">Datum *</label>
+                        <input type="date" id="incomeDate" required value="<?php echo date('Y-m-d'); ?>">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="incomeCategory">Kategorie *</label>
+                        <select id="incomeCategory" required>
+                            <option value="">Bitte auswählen</option>
+                            <option value="Gehalt">Gehalt</option>
+                            <option value="Investition">Investition</option>
+                            <option value="Mieteinnahmen">Mieteinnahmen</option>
+                            <option value="Freelance">Freelance</option>
+                            <option value="Verkauf">Verkauf</option>
+                            <option value="Dividenden">Dividenden</option>
+                            <option value="Sonstiges">Sonstiges</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="incomeSource">Quelle</label>
+                        <input type="text" id="incomeSource" placeholder="z.B. Firma XY, Immobilie A">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="incomeNotes">Notizen</label>
+                    <textarea id="incomeNotes" rows="3" placeholder="Optionale Notizen zum Einkommen"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="incomePaymentMethod">Zahlungsmethode</label>
+                    <select id="incomePaymentMethod">
+                        <option value="Überweisung">Überweisung</option>
+                        <option value="Karte">Karte</option>
+                        <option value="BAR">BAR</option>
+                        <option value="PayPal">PayPal</option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="closeModal('incomeModal')" style="background: var(--secondary); color: white;">Abbrechen</button>
+                    <button type="button" class="btn btn-success" onclick="saveIncome()">Einkommen speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal für Kunden -->
     <div id="customerModal" class="modal">
         <div class="modal-content">
@@ -943,18 +1063,164 @@
     <!-- Alert Container -->
     <div id="alertContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
 
+    <!-- Firebase Import -->
+    <script type="module">
+        // Firebase Import und Konfiguration
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
+        import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-storage.js";
+
+        // Firebase Konfiguration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCw4nadHCIRcouTJJoQ3ElToiVVFr5Rufo",
+            authDomain: "khusland-b7d13.firebaseapp.com",
+            databaseURL: "https://khusland-b7d13-default-rtdb.firebaseio.com",
+            projectId: "khusland-b7d13",
+            storageBucket: "khusland-b7d13.firebasestorage.app",
+            messagingSenderId: "69573193613",
+            appId: "1:69573193613:web:86c4d839281b1e343cd7c4",
+            measurementId: "G-JSCWR4207G"
+        };
+
+        // Firebase initialisieren
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+        const storage = getStorage(app);
+        
+        // Firebase Referenzen
+        const incomeRef = ref(db, 'income_entries');
+        const invoicesRef = ref(db, 'invoices');
+        const customersRef = ref(db, 'customers');
+        const purchasesRef = ref(db, 'purchases');
+        const installmentPlansRef = ref(db, 'installment_plans');
+        const installmentsRef = ref(db, 'installments');
+        const paymentsRef = ref(db, 'payments');
+        const logoSettingsRef = ref(db, 'logo_settings');
+        const logoImageRef = storageRef(storage, 'global_logo.png');
+        
+        // Globale Variablen für Firebase Daten
+        window.firebaseData = {
+            db: db,
+            incomeRef: incomeRef,
+            invoicesRef: invoicesRef,
+            customersRef: customersRef,
+            purchasesRef: purchasesRef,
+            installmentPlansRef: installmentPlansRef,
+            installmentsRef: installmentsRef,
+            paymentsRef: paymentsRef
+        };
+
+        // Funktionen für Firebase
+        window.syncWithFirebase = async function() {
+            try {
+                // IndexedDB Daten abrufen
+                const localData = {
+                    customers: await accountingSystem.getAll('customers'),
+                    invoices: await accountingSystem.getAll('invoices'),
+                    invoiceItems: await accountingSystem.getAll('invoiceItems'),
+                    installmentPlans: await accountingSystem.getAll('installmentPlans'),
+                    installments: await accountingSystem.getAll('installments'),
+                    purchases: await accountingSystem.getAll('purchases'),
+                    payments: await accountingSystem.getAll('payments'),
+                    income: await accountingSystem.getAll('income')
+                };
+                
+                // Zu Firebase hochladen
+                for (const [key, data] of Object.entries(localData)) {
+                    if (data.length > 0) {
+                        const firebaseRef = ref(db, key);
+                        await set(firebaseRef, data);
+                    }
+                }
+                
+                accountingSystem.showAlert('Daten erfolgreich zu Firebase synchronisiert!', 'success');
+                
+            } catch (error) {
+                console.error('Fehler beim Synchronisieren mit Firebase:', error);
+                accountingSystem.showAlert('Fehler beim Synchronisieren: ' + error.message, 'danger');
+            }
+        };
+
+        window.loadFromFirebase = async function() {
+            try {
+                // Daten von Firebase laden
+                const loadData = async (refPath) => {
+                    return new Promise((resolve) => {
+                        onValue(ref(db, refPath), (snapshot) => {
+                            const data = snapshot.val();
+                            resolve(data || []);
+                        });
+                    });
+                };
+                
+                const firebaseData = {
+                    customers: await loadData('customers'),
+                    invoices: await loadData('invoices'),
+                    invoiceItems: await loadData('invoiceItems'),
+                    installmentPlans: await loadData('installmentPlans'),
+                    installments: await loadData('installments'),
+                    purchases: await loadData('purchases'),
+                    payments: await loadData('payments'),
+                    income: await loadData('income')
+                };
+                
+                // IndexedDB leeren und mit Firebase Daten füllen
+                const stores = ['customers', 'invoices', 'invoiceItems', 'installmentPlans', 'installments', 'purchases', 'payments', 'income'];
+                
+                for (const store of stores) {
+                    // Alte Daten löschen (einfache Implementierung - in Produktion mit Transaktion)
+                    const oldData = await accountingSystem.getAll(store);
+                    for (const item of oldData) {
+                        await accountingSystem.delete(store, item.id);
+                    }
+                    
+                    // Neue Daten hinzufügen
+                    if (firebaseData[store]) {
+                        for (const item of firebaseData[store]) {
+                            await accountingSystem.add(store, item);
+                        }
+                    }
+                }
+                
+                accountingSystem.showAlert('Daten erfolgreich von Firebase geladen!', 'success');
+                accountingSystem.updateDashboard();
+                accountingSystem.loadInvoices();
+                accountingSystem.loadIncome();
+                accountingSystem.loadCustomers();
+                accountingSystem.loadPurchases();
+                accountingSystem.loadInstallments();
+                
+            } catch (error) {
+                console.error('Fehler beim Laden von Firebase:', error);
+                accountingSystem.showAlert('Fehler beim Laden: ' + error.message, 'danger');
+            }
+        };
+
+        // Beim Laden der Seite Daten von Firebase laden
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Frage, ob Daten von Firebase geladen werden sollen
+            if (confirm('Möchten Sie Daten von Firebase laden?')) {
+                await loadFromFirebase();
+            }
+        });
+
+    </script>
+
     <script>
         // Hauptklasse für das Buchhaltungssystem
         class AccountingSystem {
             constructor() {
                 this.dbName = 'accounting_db';
-                this.dbVersion = 2;
+                this.dbVersion = 3; // Version erhöht für Einkommen-Tabelle
                 this.db = null;
                 this.initDatabase();
                 
                 this.currentInvoiceId = null;
                 this.currentPaymentInvoiceId = null;
                 this.editingCustomerId = null;
+                this.editingIncomeId = null;
                 
                 // Standard Fälligkeitsdatum für Ratenzahlungen: 01.01.2026
                 this.defaultInstallmentDueDate = '2026-01-01';
@@ -1000,6 +1266,13 @@
                             itemStore.createIndex('invoiceId', 'invoiceId', { unique: false });
                         }
                         
+                        // Einkommen-Tabelle
+                        if (!db.objectStoreNames.contains('income')) {
+                            const incomeStore = db.createObjectStore('income', { keyPath: 'id', autoIncrement: true });
+                            incomeStore.createIndex('date', 'date', { unique: false });
+                            incomeStore.createIndex('category', 'category', { unique: false });
+                        }
+                        
                         // Ratenpläne-Tabelle
                         if (!db.objectStoreNames.contains('installmentPlans')) {
                             const planStore = db.createObjectStore('installmentPlans', { keyPath: 'id', autoIncrement: true });
@@ -1038,6 +1311,7 @@
                 
                 this.updateDashboard();
                 this.loadInvoices();
+                this.loadIncome();
                 this.loadCustomers();
                 this.loadPurchases();
                 this.loadInstallments();
@@ -1053,6 +1327,29 @@
                 for (const customer of sampleCustomers) {
                     await this.add('customers', customer);
                 }
+                
+                // Beispiel-Einkommen
+                await this.add('income', {
+                    description: 'Gehalt Januar',
+                    amount: 3500.00,
+                    date: new Date().toISOString().split('T')[0],
+                    category: 'Gehalt',
+                    source: 'Firma XYZ',
+                    paymentMethod: 'Überweisung',
+                    notes: 'Monatsgehalt',
+                    createdAt: new Date().toISOString()
+                });
+                
+                await this.add('income', {
+                    description: 'Mieteinnahmen Wohnung A',
+                    amount: 1200.00,
+                    date: new Date().toISOString().split('T')[0],
+                    category: 'Mieteinnahmen',
+                    source: 'Wohnung A',
+                    paymentMethod: 'Überweisung',
+                    notes: 'Monatliche Miete',
+                    createdAt: new Date().toISOString()
+                });
                 
                 // Beispiel-Einkauf
                 await this.add('purchases', {
@@ -1132,6 +1429,7 @@
             async createInvoice(invoiceData, items) {
                 // Rechnungsnummer generieren
                 invoiceData.invoiceNumber = invoiceData.invoiceNumber || await this.generateInvoiceNumber();
+                invoiceData.createdAt = new Date().toISOString();
                 
                 // Rechnung speichern
                 const invoiceId = await this.add('invoices', invoiceData);
@@ -1140,7 +1438,8 @@
                 for (const item of items) {
                     await this.add('invoiceItems', {
                         ...item,
-                        invoiceId: invoiceId
+                        invoiceId: invoiceId,
+                        createdAt: new Date().toISOString()
                     });
                 }
                 
@@ -1155,7 +1454,8 @@
                         installmentAmount: installmentAmount,
                         frequency: 'monthly',
                         startDate: invoiceData.issueDate,
-                        totalAmount: invoiceData.totalAmount
+                        totalAmount: invoiceData.totalAmount,
+                        createdAt: new Date().toISOString()
                     });
                     
                     // Einzelne Raten erstellen (nur monatlich)
@@ -1171,7 +1471,8 @@
                             installmentNumber: i + 1,
                             dueDate: dueDate.toISOString().split('T')[0],
                             amount: installmentAmount,
-                            status: 'pending'
+                            status: 'pending',
+                            createdAt: new Date().toISOString()
                         });
                     }
                 }
@@ -1189,7 +1490,8 @@
                     amount: paymentData.amount,
                     date: paymentData.date,
                     method: paymentData.method,
-                    notes: paymentData.notes
+                    notes: paymentData.notes,
+                    createdAt: new Date().toISOString()
                 });
                 
                 // Rechnungsstatus aktualisieren
@@ -1222,12 +1524,24 @@
                 return true;
             }
             
+            async addIncome(incomeData) {
+                incomeData.createdAt = new Date().toISOString();
+                return await this.add('income', incomeData);
+            }
+            
             async getFinancialOverview() {
                 const invoices = await this.getAll('invoices');
                 const purchases = await this.getAll('purchases');
+                const income = await this.getAll('income');
+                
+                // Gesamteinnahmen aus Rechnungen
+                const totalInvoiceIncome = invoices.reduce((sum, inv) => sum + inv.totalAmount, 0);
+                
+                // Einkommen aus Einkommens-Tabelle
+                const totalOtherIncome = income.reduce((sum, inc) => sum + inc.amount, 0);
                 
                 // Gesamteinnahmen
-                const totalIncome = invoices.reduce((sum, inv) => sum + inv.totalAmount, 0);
+                const totalIncome = totalInvoiceIncome + totalOtherIncome;
                 
                 // Bereits bezahlte Beträge
                 const paidAmount = invoices.reduce((sum, inv) => sum + (inv.paidAmount || 0), 0);
@@ -1244,14 +1558,26 @@
                 const overdueInvoices = openInvoices.filter(inv => inv.dueDate < today);
                 const overdueAmount = overdueInvoices.reduce((sum, inv) => sum + (inv.totalAmount - (inv.paidAmount || 0)), 0);
                 
+                // Einkommen nach Kategorien
+                const incomeByCategory = {};
+                income.forEach(inc => {
+                    if (!incomeByCategory[inc.category]) {
+                        incomeByCategory[inc.category] = 0;
+                    }
+                    incomeByCategory[inc.category] += inc.amount;
+                });
+                
                 return {
                     totalIncome,
+                    totalInvoiceIncome,
+                    totalOtherIncome,
                     paidAmount,
                     openAmount,
                     totalExpenses,
                     profit: totalIncome - totalExpenses,
                     overdueCount: overdueInvoices.length,
-                    overdueAmount
+                    overdueAmount,
+                    incomeByCategory
                 };
             }
             
@@ -1305,21 +1631,21 @@
                         </div>
                     </div>
                     <div class="stat-card">
+                        <div class="stat-icon other-income">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Sonstiges Einkommen</h3>
+                            <div class="amount">${overview.totalOtherIncome.toFixed(2)} €</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
                         <div class="stat-icon expense">
                             <i class="fas fa-shopping-cart"></i>
                         </div>
                         <div class="stat-info">
                             <h3>Ausgaben</h3>
                             <div class="amount">${overview.totalExpenses.toFixed(2)} €</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon profit">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Gewinn</h3>
-                            <div class="amount">${overview.profit.toFixed(2)} €</div>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -1345,6 +1671,14 @@
                             <div style="background: #fef3c7; padding: 1rem; border-radius: 8px;">
                                 <div style="font-size: 0.9rem; color: var(--secondary);">Überfällig</div>
                                 <div style="font-size: 1.5rem; font-weight: bold; color: #92400e;">${overview.overdueAmount.toFixed(2)} €</div>
+                            </div>
+                            <div style="background: #dcfce7; padding: 1rem; border-radius: 8px;">
+                                <div style="font-size: 0.9rem; color: var(--secondary);">Gewinn</div>
+                                <div style="font-size: 1.5rem; font-weight: bold; color: #166534;">${overview.profit.toFixed(2)} €</div>
+                            </div>
+                            <div style="background: #e9d5ff; padding: 1rem; border-radius: 8px;">
+                                <div style="font-size: 0.9rem; color: var(--secondary);">Rechnungseinn.</div>
+                                <div style="font-size: 1.5rem; font-weight: bold; color: #7c3aed;">${overview.totalInvoiceIncome.toFixed(2)} €</div>
                             </div>
                         </div>
                     `;
@@ -1448,6 +1782,46 @@
                         </tr>
                     `;
                 }).join('');
+            }
+            
+            async loadIncome() {
+                const income = await this.getAll('income');
+                const container = document.getElementById('incomeTable');
+                
+                if (!container) return;
+                
+                container.innerHTML = income.map(inc => {
+                    const categoryClass = this.getIncomeCategoryClass(inc.category);
+                    
+                    return `
+                        <tr>
+                            <td>${new Date(inc.date).toLocaleDateString('de-DE')}</td>
+                            <td>${inc.description}</td>
+                            <td><span class="category-badge ${categoryClass}">${inc.category}</span></td>
+                            <td>${inc.amount.toFixed(2)} €</td>
+                            <td>${inc.source || '-'}</td>
+                            <td>${inc.notes || '-'}</td>
+                            <td class="data-actions">
+                                <button class="action-btn delete-btn" onclick="deleteIncome(${inc.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            getIncomeCategoryClass(category) {
+                const classes = {
+                    'Gehalt': 'category-salary',
+                    'Investition': 'category-investment',
+                    'Mieteinnahmen': 'category-rental',
+                    'Freelance': 'category-freelance',
+                    'Verkauf': 'category-other',
+                    'Dividenden': 'category-investment',
+                    'Sonstiges': 'category-other'
+                };
+                return classes[category] || 'category-other';
             }
             
             async loadCustomers() {
@@ -1610,6 +1984,9 @@
                 case 'installments':
                     accountingSystem.loadInstallments();
                     break;
+                case 'income':
+                    accountingSystem.loadIncome();
+                    break;
                 case 'customers':
                     accountingSystem.loadCustomers();
                     break;
@@ -1631,6 +2008,7 @@
             accountingSystem.currentInvoiceId = null;
             accountingSystem.currentPaymentInvoiceId = null;
             accountingSystem.editingCustomerId = null;
+            accountingSystem.editingIncomeId = null;
             
             // Rechnungsmodal zurücksetzen
             if (modalId === 'invoiceModal') {
@@ -1639,6 +2017,17 @@
                 document.getElementById('invoiceItems').innerHTML = '';
                 document.getElementById('totalAmountDisplay').textContent = '0.00 €';
                 document.getElementById('installmentDisplay').innerHTML = '<p>Bitte geben Sie zuerst den Gesamtbetrag ein.</p>';
+            }
+            
+            // Einkommensmodal zurücksetzen
+            if (modalId === 'incomeModal') {
+                document.getElementById('incomeDescription').value = '';
+                document.getElementById('incomeAmount').value = '';
+                document.getElementById('incomeDate').value = new Date().toISOString().split('T')[0];
+                document.getElementById('incomeCategory').value = '';
+                document.getElementById('incomeSource').value = '';
+                document.getElementById('incomeNotes').value = '';
+                document.getElementById('incomePaymentMethod').value = 'Überweisung';
             }
         }
 
@@ -1866,6 +2255,77 @@
             }
         }
 
+        function openIncomeModal(editId = null) {
+            const modalTitle = document.getElementById('incomeModalTitle');
+            
+            if (editId) {
+                modalTitle.textContent = 'Einkommen bearbeiten';
+                // Hier könnte Bearbeitungslogik hinzugefügt werden
+                accountingSystem.editingIncomeId = editId;
+            } else {
+                modalTitle.textContent = 'Neues Einkommen erfassen';
+                accountingSystem.editingIncomeId = null;
+            }
+            
+            // Datum auf heute setzen
+            document.getElementById('incomeDate').value = new Date().toISOString().split('T')[0];
+            
+            openModal('incomeModal');
+        }
+
+        async function saveIncome() {
+            const description = document.getElementById('incomeDescription').value;
+            const amount = parseFloat(document.getElementById('incomeAmount').value);
+            const date = document.getElementById('incomeDate').value;
+            const category = document.getElementById('incomeCategory').value;
+            const source = document.getElementById('incomeSource').value;
+            const notes = document.getElementById('incomeNotes').value;
+            const paymentMethod = document.getElementById('incomePaymentMethod').value;
+            
+            // Validierung
+            if (!description) {
+                accountingSystem.showAlert('Bitte geben Sie eine Beschreibung ein', 'warning');
+                return;
+            }
+            
+            if (!amount || amount <= 0) {
+                accountingSystem.showAlert('Bitte geben Sie einen gültigen Betrag ein', 'warning');
+                return;
+            }
+            
+            if (!category) {
+                accountingSystem.showAlert('Bitte wählen Sie eine Kategorie', 'warning');
+                return;
+            }
+            
+            const incomeData = {
+                description: description,
+                amount: amount,
+                date: date,
+                category: category,
+                source: source,
+                notes: notes,
+                paymentMethod: paymentMethod
+            };
+            
+            try {
+                if (accountingSystem.editingIncomeId) {
+                    // Bearbeitung - später implementieren
+                    accountingSystem.showAlert('Einkommen erfolgreich aktualisiert');
+                } else {
+                    await accountingSystem.addIncome(incomeData);
+                    accountingSystem.showAlert('Einkommen erfolgreich erfasst!');
+                }
+                
+                closeModal('incomeModal');
+                accountingSystem.loadIncome();
+                accountingSystem.updateDashboard();
+                
+            } catch (error) {
+                accountingSystem.showAlert('Fehler beim Speichern des Einkommens: ' + error.message, 'danger');
+            }
+        }
+
         async function recordPaymentModal(invoiceId) {
             const invoice = await accountingSystem.get('invoices', invoiceId);
             if (!invoice) {
@@ -2060,6 +2520,20 @@
             }
         }
 
+        async function deleteIncome(id) {
+            if (confirm('Sind Sie sicher, dass Sie dieses Einkommen löschen möchten?')) {
+                try {
+                    await accountingSystem.delete('income', id);
+                    accountingSystem.showAlert('Einkommen erfolgreich gelöscht');
+                    accountingSystem.loadIncome();
+                    accountingSystem.updateDashboard();
+                    
+                } catch (error) {
+                    accountingSystem.showAlert('Fehler beim Löschen des Einkommens: ' + error.message, 'danger');
+                }
+            }
+        }
+
         async function deleteCustomer(id) {
             if (confirm('Sind Sie sicher, dass Sie diesen Kunden löschen möchten?')) {
                 try {
@@ -2112,6 +2586,7 @@
                     customers: await accountingSystem.getAll('customers'),
                     invoices: await accountingSystem.getAll('invoices'),
                     invoiceItems: await accountingSystem.getAll('invoiceItems'),
+                    income: await accountingSystem.getAll('income'),
                     installmentPlans: await accountingSystem.getAll('installmentPlans'),
                     installments: await accountingSystem.getAll('installments'),
                     purchases: await accountingSystem.getAll('purchases'),
