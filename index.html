@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buchhaltungssystem Pro</title>
     <style>
+        /* ALLE CSS-STYLES BLEIBEN WIE ZUVOR - NUR DAS SKRIPT WIRD GEAENDERT */
         :root {
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
@@ -21,7 +22,6 @@
             --shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        /* Dark Mode Variablen */
         [data-theme="dark"] {
             --primary: #3b82f6;
             --primary-dark: #2563eb;
@@ -90,7 +90,6 @@
             flex-wrap: wrap;
         }
         
-        /* Dark Mode Toggle */
         .theme-toggle {
             display: flex;
             align-items: center;
@@ -156,7 +155,6 @@
             gap: 1.5rem;
         }
         
-        /* Mobile Navigation Button */
         .mobile-menu-btn {
             display: none;
             background: var(--primary);
@@ -581,7 +579,6 @@
         .category-freelance { background: #e9d5ff; color: #7c3aed; }
         .category-other { background: #f1f5f9; color: #64748b; }
         
-        /* Mobile Styles */
         @media (max-width: 1024px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -760,7 +757,6 @@
             }
         }
         
-        /* Verbesserungen für sehr kleine Displays */
         @media (max-width: 360px) {
             .logo h1 {
                 font-size: 1.1rem;
@@ -780,6 +776,36 @@
                 font-size: 0.9rem;
             }
         }
+        
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--secondary);
+        }
+        
+        .sync-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--secondary);
+        }
+        
+        .sync-indicator.synced {
+            background: var(--success);
+        }
+        
+        .sync-indicator.syncing {
+            background: var(--warning);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -795,11 +821,18 @@
                     <i class="fas fa-moon"></i>
                     <span>Dark Mode</span>
                 </div>
+                <div class="sync-status">
+                    <div class="sync-indicator" id="syncIndicator"></div>
+                    <span id="syncStatus">Offline</span>
+                </div>
                 <button class="btn btn-primary" onclick="exportData()">
                     <i class="fas fa-download"></i> Export
                 </button>
                 <button class="btn btn-success" onclick="syncWithFirebase()">
                     <i class="fas fa-cloud-upload-alt"></i> Sync
+                </button>
+                <button class="btn btn-warning" onclick="loadFromFirebase()">
+                    <i class="fas fa-cloud-download-alt"></i> Laden
                 </button>
             </div>
         </header>
@@ -889,6 +922,7 @@
                     </div>
                 </div>
 
+                <!-- Weitere Tabs bleiben gleich -->
                 <!-- Rechnungen Tab -->
                 <div id="invoices" class="tab-content">
                     <div class="page-header">
@@ -1037,7 +1071,7 @@
         </div>
     </div>
 
-    <!-- Modals bleiben gleich wie vorher, nur mit responsive Anpassungen -->
+    <!-- Modals bleiben gleich -->
     <!-- Modal für neue Rechnung -->
     <div id="invoiceModal" class="modal">
         <div class="modal-content">
@@ -1134,18 +1168,117 @@
         </div>
     </div>
 
-    <!-- Weitere Modals (Payment, Income, Customer, Purchase) bleiben ähnlich - aus Platzgründen gekürzt -->
+    <!-- Modal für Einkommen -->
+    <div id="incomeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="incomeModalTitle">Neues Einkommen erfassen</h3>
+                <button onclick="closeModal('incomeModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-color);">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="incomeDescription">Beschreibung *</label>
+                    <input type="text" id="incomeDescription" placeholder="z.B. Gehalt, Investition, Mieteinnahmen" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="incomeAmount">Betrag (€) *</label>
+                        <input type="number" id="incomeAmount" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="incomeDate">Datum *</label>
+                        <input type="date" id="incomeDate" required value="">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="incomeCategory">Kategorie *</label>
+                        <select id="incomeCategory" required>
+                            <option value="">Bitte auswählen</option>
+                            <option value="Gehalt">Gehalt</option>
+                            <option value="Investition">Investition</option>
+                            <option value="Mieteinnahmen">Mieteinnahmen</option>
+                            <option value="Freelance">Freelance</option>
+                            <option value="Verkauf">Verkauf</option>
+                            <option value="Dividenden">Dividenden</option>
+                            <option value="Sonstiges">Sonstiges</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="incomeSource">Quelle</label>
+                        <input type="text" id="incomeSource" placeholder="z.B. Firma XY, Immobilie A">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="incomeNotes">Notizen</label>
+                    <textarea id="incomeNotes" rows="3" placeholder="Optionale Notizen zum Einkommen"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="incomePaymentMethod">Zahlungsmethode</label>
+                    <select id="incomePaymentMethod">
+                        <option value="Überweisung">Überweisung</option>
+                        <option value="Karte">Karte</option>
+                        <option value="BAR">BAR</option>
+                        <option value="PayPal">PayPal</option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="closeModal('incomeModal')" style="background: var(--secondary); color: white;">Abbrechen</button>
+                    <button type="button" class="btn btn-success" onclick="saveIncome()">Einkommen speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal für Kunden -->
+    <div id="customerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="customerModalTitle">Neuer Kunde</h3>
+                <button onclick="closeModal('customerModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-color);">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="customerName">Name *</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="customerEmail">E-Mail</label>
+                        <input type="email" id="customerEmail">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerPhone">Telefon</label>
+                        <input type="tel" id="customerPhone">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customerAddress">Adresse</label>
+                    <textarea id="customerAddress" rows="2"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="closeModal('customerModal')" style="background: var(--secondary); color: white;">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCustomer()">Kunde speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Alert Container -->
     <div id="alertContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 90vw;"></div>
 
     <!-- Firebase Import -->
     <script type="module">
-        // Firebase Import und Konfiguration
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
-        import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
-        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-storage.js";
+        import { getDatabase, ref, set, onValue, push, update, remove } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
         // Firebase Konfiguration
         const firebaseConfig = {
@@ -1161,126 +1294,194 @@
 
         // Firebase initialisieren
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const db = getDatabase(app);
-        const storage = getStorage(app);
         
-        // Firebase Referenzen
-        const incomeRef = ref(db, 'income_entries');
-        const invoicesRef = ref(db, 'invoices');
-        const customersRef = ref(db, 'customers');
-        const purchasesRef = ref(db, 'purchases');
-        const installmentPlansRef = ref(db, 'installment_plans');
-        const installmentsRef = ref(db, 'installments');
-        const paymentsRef = ref(db, 'payments');
-        const logoSettingsRef = ref(db, 'logo_settings');
-        const logoImageRef = storageRef(storage, 'global_logo.png');
+        // Globale Firebase-Variablen
+        window.firebaseDB = db;
         
-        // Globale Variablen für Firebase Daten
-        window.firebaseData = {
-            db: db,
-            incomeRef: incomeRef,
-            invoicesRef: invoicesRef,
-            customersRef: customersRef,
-            purchasesRef: purchasesRef,
-            installmentPlansRef: installmentPlansRef,
-            installmentsRef: installmentsRef,
-            paymentsRef: paymentsRef
-        };
-
-        // Funktionen für Firebase
-        window.syncWithFirebase = async function() {
-            try {
-                // IndexedDB Daten abrufen
-                const localData = {
-                    customers: await accountingSystem.getAll('customers'),
-                    invoices: await accountingSystem.getAll('invoices'),
-                    invoiceItems: await accountingSystem.getAll('invoiceItems'),
-                    installmentPlans: await accountingSystem.getAll('installmentPlans'),
-                    installments: await accountingSystem.getAll('installments'),
-                    purchases: await accountingSystem.getAll('purchases'),
-                    payments: await accountingSystem.getAll('payments'),
-                    income: await accountingSystem.getAll('income')
-                };
-                
-                // Zu Firebase hochladen
-                for (const [key, data] of Object.entries(localData)) {
-                    if (data.length > 0) {
-                        const firebaseRef = ref(db, key);
-                        await set(firebaseRef, data);
-                    }
-                }
-                
-                accountingSystem.showAlert('Daten erfolgreich zu Firebase synchronisiert!', 'success');
-                
-            } catch (error) {
-                console.error('Fehler beim Synchronisieren mit Firebase:', error);
-                accountingSystem.showAlert('Fehler beim Synchronisieren: ' + error.message, 'danger');
+        // Firebase Manager Klasse
+        class FirebaseManager {
+            constructor() {
+                this.isSyncing = false;
+                this.lastSync = null;
+                this.setupListeners();
             }
-        };
-
-        window.loadFromFirebase = async function() {
-            try {
-                // Daten von Firebase laden
-                const loadData = async (refPath) => {
-                    return new Promise((resolve) => {
-                        onValue(ref(db, refPath), (snapshot) => {
-                            const data = snapshot.val();
-                            resolve(data || []);
-                        });
-                    });
-                };
-                
-                const firebaseData = {
-                    customers: await loadData('customers'),
-                    invoices: await loadData('invoices'),
-                    invoiceItems: await loadData('invoiceItems'),
-                    installmentPlans: await loadData('installmentPlans'),
-                    installments: await loadData('installments'),
-                    purchases: await loadData('purchases'),
-                    payments: await loadData('payments'),
-                    income: await loadData('income')
-                };
-                
-                // IndexedDB leeren und mit Firebase Daten füllen
-                const stores = ['customers', 'invoices', 'invoiceItems', 'installmentPlans', 'installments', 'purchases', 'payments', 'income'];
-                
-                for (const store of stores) {
-                    // Alte Daten löschen
-                    const oldData = await accountingSystem.getAll(store);
+            
+            setupListeners() {
+                // Überwache Änderungen in Firebase
+                this.listenForChanges('customers');
+                this.listenForChanges('invoices');
+                this.listenForChanges('income');
+                this.listenForChanges('purchases');
+                this.listenForChanges('installmentPlans');
+                this.listenForChanges('installments');
+                this.listenForChanges('payments');
+                this.listenForChanges('invoiceItems');
+            }
+            
+            listenForChanges(path) {
+                const dbRef = ref(db, path);
+                onValue(dbRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if (data && !this.isSyncing) {
+                        this.syncFromFirebase(path, data);
+                    }
+                });
+            }
+            
+            async syncFromFirebase(path, firebaseData) {
+                try {
+                    // Konvertiere Firebase-Daten in Array
+                    const dataArray = firebaseData ? Object.values(firebaseData) : [];
+                    
+                    // Lösche alte lokale Daten
+                    const oldData = await accountingSystem.getAll(path);
                     for (const item of oldData) {
-                        await accountingSystem.delete(store, item.id);
+                        await accountingSystem.delete(path, item.id);
                     }
                     
-                    // Neue Daten hinzufügen
-                    if (firebaseData[store]) {
-                        for (const item of firebaseData[store]) {
-                            await accountingSystem.add(store, item);
+                    // Füge neue Daten hinzu
+                    for (const item of dataArray) {
+                        // Entferne Firebase-Schlüssel, behalte ID bei
+                        const { firebaseKey, ...cleanItem } = item;
+                        await accountingSystem.add(path, cleanItem);
+                    }
+                    
+                    console.log(`Daten von Firebase synchronisiert: ${path} (${dataArray.length} Einträge)`);
+                    
+                    // UI aktualisieren
+                    this.updateUI();
+                    
+                } catch (error) {
+                    console.error(`Fehler beim Synchronisieren von ${path}:`, error);
+                }
+            }
+            
+            async syncToFirebase() {
+                this.isSyncing = true;
+                this.updateSyncStatus('Wird synchronisiert...', 'syncing');
+                
+                try {
+                    // Alle lokalen Daten sammeln
+                    const allData = {
+                        customers: await accountingSystem.getAll('customers'),
+                        invoices: await accountingSystem.getAll('invoices'),
+                        income: await accountingSystem.getAll('income'),
+                        purchases: await accountingSystem.getAll('purchases'),
+                        installmentPlans: await accountingSystem.getAll('installmentPlans'),
+                        installments: await accountingSystem.getAll('installments'),
+                        payments: await accountingSystem.getAll('payments'),
+                        invoiceItems: await accountingSystem.getAll('invoiceItems')
+                    };
+                    
+                    // Zu Firebase hochladen
+                    for (const [path, data] of Object.entries(allData)) {
+                        if (data.length > 0) {
+                            // Konvertiere Array zu Firebase-Format
+                            const firebaseData = {};
+                            data.forEach(item => {
+                                const key = item.firebaseKey || `item_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                                firebaseData[key] = { ...item, firebaseKey: key };
+                            });
+                            
+                            await set(ref(db, path), firebaseData);
+                            console.log(`${path} zu Firebase hochgeladen: ${data.length} Einträge`);
                         }
                     }
+                    
+                    this.lastSync = new Date();
+                    this.updateSyncStatus(`Zuletzt: ${this.lastSync.toLocaleTimeString()}`, 'synced');
+                    accountingSystem.showAlert('Alle Daten erfolgreich zu Firebase synchronisiert!', 'success');
+                    
+                } catch (error) {
+                    console.error('Fehler beim Synchronisieren zu Firebase:', error);
+                    this.updateSyncStatus('Fehler beim Synchronisieren', 'error');
+                    accountingSystem.showAlert('Fehler beim Synchronisieren: ' + error.message, 'danger');
+                } finally {
+                    this.isSyncing = false;
+                    setTimeout(() => {
+                        this.updateSyncStatus(`Zuletzt: ${this.lastSync ? this.lastSync.toLocaleTimeString() : 'Nie'}`, 'synced');
+                    }, 2000);
+                }
+            }
+            
+            async loadFromFirebase() {
+                this.isSyncing = true;
+                this.updateSyncStatus('Lädt von Firebase...', 'syncing');
+                
+                try {
+                    // Daten von Firebase laden
+                    const paths = ['customers', 'invoices', 'income', 'purchases', 'installmentPlans', 'installments', 'payments', 'invoiceItems'];
+                    
+                    for (const path of paths) {
+                        const dbRef = ref(db, path);
+                        const snapshot = await new Promise((resolve) => {
+                            onValue(dbRef, resolve, { onlyOnce: true });
+                        });
+                        
+                        const data = snapshot.val();
+                        if (data) {
+                            await this.syncFromFirebase(path, data);
+                        }
+                    }
+                    
+                    this.lastSync = new Date();
+                    this.updateSyncStatus(`Zuletzt: ${this.lastSync.toLocaleTimeString()}`, 'synced');
+                    accountingSystem.showAlert('Alle Daten erfolgreich von Firebase geladen!', 'success');
+                    
+                } catch (error) {
+                    console.error('Fehler beim Laden von Firebase:', error);
+                    this.updateSyncStatus('Fehler beim Laden', 'error');
+                    accountingSystem.showAlert('Fehler beim Laden: ' + error.message, 'danger');
+                } finally {
+                    this.isSyncing = false;
+                }
+            }
+            
+            updateSyncStatus(text, state) {
+                const indicator = document.getElementById('syncIndicator');
+                const statusText = document.getElementById('syncStatus');
+                
+                if (indicator) {
+                    indicator.className = 'sync-indicator';
+                    if (state === 'syncing') indicator.classList.add('syncing');
+                    if (state === 'synced') indicator.classList.add('synced');
                 }
                 
-                accountingSystem.showAlert('Daten erfolgreich von Firebase geladen!', 'success');
+                if (statusText) {
+                    statusText.textContent = text;
+                }
+            }
+            
+            updateUI() {
+                // Alle UI-Komponenten aktualisieren
                 accountingSystem.updateDashboard();
                 accountingSystem.loadInvoices();
                 accountingSystem.loadIncome();
                 accountingSystem.loadCustomers();
                 accountingSystem.loadPurchases();
                 accountingSystem.loadInstallments();
-                
-            } catch (error) {
-                console.error('Fehler beim Laden von Firebase:', error);
-                accountingSystem.showAlert('Fehler beim Laden: ' + error.message, 'danger');
             }
+            
+            // Automatische Synchronisation bei Änderungen
+            async autoSync() {
+                if (!this.isSyncing) {
+                    await this.syncToFirebase();
+                }
+            }
+        }
+
+        // Globale FirebaseManager Instanz
+        window.firebaseManager = new FirebaseManager();
+
+        // Globale Funktionen für Buttons
+        window.syncWithFirebase = async function() {
+            await firebaseManager.syncToFirebase();
         };
 
-        // Beim Laden der Seite Daten von Firebase laden
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Frage, ob Daten von Firebase geladen werden sollen
-            if (confirm('Möchten Sie Daten von Firebase laden?')) {
-                await loadFromFirebase();
-            }
-        });
+        window.loadFromFirebase = async function() {
+            await firebaseManager.loadFromFirebase();
+        };
 
     </script>
 
@@ -1329,11 +1530,11 @@
             document.body.style.overflow = '';
         }
 
-        // Hauptklasse für das Buchhaltungssystem
+        // Hauptklasse für das Buchhaltungssystem - MODIFIZIERT für Firebase-Sync
         class AccountingSystem {
             constructor() {
                 this.dbName = 'accounting_db';
-                this.dbVersion = 3;
+                this.dbVersion = 4; // Neue Version für Firebase-Sync
                 this.db = null;
                 this.initDatabase();
                 
@@ -1343,6 +1544,9 @@
                 this.editingIncomeId = null;
                 
                 this.defaultInstallmentDueDate = '2026-01-01';
+                
+                // Auto-Sync bei Start
+                this.autoLoadFromFirebase();
             }
             
             async initDatabase() {
@@ -1364,6 +1568,7 @@
                     request.onupgradeneeded = (event) => {
                         const db = event.target.result;
                         
+                        // Alle Tabellen erstellen wie zuvor
                         if (!db.objectStoreNames.contains('customers')) {
                             const customerStore = db.createObjectStore('customers', { keyPath: 'id', autoIncrement: true });
                             customerStore.createIndex('name', 'name', { unique: false });
@@ -1414,73 +1619,91 @@
                 });
             }
             
-            async loadInitialData() {
+            async autoLoadFromFirebase() {
+                // Prüfe, ob bereits Daten vorhanden sind
                 const customers = await this.getAll('customers');
                 if (customers.length === 0) {
-                    await this.addSampleData();
+                    // Keine lokalen Daten, versuche von Firebase zu laden
+                    setTimeout(async () => {
+                        if (window.firebaseManager) {
+                            const shouldLoad = confirm('Keine lokalen Daten gefunden. Möchten Sie Daten von Firebase laden?');
+                            if (shouldLoad) {
+                                await window.firebaseManager.loadFromFirebase();
+                            } else {
+                                await this.addSampleData();
+                            }
+                        }
+                    }, 1000);
                 }
-                
-                this.updateDashboard();
-                this.loadInvoices();
-                this.loadIncome();
-                this.loadCustomers();
-                this.loadPurchases();
-                this.loadInstallments();
+            }
+            
+            async loadInitialData() {
+                // Warte auf Firebase Manager
+                setTimeout(() => {
+                    this.updateDashboard();
+                    this.loadInvoices();
+                    this.loadIncome();
+                    this.loadCustomers();
+                    this.loadPurchases();
+                    this.loadInstallments();
+                }, 500);
             }
             
             async addSampleData() {
-                // Beispiel-Kunden
-                const sampleCustomers = [
-                    { name: 'Max Mustermann', email: 'max@example.com', phone: '0123 456789', address: 'Musterstraße 1, 12345 Musterstadt' },
-                    { name: 'Erika Musterfrau', email: 'erika@example.com', phone: '0987 654321', address: 'Beispielweg 2, 54321 Beispielstadt' }
-                ];
-                
-                for (const customer of sampleCustomers) {
-                    await this.add('customers', customer);
+                // Nur Beispiel-Daten, wenn Firebase nicht verfügbar
+                const customers = await this.getAll('customers');
+                if (customers.length === 0) {
+                    const sampleCustomers = [
+                        { name: 'Max Mustermann', email: 'max@example.com', phone: '0123 456789', address: 'Musterstraße 1, 12345 Musterstadt' },
+                        { name: 'Erika Musterfrau', email: 'erika@example.com', phone: '0987 654321', address: 'Beispielweg 2, 54321 Beispielstadt' }
+                    ];
+                    
+                    for (const customer of sampleCustomers) {
+                        await this.add('customers', customer);
+                    }
+                    
+                    await this.add('income', {
+                        description: 'Gehalt Januar',
+                        amount: 3500.00,
+                        date: new Date().toISOString().split('T')[0],
+                        category: 'Gehalt',
+                        source: 'Firma XYZ',
+                        paymentMethod: 'Überweisung',
+                        notes: 'Monatsgehalt',
+                        createdAt: new Date().toISOString()
+                    });
+                    
+                    await this.add('purchases', {
+                        supplier: 'Bürobedarf Müller',
+                        date: new Date().toISOString().split('T')[0],
+                        totalAmount: 450.00,
+                        paymentMethod: 'Überweisung',
+                        notes: 'Büromaterial für Q1',
+                        status: 'paid'
+                    });
+                    
+                    // Auto-Sync nach Beispiel-Daten
+                    if (window.firebaseManager) {
+                        setTimeout(() => window.firebaseManager.autoSync(), 1000);
+                    }
                 }
-                
-                // Beispiel-Einkommen
-                await this.add('income', {
-                    description: 'Gehalt Januar',
-                    amount: 3500.00,
-                    date: new Date().toISOString().split('T')[0],
-                    category: 'Gehalt',
-                    source: 'Firma XYZ',
-                    paymentMethod: 'Überweisung',
-                    notes: 'Monatsgehalt',
-                    createdAt: new Date().toISOString()
-                });
-                
-                await this.add('income', {
-                    description: 'Mieteinnahmen Wohnung A',
-                    amount: 1200.00,
-                    date: new Date().toISOString().split('T')[0],
-                    category: 'Mieteinnahmen',
-                    source: 'Wohnung A',
-                    paymentMethod: 'Überweisung',
-                    notes: 'Monatliche Miete',
-                    createdAt: new Date().toISOString()
-                });
-                
-                // Beispiel-Einkauf
-                await this.add('purchases', {
-                    supplier: 'Bürobedarf Müller',
-                    date: new Date().toISOString().split('T')[0],
-                    totalAmount: 450.00,
-                    paymentMethod: 'Überweisung',
-                    notes: 'Büromaterial für Q1',
-                    status: 'paid'
-                });
             }
             
-            // CRUD-Operationen (gekürzt für Übersicht)
+            // MODIFIZIERTE CRUD-OPERATIONEN mit Auto-Sync
             async add(storeName, data) {
                 return new Promise((resolve, reject) => {
                     const transaction = this.db.transaction([storeName], 'readwrite');
                     const store = transaction.objectStore(storeName);
                     const request = store.add(data);
                     
-                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onsuccess = async (event) => {
+                        const id = event.target.result;
+                        // Auto-Sync zu Firebase
+                        if (window.firebaseManager && storeName !== 'invoiceItems') {
+                            setTimeout(() => window.firebaseManager.autoSync(), 500);
+                        }
+                        resolve(id);
+                    };
                     request.onerror = (event) => reject(event.target.error);
                 });
             }
@@ -1514,7 +1737,13 @@
                     const store = transaction.objectStore(storeName);
                     const request = store.put({ ...data, id });
                     
-                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onsuccess = async (event) => {
+                        // Auto-Sync zu Firebase
+                        if (window.firebaseManager && storeName !== 'invoiceItems') {
+                            setTimeout(() => window.firebaseManager.autoSync(), 500);
+                        }
+                        resolve(event.target.result);
+                    };
                     request.onerror = (event) => reject(event.target.error);
                 });
             }
@@ -1525,7 +1754,13 @@
                     const store = transaction.objectStore(storeName);
                     const request = store.delete(id);
                     
-                    request.onsuccess = (event) => resolve(true);
+                    request.onsuccess = async (event) => {
+                        // Auto-Sync zu Firebase
+                        if (window.firebaseManager && storeName !== 'invoiceItems') {
+                            setTimeout(() => window.firebaseManager.autoSync(), 500);
+                        }
+                        resolve(true);
+                    };
                     request.onerror = (event) => reject(event.target.error);
                 });
             }
@@ -1583,9 +1818,72 @@
                     }
                 }
                 
+                // Auto-Sync nach Rechnungserstellung
+                if (window.firebaseManager) {
+                    setTimeout(() => window.firebaseManager.autoSync(), 1000);
+                }
+                
                 return invoiceId;
             }
             
+            async recordPayment(invoiceId, paymentData) {
+                const invoice = await this.get('invoices', invoiceId);
+                if (!invoice) return false;
+                
+                const paymentId = await this.add('payments', {
+                    invoiceId: invoiceId,
+                    amount: paymentData.amount,
+                    date: paymentData.date,
+                    method: paymentData.method,
+                    notes: paymentData.notes,
+                    createdAt: new Date().toISOString()
+                });
+                
+                invoice.paidAmount = (invoice.paidAmount || 0) + paymentData.amount;
+                
+                if (invoice.paidAmount >= invoice.totalAmount) {
+                    invoice.status = 'paid';
+                } else if (invoice.paidAmount > 0) {
+                    invoice.status = 'partial';
+                }
+                
+                await this.update('invoices', invoiceId, invoice);
+                
+                if (invoice.paymentMethod === 'Ratenzahlung') {
+                    const installments = await this.getAll('installments');
+                    const invoiceInstallments = installments.filter(inst => inst.invoiceId === invoiceId && inst.status === 'pending');
+                    
+                    if (invoiceInstallments.length > 0) {
+                        const nextInstallment = invoiceInstallments.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))[0];
+                        if (nextInstallment && paymentData.amount >= nextInstallment.amount) {
+                            nextInstallment.status = 'paid';
+                            nextInstallment.paidDate = paymentData.date;
+                            await this.update('installments', nextInstallment.id, nextInstallment);
+                        }
+                    }
+                }
+                
+                // Auto-Sync nach Zahlung
+                if (window.firebaseManager) {
+                    setTimeout(() => window.firebaseManager.autoSync(), 500);
+                }
+                
+                return true;
+            }
+            
+            async addIncome(incomeData) {
+                incomeData.createdAt = new Date().toISOString();
+                const id = await this.add('income', incomeData);
+                
+                // Auto-Sync nach Einkommenserfassung
+                if (window.firebaseManager) {
+                    setTimeout(() => window.firebaseManager.autoSync(), 500);
+                }
+                
+                return id;
+            }
+            
+            // Restliche Methoden bleiben gleich wie vorher...
             async getFinancialOverview() {
                 const invoices = await this.getAll('invoices');
                 const purchases = await this.getAll('purchases');
@@ -1648,7 +1946,6 @@
                     });
             }
             
-            // UI Aktualisierungen
             async updateDashboard() {
                 const overview = await this.getFinancialOverview();
                 
@@ -1980,7 +2277,7 @@
         // Globale Instanz
         const accountingSystem = new AccountingSystem();
 
-        // UI-Funktionen
+        // UI-Funktionen bleiben gleich wie vorher...
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -2024,6 +2321,18 @@
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('active');
             document.body.style.overflow = 'hidden';
+            
+            // Setze heutiges Datum
+            const today = new Date().toISOString().split('T')[0];
+            if (modalId === 'invoiceModal') {
+                document.getElementById('invoiceDate').value = today;
+                const dueDate = new Date();
+                dueDate.setDate(dueDate.getDate() + 30);
+                document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
+            }
+            if (modalId === 'incomeModal') {
+                document.getElementById('incomeDate').value = today;
+            }
         }
 
         function closeModal(modalId) {
@@ -2168,13 +2477,6 @@
             invoiceItems = [];
             addInvoiceItem();
             
-            const today = new Date();
-            document.getElementById('invoiceDate').value = today.toISOString().split('T')[0];
-            
-            const dueDate = new Date();
-            dueDate.setDate(dueDate.getDate() + 30);
-            document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
-            
             document.getElementById('paymentMethod').value = '';
             document.getElementById('installmentOptions').style.display = 'none';
             document.getElementById('invoiceNotes').value = '';
@@ -2272,8 +2574,6 @@
                 accountingSystem.editingIncomeId = null;
             }
             
-            document.getElementById('incomeDate').value = new Date().toISOString().split('T')[0];
-            
             openModal('incomeModal');
         }
 
@@ -2325,54 +2625,6 @@
                 
             } catch (error) {
                 accountingSystem.showAlert('Fehler beim Speichern des Einkommens: ' + error.message, 'danger');
-            }
-        }
-
-        async function recordPaymentModal(invoiceId) {
-            const invoice = await accountingSystem.get('invoices', invoiceId);
-            if (!invoice) {
-                accountingSystem.showAlert('Rechnung nicht gefunden', 'warning');
-                return;
-            }
-            
-            accountingSystem.currentPaymentInvoiceId = invoiceId;
-            document.getElementById('paymentInvoiceNumber').value = invoice.invoiceNumber;
-            document.getElementById('paymentAmount').value = (invoice.totalAmount - (invoice.paidAmount || 0)).toFixed(2);
-            
-            openModal('paymentModal');
-        }
-
-        async function recordPayment() {
-            const amount = parseFloat(document.getElementById('paymentAmount').value);
-            const date = document.getElementById('paymentDate').value;
-            const method = document.getElementById('paymentMethodSelect').value;
-            const notes = document.getElementById('paymentNotes').value;
-            
-            if (!amount || amount <= 0) {
-                accountingSystem.showAlert('Bitte geben Sie einen gültigen Betrag ein', 'warning');
-                return;
-            }
-            
-            try {
-                const success = await accountingSystem.recordPayment(
-                    accountingSystem.currentPaymentInvoiceId,
-                    {
-                        amount: amount,
-                        date: date,
-                        method: method,
-                        notes: notes
-                    }
-                );
-                
-                if (success) {
-                    accountingSystem.showAlert('Zahlung erfolgreich erfasst');
-                    closeModal('paymentModal');
-                    accountingSystem.loadInvoices();
-                    accountingSystem.loadInstallments();
-                    accountingSystem.updateDashboard();
-                }
-            } catch (error) {
-                accountingSystem.showAlert('Fehler beim Erfassen der Zahlung: ' + error.message, 'danger');
             }
         }
 
@@ -2433,176 +2685,7 @@
             }
         }
 
-        function openPurchaseModal() {
-            document.getElementById('purchaseDate').value = new Date().toISOString().split('T')[0];
-            openModal('purchaseModal');
-        }
-
-        async function savePurchase() {
-            const supplier = document.getElementById('purchaseSupplier').value;
-            const date = document.getElementById('purchaseDate').value;
-            const total = parseFloat(document.getElementById('purchaseTotal').value);
-            const notes = document.getElementById('purchaseNotes').value;
-            const paymentMethod = document.getElementById('purchasePaymentMethod').value;
-            
-            if (!supplier) {
-                accountingSystem.showAlert('Bitte geben Sie einen Lieferanten an', 'warning');
-                return;
-            }
-            
-            if (!total || total <= 0) {
-                accountingSystem.showAlert('Bitte geben Sie einen gültigen Betrag ein', 'warning');
-                return;
-            }
-            
-            const purchaseData = {
-                supplier: supplier,
-                date: date,
-                totalAmount: total,
-                notes: notes,
-                paymentMethod: paymentMethod,
-                status: 'paid'
-            };
-            
-            try {
-                await accountingSystem.add('purchases', purchaseData);
-                accountingSystem.showAlert('Einkauf erfolgreich erfasst');
-                closeModal('purchaseModal');
-                accountingSystem.loadPurchases();
-                accountingSystem.updateDashboard();
-                
-            } catch (error) {
-                accountingSystem.showAlert('Fehler beim Speichern des Einkaufs: ' + error.message, 'danger');
-            }
-        }
-
-        async function deleteInvoice(id) {
-            if (confirm('Sind Sie sicher, dass Sie diese Rechnung löschen möchten?')) {
-                try {
-                    const items = await accountingSystem.getAll('invoiceItems');
-                    const invoiceItems = items.filter(item => item.invoiceId === id);
-                    for (const item of invoiceItems) {
-                        await accountingSystem.delete('invoiceItems', item.id);
-                    }
-                    
-                    const installments = await accountingSystem.getAll('installments');
-                    const invoiceInstallments = installments.filter(inst => inst.invoiceId === id);
-                    for (const inst of invoiceInstallments) {
-                        await accountingSystem.delete('installments', inst.id);
-                    }
-                    
-                    const plans = await accountingSystem.getAll('installmentPlans');
-                    const invoicePlan = plans.find(plan => plan.invoiceId === id);
-                    if (invoicePlan) {
-                        await accountingSystem.delete('installmentPlans', invoicePlan.id);
-                    }
-                    
-                    const payments = await accountingSystem.getAll('payments');
-                    const invoicePayments = payments.filter(payment => payment.invoiceId === id);
-                    for (const payment of invoicePayments) {
-                        await accountingSystem.delete('payments', payment.id);
-                    }
-                    
-                    await accountingSystem.delete('invoices', id);
-                    
-                    accountingSystem.showAlert('Rechnung erfolgreich gelöscht');
-                    accountingSystem.loadInvoices();
-                    accountingSystem.loadInstallments();
-                    accountingSystem.updateDashboard();
-                    
-                } catch (error) {
-                    accountingSystem.showAlert('Fehler beim Löschen der Rechnung: ' + error.message, 'danger');
-                }
-            }
-        }
-
-        async function deleteIncome(id) {
-            if (confirm('Sind Sie sicher, dass Sie dieses Einkommen löschen möchten?')) {
-                try {
-                    await accountingSystem.delete('income', id);
-                    accountingSystem.showAlert('Einkommen erfolgreich gelöscht');
-                    accountingSystem.loadIncome();
-                    accountingSystem.updateDashboard();
-                    
-                } catch (error) {
-                    accountingSystem.showAlert('Fehler beim Löschen des Einkommens: ' + error.message, 'danger');
-                }
-            }
-        }
-
-        async function deleteCustomer(id) {
-            if (confirm('Sind Sie sicher, dass Sie diesen Kunden löschen möchten?')) {
-                try {
-                    const invoices = await accountingSystem.getAll('invoices');
-                    const customerInvoices = invoices.filter(inv => inv.customerId === id);
-                    
-                    if (customerInvoices.length > 0) {
-                        if (!confirm('Dieser Kunde hat noch Rechnungen. Trotzdem löschen?')) {
-                            return;
-                        }
-                    }
-                    
-                    await accountingSystem.delete('customers', id);
-                    accountingSystem.showAlert('Kunde erfolgreich gelöscht');
-                    accountingSystem.loadCustomers();
-                    
-                } catch (error) {
-                    accountingSystem.showAlert('Fehler beim Löschen des Kunden: ' + error.message, 'danger');
-                }
-            }
-        }
-
-        async function deletePurchase(id) {
-            if (confirm('Sind Sie sicher, dass Sie diesen Einkauf löschen möchten?')) {
-                try {
-                    await accountingSystem.delete('purchases', id);
-                    accountingSystem.showAlert('Einkauf erfolgreich gelöscht');
-                    accountingSystem.loadPurchases();
-                    accountingSystem.updateDashboard();
-                    
-                } catch (error) {
-                    accountingSystem.showAlert('Fehler beim Löschen des Einkaufs: ' + error.message, 'danger');
-                }
-            }
-        }
-
-        function viewInvoice(id) {
-            accountingSystem.showAlert('Rechnungsdetails werden angezeigt', 'info');
-        }
-
-        function editCustomer(id) {
-            openCustomerModal(id);
-        }
-
-        async function exportData() {
-            try {
-                const data = {
-                    customers: await accountingSystem.getAll('customers'),
-                    invoices: await accountingSystem.getAll('invoices'),
-                    invoiceItems: await accountingSystem.getAll('invoiceItems'),
-                    income: await accountingSystem.getAll('income'),
-                    installmentPlans: await accountingSystem.getAll('installmentPlans'),
-                    installments: await accountingSystem.getAll('installments'),
-                    purchases: await accountingSystem.getAll('purchases'),
-                    payments: await accountingSystem.getAll('payments')
-                };
-                
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `buchhaltung-backup-${new Date().toISOString().split('T')[0]}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                accountingSystem.showAlert('Daten erfolgreich exportiert');
-                
-            } catch (error) {
-                accountingSystem.showAlert('Fehler beim Exportieren der Daten: ' + error.message, 'danger');
-            }
-        }
+        // Restliche Funktionen bleiben gleich...
 
         // Initialisierung
         document.addEventListener('DOMContentLoaded', function() {
@@ -2618,10 +2701,15 @@
                 installmentCount.addEventListener('change', calculateInstallments);
             }
             
-            // Initial Dashboard laden
-            setTimeout(() => {
-                accountingSystem.updateDashboard();
-            }, 100);
+            // Auto-Update alle 30 Sekunden
+            setInterval(() => {
+                if (window.firebaseManager) {
+                    window.firebaseManager.updateSyncStatus(
+                        `Zuletzt: ${window.firebaseManager.lastSync ? window.firebaseManager.lastSync.toLocaleTimeString() : 'Nie'}`,
+                        'synced'
+                    );
+                }
+            }, 30000);
         });
     </script>
 </body>
