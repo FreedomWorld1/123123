@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buchhaltungssystem - Verträge & Rechnungen</title>
+    <title>Buchhaltungssystem für Rechnungen & Ratenzahlungen</title>
     <style>
         :root {
-            --primary: #1a56db;
-            --primary-light: #ebf5ff;
-            --secondary: #6b7280;
-            --success: #0e9f6e;
-            --warning: #f05252;
-            --danger: #c81e1e;
-            --light: #f9fafb;
-            --dark: #111827;
-            --border: #d1d5db;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
         }
         
         * {
@@ -24,177 +24,153 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f1f5f9;
             color: var(--dark);
+            line-height: 1.6;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            padding: 20px;
         }
         
-        @media (max-width: 1024px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .card {
+        header {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            padding: 24px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
-        }
-        
-        .header-section {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 30px;
-            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
-            color: white;
-            border-radius: 16px;
-            margin-bottom: 30px;
-        }
-        
-        .header-section h1 {
-            font-size: 2.8rem;
-            margin-bottom: 8px;
-            font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .header-section .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        
-        .amount-display {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin: 20px 0;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-        
-        .status-paid {
-            background: rgba(14, 159, 110, 0.15);
-            color: var(--success);
-            border: 2px solid var(--success);
-        }
-        
-        .status-pending {
-            background: rgba(240, 82, 82, 0.15);
-            color: var(--warning);
-            border: 2px solid var(--warning);
-        }
-        
-        h2 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--border);
-            color: var(--dark);
-            font-weight: 700;
-        }
-        
-        h3 {
-            font-size: 1.2rem;
-            margin: 20px 0 15px 0;
-            color: var(--primary);
-            font-weight: 600;
-        }
-        
-        .contract-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        
-        .contract-item {
-            background: var(--light);
-            padding: 18px;
+            padding: 1.5rem;
             border-radius: 10px;
-            border-left: 5px solid var(--primary);
-            transition: all 0.3s ease;
-            position: relative;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .contract-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .contract-name {
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-            color: var(--dark);
-        }
-        
-        .contract-amount {
-            font-size: 1.5rem;
-            font-weight: 700;
+        .logo h1 {
             color: var(--primary);
+            font-size: 1.8rem;
         }
         
-        .contract-status {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 0.8rem;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-weight: 600;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
         
-        .paid .contract-status {
-            background: var(--success);
-            color: white;
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
         
-        .pending .contract-status {
-            background: var(--warning);
-            color: white;
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
         }
         
-        .contract-due {
+        .income { background: #dbeafe; color: var(--primary); }
+        .expense { background: #fee2e2; color: var(--danger); }
+        .profit { background: #dcfce7; color: var(--success); }
+        .pending { background: #fef3c7; color: var(--warning); }
+        
+        .stat-info h3 {
             font-size: 0.9rem;
             color: var(--secondary);
-            margin-top: 8px;
+            margin-bottom: 0.5rem;
         }
         
-        .payment-controls {
+        .stat-info .amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-item {
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
+            align-items: center;
             gap: 10px;
-            margin-top: 15px;
+        }
+        
+        .nav-item:hover {
+            background: #f1f5f9;
+        }
+        
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .content-area {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
         }
         
         .btn {
-            padding: 10px 20px;
+            padding: 0.7rem 1.5rem;
             border: none;
-            border-radius: 8px;
-            font-weight: 600;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -206,8 +182,7 @@
         }
         
         .btn-primary:hover {
-            background: #1e40af;
-            transform: translateY(-2px);
+            background: var(--primary-dark);
         }
         
         .btn-success {
@@ -215,107 +190,52 @@
             color: white;
         }
         
-        .btn-success:hover {
-            background: #057a55;
-        }
-        
         .btn-warning {
             background: var(--warning);
             color: white;
         }
         
-        .btn-warning:hover {
-            background: #c81e1e;
-        }
-        
-        .summary-box {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border: 2px solid var(--primary);
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-        }
-        
-        .summary-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-        }
-        
-        .summary-item:last-child {
-            border-bottom: none;
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--dark);
-        }
-        
-        .summary-label {
-            color: var(--secondary);
-        }
-        
-        .summary-value {
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        .invoice-list {
-            margin-top: 15px;
-        }
-        
-        .invoice-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: var(--light);
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border-left: 4px solid var(--primary);
-        }
-        
-        .invoice-info {
-            flex: 1;
-        }
-        
-        .invoice-number {
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        .invoice-date {
-            font-size: 0.9rem;
-            color: var(--secondary);
-        }
-        
-        .invoice-amount {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        
-        .filter-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .filter-tab {
-            padding: 10px 20px;
-            background: var(--light);
-            border: 2px solid transparent;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .filter-tab.active {
-            background: var(--primary);
+        .btn-danger {
+            background: var(--danger);
             color: white;
-            border-color: var(--primary);
         }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        tr:hover {
+            background: #f8fafc;
+        }
+        
+        .status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-paid { background: #dcfce7; color: #166534; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-overdue { background: #fee2e2; color: #991b1b; }
         
         .modal {
             display: none;
@@ -336,15 +256,15 @@
         
         .modal-content {
             background: white;
-            border-radius: 16px;
+            border-radius: 10px;
             width: 90%;
-            max-width: 500px;
+            max-width: 700px;
             max-height: 90vh;
             overflow-y: auto;
         }
         
         .modal-header {
-            padding: 20px;
+            padding: 1.5rem;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
@@ -352,124 +272,238 @@
         }
         
         .modal-body {
-            padding: 20px;
+            padding: 1.5rem;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
         }
         
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem;
             font-weight: 600;
             color: var(--dark);
         }
         
-        input, select {
+        input, select, textarea {
             width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
+            padding: 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
             font-size: 1rem;
         }
         
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .invoice-items {
+            margin: 1.5rem 0;
+        }
+        
+        .item-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: end;
+        }
+        
+        .item-total {
+            padding: 0.8rem;
+            background: #f8fafc;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .remove-item {
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .add-item {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        
+        .installment-plan {
+            background: #f0f9ff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .installment-display {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            border: 1px solid var(--border);
+        }
+        
+        .installment-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .installment-row:last-child {
+            border-bottom: none;
         }
         
         .alert {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 10px;
         }
         
-        .alert-success {
-            background: rgba(14, 159, 110, 0.15);
-            color: var(--success);
-            border: 2px solid var(--success);
+        .alert-success { background: #dcfce7; color: #166534; }
+        .alert-warning { background: #fef3c7; color: #92400e; }
+        .alert-danger { background: #fee2e2; color: #991b1b; }
+        .alert-info { background: #dbeafe; color: var(--primary); }
+        
+        .data-actions {
+            display: flex;
+            gap: 0.5rem;
         }
         
-        .alert-warning {
-            background: rgba(240, 82, 82, 0.15);
-            color: var(--warning);
-            border: 2px solid var(--warning);
+        .action-btn {
+            padding: 0.3rem 0.8rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
         }
         
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--secondary);
-        }
+        .view-btn { background: #dbeafe; color: var(--primary); }
+        .edit-btn { background: #fef3c7; color: var(--warning); }
+        .delete-btn { background: #fee2e2; color: var(--danger); }
+        .payment-btn { background: #dcfce7; color: #166534; }
         
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-        
-        .overdue {
-            border-left-color: var(--warning) !important;
-            background: rgba(240, 82, 82, 0.05);
-        }
-        
-        .total-display {
-            font-size: 2.5rem;
-            font-weight: 800;
-            text-align: center;
-            margin: 20px 0;
-            color: var(--primary);
-        }
-        
-        .stats-grid {
+        .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
         }
         
-        .stat-card {
+        .chart-container {
             background: white;
-            padding: 25px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
-        .stat-value {
-            font-size: 2.2rem;
-            font-weight: 800;
-            margin: 10px 0;
+        .recent-activity {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
-        .stat-label {
-            color: var(--secondary);
-            font-size: 0.95rem;
+        .activity-list {
+            list-style: none;
+            margin-top: 1rem;
         }
         
-        .stat-income .stat-value { color: var(--success); }
-        .stat-expenses .stat-value { color: var(--warning); }
-        .stat-balance .stat-value { color: var(--primary); }
+        .activity-item {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .invoice-summary {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .summary-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
         
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: 1fr;
             }
             
-            .contract-grid {
+            .form-row {
                 grid-template-columns: 1fr;
             }
             
-            .header-section h1 {
-                font-size: 2rem;
-            }
-            
-            .amount-display {
-                font-size: 2.5rem;
+            .item-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
             }
         }
     </style>
@@ -477,399 +511,1054 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header Section -->
-        <div class="header-section">
-            <h1># - Insgesamt -</h1>
-            <div class="subtitle">Monatliche Übersicht - Verträge & Rechnungen</div>
-            <div class="amount-display" id="totalBalance">0,00 €</div>
-            <div class="status-badge status-paid">
-                <i class="fas fa-check-circle"></i> Bü - 040,45 € - Bezahlt
+        <header>
+            <div class="logo">
+                <i class="fas fa-calculator fa-2x" style="color: #2563eb;"></i>
+                <h1>Buchhaltungssystem Pro</h1>
             </div>
+            <div>
+                <button class="btn btn-primary" onclick="exportData()">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+        </header>
+
+        <div class="stats-grid" id="statsContainer">
+            <!-- Stats werden von JavaScript geladen -->
         </div>
-        
-        <!-- Stats Overview -->
-        <div class="stats-grid" style="grid-column: 1 / -1;">
-            <div class="stat-card stat-income">
-                <div class="stat-label">Einnahmen</div>
-                <div class="stat-value" id="totalIncome">0,00 €</div>
-                <div class="stat-subtitle">Dieser Monat</div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <ul class="nav-menu">
+                    <li class="nav-item active" onclick="showTab('dashboard')">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </li>
+                    <li class="nav-item" onclick="showTab('invoices')">
+                        <i class="fas fa-file-invoice"></i> Rechnungen
+                    </li>
+                    <li class="nav-item" onclick="showTab('installments')">
+                        <i class="fas fa-calendar-alt"></i> Ratenzahlungen
+                    </li>
+                    <li class="nav-item" onclick="showTab('customers')">
+                        <i class="fas fa-users"></i> Kunden
+                    </li>
+                    <li class="nav-item" onclick="showTab('purchases')">
+                        <i class="fas fa-shopping-cart"></i> Einkäufe
+                    </li>
+                </ul>
             </div>
-            <div class="stat-card stat-expenses">
-                <div class="stat-label">Ausgaben</div>
-                <div class="stat-value" id="totalExpenses">0,00 €</div>
-                <div class="stat-subtitle">Verträge & Rechnungen</div>
-            </div>
-            <div class="stat-card stat-balance">
-                <div class="stat-label">Verbleibend</div>
-                <div class="stat-value" id="remainingBalance">0,00 €</div>
-                <div class="stat-subtitle">Nach allen Zahlungen</div>
-            </div>
-        </div>
-        
-        <!-- Left Column: Verträge -->
-        <div>
-            <div class="card">
-                <h2><i class="fas fa-file-contract"></i> Verträge - Einkommen</h2>
-                <h3>Deutschland Ticket & Verträge</h3>
-                
-                <div class="filter-tabs">
-                    <div class="filter-tab active" onclick="filterContracts('all')">Alle</div>
-                    <div class="filter-tab" onclick="filterContracts('paid')">Bezahlt</div>
-                    <div class="filter-tab" onclick="filterContracts('pending')">Ausstehend</div>
+
+            <div class="content-area">
+                <!-- Dashboard Tab -->
+                <div id="dashboard" class="tab-content active">
+                    <div class="page-header">
+                        <h2>Dashboard</h2>
+                        <div>
+                            <button class="btn btn-primary" onclick="openInvoiceModal()">
+                                <i class="fas fa-plus"></i> Neue Rechnung
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-grid">
+                        <div class="chart-container">
+                            <h3>Finanzübersicht</h3>
+                            <div id="quickStats" style="margin-top: 1rem;">
+                                <!-- Schnellstatistiken -->
+                            </div>
+                        </div>
+                        
+                        <div class="recent-activity">
+                            <h3>Aktuelle Rechnungen</h3>
+                            <ul class="activity-list" id="recentInvoices">
+                                <!-- Aktuelle Rechnungen -->
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">Überfällige Rechnungen</h3>
+                        <div class="table-container">
+                            <table id="overdueInvoicesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Rechnungsnummer</th>
+                                        <th>Kunde</th>
+                                        <th>Fälligkeitsdatum</th>
+                                        <th>Offener Betrag</th>
+                                        <th>Aktionen</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Daten werden geladen -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="contract-grid" id="contractsContainer">
-                    <!-- Contracts will be loaded here -->
+
+                <!-- Rechnungen Tab -->
+                <div id="invoices" class="tab-content">
+                    <div class="page-header">
+                        <h2>Rechnungen</h2>
+                        <button class="btn btn-primary" onclick="openInvoiceModal()">
+                            <i class="fas fa-plus"></i> Neue Rechnung
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rechnungsnummer</th>
+                                    <th>Kunde</th>
+                                    <th>Datum</th>
+                                    <th>Fällig am</th>
+                                    <th>Betrag</th>
+                                    <th>Status</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoicesTable">
+                                <!-- Daten werden geladen -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                
-                <div class="payment-controls" style="justify-content: center; margin-top: 25px;">
-                    <button class="btn btn-primary" onclick="openAddContractModal()">
-                        <i class="fas fa-plus"></i> Neuen Vertrag hinzufügen
-                    </button>
+
+                <!-- Ratenzahlungen Tab -->
+                <div id="installments" class="tab-content">
+                    <div class="page-header">
+                        <h2>Ratenzahlungen</h2>
+                        <div>
+                            <button class="btn btn-primary" onclick="openInvoiceModal()">
+                                <i class="fas fa-plus"></i> Neue Ratenzahlung
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rechnung</th>
+                                    <th>Kunde</th>
+                                    <th>Gesamtbetrag</th>
+                                    <th>Ratenplan</th>
+                                    <th>Offener Betrag</th>
+                                    <th>Status</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="installmentsTable">
+                                <!-- Daten werden geladen -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-            
-            <!-- Summary Box -->
-            <div class="card summary-box">
-                <h3><i class="fas fa-calculator"></i> Zusammenfassung</h3>
-                <div class="summary-item">
-                    <span class="summary-label">Gesamt Verträge:</span>
-                    <span class="summary-value" id="totalContracts">0</span>
+
+                <!-- Kunden Tab -->
+                <div id="customers" class="tab-content">
+                    <div class="page-header">
+                        <h2>Kunden</h2>
+                        <button class="btn btn-primary" onclick="openCustomerModal()">
+                            <i class="fas fa-plus"></i> Neuer Kunde
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>E-Mail</th>
+                                    <th>Telefon</th>
+                                    <th>Anzahl Rechnungen</th>
+                                    <th>Letzte Aktivität</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customersTable">
+                                <!-- Daten werden geladen -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="summary-item">
-                    <span class="summary-label">Bezahlt:</span>
-                    <span class="summary-value" id="paidContracts">0</span>
-                </div>
-                <div class="summary-item">
-                    <span class="summary-label">Ausstehend:</span>
-                    <span class="summary-value" id="pendingContracts">0</span>
-                </div>
-                <div class="summary-item">
-                    <span class="summary-label">Gesamtbetrag:</span>
-                    <span class="summary-value" id="summaryTotal">0,00 €</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Right Column: Rechnungen & Details -->
-        <div>
-            <div class="card">
-                <h2><i class="fas fa-receipt"></i> Offene Rechnungen</h2>
-                <div class="invoice-list" id="invoicesContainer">
-                    <!-- Invoices will be loaded here -->
-                </div>
-                
-                <div class="payment-controls" style="justify-content: center; margin-top: 25px;">
-                    <button class="btn btn-primary" onclick="openAddInvoiceModal()">
-                        <i class="fas fa-plus"></i> Neue Rechnung hinzufügen
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Payment Status -->
-            <div class="card">
-                <h2><i class="fas fa-euro-sign"></i> Zahlungsstatus</h2>
-                <h3>Noch zu bezahlen:</h3>
-                
-                <div id="pendingPaymentsContainer">
-                    <!-- Pending payments will be loaded here -->
-                </div>
-                
-                <div class="total-display" id="pendingTotal">0,00 €</div>
-                
-                <div class="payment-controls" style="justify-content: space-between;">
-                    <button class="btn btn-success" onclick="markAllAsPaid()">
-                        <i class="fas fa-check-double"></i> Alle als bezahlt markieren
-                    </button>
-                    <button class="btn btn-warning" onclick="recordPayment()">
-                        <i class="fas fa-money-bill-wave"></i> Zahlung erfassen
-                    </button>
+
+                <!-- Einkäufe Tab -->
+                <div id="purchases" class="tab-content">
+                    <div class="page-header">
+                        <h2>Einkäufe</h2>
+                        <button class="btn btn-primary" onclick="openPurchaseModal()">
+                            <i class="fas fa-plus"></i> Neuer Einkauf
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Lieferant</th>
+                                    <th>Datum</th>
+                                    <th>Betrag</th>
+                                    <th>Zahlungsstatus</th>
+                                    <th>Notizen</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="purchasesTable">
+                                <!-- Daten werden geladen -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Add Contract Modal -->
-    <div id="addContractModal" class="modal">
+
+    <!-- Modal für neue Rechnung -->
+    <div id="invoiceModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Neuen Vertrag hinzufügen</h3>
-                <button onclick="closeModal('addContractModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+                <h3>Neue Rechnung erstellen</h3>
+                <button onclick="closeModal('invoiceModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="contractName">Vertragsname *</label>
-                    <input type="text" id="contractName" placeholder="z.B. Deutschland Ticket" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="contractAmount">Betrag (€) *</label>
-                    <input type="number" id="contractAmount" step="0.01" placeholder="30,00" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="contractType">Typ</label>
-                    <select id="contractType">
-                        <option value="monthly">Monatlich</option>
-                        <option value="quarterly">Vierteljährlich</option>
-                        <option value="yearly">Jährlich</option>
-                        <option value="one-time">Einmalig</option>
+                    <label for="invoiceCustomer">Kunde *</label>
+                    <select id="invoiceCustomer" required>
+                        <option value="">Kunden auswählen...</option>
                     </select>
                 </div>
                 
-                <div class="form-group">
-                    <label for="contractDueDate">Fällig am</label>
-                    <input type="date" id="contractDueDate">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="invoiceDate">Rechnungsdatum</label>
+                        <input type="date" id="invoiceDate" value="<?php echo date('Y-m-d'); ?>" readonly style="background: #f8fafc;">
+                    </div>
+                    <div class="form-group">
+                        <label for="dueDate">Fälligkeitsdatum *</label>
+                        <input type="date" id="dueDate" required>
+                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="contractStatus">Status</label>
-                    <select id="contractStatus">
-                        <option value="pending">Ausstehend</option>
-                        <option value="paid">Bezahlt</option>
+                    <label>Rechnungspositionen</label>
+                    <div class="invoice-items">
+                        <div id="invoiceItems">
+                            <!-- Items werden dynamisch hinzugefügt -->
+                        </div>
+                        <button type="button" class="add-item" onclick="addInvoiceItem()">
+                            <i class="fas fa-plus"></i> Position hinzufügen
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="invoice-summary">
+                    <div class="summary-row">
+                        <span>Gesamtbetrag:</span>
+                        <span id="totalAmountDisplay">0.00 €</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentMethod">Zahlungsmethode *</label>
+                    <select id="paymentMethod" onchange="toggleInstallmentOptions()" required>
+                        <option value="">Bitte auswählen</option>
+                        <option value="Karte">Karte</option>
+                        <option value="Überweisung">Überweisung</option>
+                        <option value="BAR">BAR</option>
+                        <option value="Ratenzahlung">Ratenzahlung</option>
                     </select>
                 </div>
                 
-                <div class="form-group">
-                    <label for="contractNotes">Notizen</label>
-                    <input type="text" id="contractNotes" placeholder="Optional">
-                </div>
-                
-                <div style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px;">
-                    <button type="button" class="btn" onclick="closeModal('addContractModal')" style="background: var(--secondary); color: white;">Abbrechen</button>
-                    <button type="button" class="btn btn-primary" onclick="saveContract()">Vertrag speichern</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Add Invoice Modal -->
-    <div id="addInvoiceModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Neue Rechnung hinzufügen</h3>
-                <button onclick="closeModal('addInvoiceModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="invoiceNumber">Rechnungsnummer *</label>
-                    <input type="text" id="invoiceNumber" placeholder="z.B. #EVV/001" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="invoiceAmount">Betrag (€) *</label>
-                    <input type="number" id="invoiceAmount" step="0.01" placeholder="0,00" required>
+                <div id="installmentOptions" style="display: none;">
+                    <div class="installment-plan">
+                        <h4>Ratenzahlungsplan</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="installmentCount">Anzahl Raten *</label>
+                                <select id="installmentCount" onchange="calculateInstallments()" required>
+                                    <option value="2">2 Raten</option>
+                                    <option value="3">3 Raten</option>
+                                    <option value="6">6 Raten</option>
+                                    <option value="12" selected>12 Raten</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="installmentFrequency">Ratenintervall *</label>
+                                <select id="installmentFrequency" onchange="calculateInstallments()" required>
+                                    <option value="monthly" selected>Monatlich</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="installmentDisplay" class="installment-display">
+                            <p>Bitte geben Sie zuerst den Gesamtbetrag ein.</p>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="invoiceDate">Rechnungsdatum</label>
-                    <input type="date" id="invoiceDate">
+                    <label for="invoiceNotes">Notizen</label>
+                    <textarea id="invoiceNotes" rows="3" placeholder="Optional: Notizen zur Rechnung"></textarea>
                 </div>
                 
-                <div class="form-group">
-                    <label for="invoiceDueDate">Fällig bis</label>
-                    <input type="date" id="invoiceDueDate">
-                </div>
-                
-                <div class="form-group">
-                    <label for="invoiceStatus">Status</label>
-                    <select id="invoiceStatus">
-                        <option value="pending">Offen</option>
-                        <option value="paid">Bezahlt</option>
-                        <option value="overdue">Überfällig</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="invoiceDescription">Beschreibung</label>
-                    <input type="text" id="invoiceDescription" placeholder="Optional">
-                </div>
-                
-                <div style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px;">
-                    <button type="button" class="btn" onclick="closeModal('addInvoiceModal')" style="background: var(--secondary); color: white;">Abbrechen</button>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="closeModal('invoiceModal')" style="background: var(--secondary); color: white;">Abbrechen</button>
                     <button type="button" class="btn btn-primary" onclick="saveInvoice()">Rechnung speichern</button>
                 </div>
             </div>
         </div>
     </div>
-    
+
+    <!-- Modal für Zahlungserfassung -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Zahlung erfassen</h3>
+                <button onclick="closeModal('paymentModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="paymentInvoiceNumber">Rechnungsnummer</label>
+                    <input type="text" id="paymentInvoiceNumber" readonly style="background: #f8fafc;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentAmount">Betrag (€) *</label>
+                    <input type="number" id="paymentAmount" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentDate">Zahlungsdatum *</label>
+                    <input type="date" id="paymentDate" required value="<?php echo date('Y-m-d'); ?>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentMethodSelect">Zahlungsmethode *</label>
+                    <select id="paymentMethodSelect" required>
+                        <option value="Karte">Karte</option>
+                        <option value="Überweisung">Überweisung</option>
+                        <option value="BAR">BAR</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentNotes">Notizen</label>
+                    <textarea id="paymentNotes" rows="3"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="closeModal('paymentModal')" style="background: var(--secondary); color: white;">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" onclick="recordPayment()">Zahlung speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal für Kunden -->
+    <div id="customerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="customerModalTitle">Neuer Kunde</h3>
+                <button onclick="closeModal('customerModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="customerName">Name *</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="customerEmail">E-Mail</label>
+                        <input type="email" id="customerEmail">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerPhone">Telefon</label>
+                        <input type="tel" id="customerPhone">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customerAddress">Adresse</label>
+                    <textarea id="customerAddress" rows="2"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="closeModal('customerModal')" style="background: var(--secondary); color: white;">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCustomer()">Kunde speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal für Einkäufe -->
+    <div id="purchaseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Neuer Einkauf</h3>
+                <button onclick="closeModal('purchaseModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="purchaseSupplier">Lieferant *</label>
+                    <input type="text" id="purchaseSupplier" placeholder="Name des Lieferanten" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="purchaseDate">Einkaufsdatum *</label>
+                        <input type="date" id="purchaseDate" required value="<?php echo date('Y-m-d'); ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="purchaseTotal">Betrag (€) *</label>
+                        <input type="number" id="purchaseTotal" step="0.01" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="purchaseNotes">Beschreibung / Notizen</label>
+                    <textarea id="purchaseNotes" rows="3" placeholder="Was wurde eingekauft?"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="purchasePaymentMethod">Zahlungsmethode</label>
+                    <select id="purchasePaymentMethod">
+                        <option value="Überweisung">Überweisung</option>
+                        <option value="Karte">Karte</option>
+                        <option value="BAR">BAR</option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="closeModal('purchaseModal')" style="background: var(--secondary); color: white;">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" onclick="savePurchase()">Einkauf speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Alert Container -->
-    <div id="alertContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 400px;"></div>
+    <div id="alertContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
 
     <script>
-        // Accounting System Class
+        // Hauptklasse für das Buchhaltungssystem
         class AccountingSystem {
             constructor() {
-                this.contracts = this.loadFromStorage('contracts') || this.getDefaultContracts();
-                this.invoices = this.loadFromStorage('invoices') || this.getDefaultInvoices();
-                this.payments = this.loadFromStorage('payments') || [];
-                this.updateCalculations();
-            }
-            
-            getDefaultContracts() {
-                return [
-                    { id: 1, name: 'Play Station Vertrag', amount: 70.00, status: 'pending', type: 'monthly', dueDate: '2024-12-15', notes: '' },
-                    { id: 2, name: 'Epsilon Vertrag', amount: 60.00, status: 'pending', type: 'monthly', dueDate: '2024-12-10', notes: '' },
-                    { id: 3, name: 'Apple 8000 Cloud Mountain', amount: 0.00, status: 'paid', type: 'monthly', dueDate: '2024-12-05', notes: '' },
-                    { id: 4, name: 'Black Golden', amount: 1.00, status: 'pending', type: 'monthly', dueDate: '2024-12-20', notes: '' },
-                    { id: 5, name: 'Speedby Pascal', amount: 4.00, status: 'pending', type: 'monthly', dueDate: '2024-12-18', notes: '' },
-                    { id: 6, name: 'Ipsel Vertrag', amount: 32.01, status: 'pending', type: 'monthly', dueDate: '2024-12-12', notes: '' },
-                    { id: 7, name: 'Montier Vertrag', amount: 20.10, status: 'pending', type: 'monthly', dueDate: '2024-12-08', notes: '' },
-                    { id: 8, name: 'Deutschland Ticket monatlich', amount: 30.00, status: 'pending', type: 'monthly', dueDate: '2024-12-01', notes: '' },
-                    { id: 9, name: 'Stahl Vertrag', amount: 0.00, status: 'paid', type: 'monthly', dueDate: '2024-12-03', notes: '' },
-                    { id: 10, name: 'WLAN Zuhause Vertrag monatlich', amount: 0.00, status: 'paid', type: 'monthly', dueDate: '2024-12-05', notes: '' },
-                    { id: 11, name: 'SS', amount: 0.00, status: 'paid', type: 'monthly', dueDate: '2024-12-07', notes: '' },
-                    { id: 12, name: 'i2f Mobile Vertrag', amount: 0.00, status: 'paid', type: 'monthly', dueDate: '2024-12-10', notes: '' },
-                    { id: 13, name: 'Grafikkarte Vertrag', amount: 0.00, status: 'paid', type: 'monthly', dueDate: '2024-12-15', notes: '' }
-                ];
-            }
-            
-            getDefaultInvoices() {
-                return [
-                    { id: 1, number: '#EVV/001', amount: 0.00, date: '2024-12-01', dueDate: '2024-12-31', status: 'paid', description: '' },
-                    { id: 2, number: '#EVV/002', amount: 0.00, date: '2024-12-01', dueDate: '2024-12-31', status: 'paid', description: '' },
-                    { id: 3, number: '#EVV/003', amount: 0.00, date: '2024-12-01', dueDate: '2024-12-31', status: 'paid', description: '' },
-                    { id: 4, number: '#EVV/004', amount: 0.00, date: '2024-12-01', dueDate: '2024-12-31', status: 'paid', description: '' }
-                ];
-            }
-            
-            loadFromStorage(key) {
-                try {
-                    const data = localStorage.getItem(`accounting_${key}`);
-                    return data ? JSON.parse(data) : null;
-                } catch (e) {
-                    console.error('Error loading from storage:', e);
-                    return null;
-                }
-            }
-            
-            saveToStorage(key, data) {
-                try {
-                    localStorage.setItem(`accounting_${key}`, JSON.stringify(data));
-                } catch (e) {
-                    console.error('Error saving to storage:', e);
-                }
-            }
-            
-            updateCalculations() {
-                // Calculate totals
-                this.totalContracts = this.contracts.length;
-                this.paidContracts = this.contracts.filter(c => c.status === 'paid').length;
-                this.pendingContracts = this.contracts.filter(c => c.status === 'pending').length;
+                this.dbName = 'accounting_db';
+                this.dbVersion = 2;
+                this.db = null;
+                this.initDatabase();
                 
-                // Calculate amounts
-                this.totalContractAmount = this.contracts.reduce((sum, c) => sum + c.amount, 0);
-                this.paidAmount = this.contracts
-                    .filter(c => c.status === 'paid')
-                    .reduce((sum, c) => sum + c.amount, 0);
-                this.pendingAmount = this.contracts
-                    .filter(c => c.status === 'pending')
-                    .reduce((sum, c) => sum + c.amount, 0);
+                this.currentInvoiceId = null;
+                this.currentPaymentInvoiceId = null;
+                this.editingCustomerId = null;
                 
-                // Calculate invoice totals
-                this.totalInvoices = this.invoices.length;
-                this.paidInvoices = this.invoices.filter(i => i.status === 'paid').length;
-                this.pendingInvoices = this.invoices.filter(i => i.status !== 'paid').length;
-                this.totalInvoiceAmount = this.invoices.reduce((sum, i) => sum + i.amount, 0);
-                
-                // Update storage
-                this.saveToStorage('contracts', this.contracts);
-                this.saveToStorage('invoices', this.invoices);
-                this.saveToStorage('payments', this.payments);
+                // Standard Fälligkeitsdatum für Ratenzahlungen: 01.01.2026
+                this.defaultInstallmentDueDate = '2026-01-01';
             }
             
-            addContract(contract) {
-                const newContract = {
-                    id: Date.now(),
-                    ...contract,
-                    amount: parseFloat(contract.amount)
-                };
-                this.contracts.push(newContract);
-                this.updateCalculations();
-                return newContract;
-            }
-            
-            updateContract(id, updates) {
-                const index = this.contracts.findIndex(c => c.id === id);
-                if (index !== -1) {
-                    this.contracts[index] = { ...this.contracts[index], ...updates };
-                    this.updateCalculations();
-                    return true;
-                }
-                return false;
-            }
-            
-            deleteContract(id) {
-                const index = this.contracts.findIndex(c => c.id === id);
-                if (index !== -1) {
-                    this.contracts.splice(index, 1);
-                    this.updateCalculations();
-                    return true;
-                }
-                return false;
-            }
-            
-            addInvoice(invoice) {
-                const newInvoice = {
-                    id: Date.now(),
-                    ...invoice,
-                    amount: parseFloat(invoice.amount)
-                };
-                this.invoices.push(newInvoice);
-                this.updateCalculations();
-                return newInvoice;
-            }
-            
-            updateInvoice(id, updates) {
-                const index = this.invoices.findIndex(i => i.id === id);
-                if (index !== -1) {
-                    this.invoices[index] = { ...this.invoices[index], ...updates };
-                    this.updateCalculations();
-                    return true;
-                }
-                return false;
-            }
-            
-            markAllContractsAsPaid() {
-                this.contracts.forEach(contract => {
-                    contract.status = 'paid';
+            async initDatabase() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(this.dbName, this.dbVersion);
+                    
+                    request.onerror = (event) => {
+                        console.error('Datenbankfehler:', event.target.error);
+                        reject(event.target.error);
+                    };
+                    
+                    request.onsuccess = (event) => {
+                        this.db = event.target.result;
+                        console.log('Datenbank initialisiert');
+                        this.loadInitialData();
+                        resolve();
+                    };
+                    
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        
+                        // Kunden-Tabelle
+                        if (!db.objectStoreNames.contains('customers')) {
+                            const customerStore = db.createObjectStore('customers', { keyPath: 'id', autoIncrement: true });
+                            customerStore.createIndex('name', 'name', { unique: false });
+                        }
+                        
+                        // Rechnungen-Tabelle
+                        if (!db.objectStoreNames.contains('invoices')) {
+                            const invoiceStore = db.createObjectStore('invoices', { keyPath: 'id', autoIncrement: true });
+                            invoiceStore.createIndex('customerId', 'customerId', { unique: false });
+                            invoiceStore.createIndex('invoiceNumber', 'invoiceNumber', { unique: true });
+                            invoiceStore.createIndex('status', 'status', { unique: false });
+                            invoiceStore.createIndex('dueDate', 'dueDate', { unique: false });
+                        }
+                        
+                        // Rechnungspositionen-Tabelle
+                        if (!db.objectStoreNames.contains('invoiceItems')) {
+                            const itemStore = db.createObjectStore('invoiceItems', { keyPath: 'id', autoIncrement: true });
+                            itemStore.createIndex('invoiceId', 'invoiceId', { unique: false });
+                        }
+                        
+                        // Ratenpläne-Tabelle
+                        if (!db.objectStoreNames.contains('installmentPlans')) {
+                            const planStore = db.createObjectStore('installmentPlans', { keyPath: 'id', autoIncrement: true });
+                            planStore.createIndex('invoiceId', 'invoiceId', { unique: false });
+                        }
+                        
+                        // Einzelne Raten-Tabelle
+                        if (!db.objectStoreNames.contains('installments')) {
+                            const installmentStore = db.createObjectStore('installments', { keyPath: 'id', autoIncrement: true });
+                            installmentStore.createIndex('planId', 'planId', { unique: false });
+                            installmentStore.createIndex('invoiceId', 'invoiceId', { unique: false });
+                            installmentStore.createIndex('status', 'status', { unique: false });
+                            installmentStore.createIndex('dueDate', 'dueDate', { unique: false });
+                        }
+                        
+                        // Einkäufe-Tabelle
+                        if (!db.objectStoreNames.contains('purchases')) {
+                            const purchaseStore = db.createObjectStore('purchases', { keyPath: 'id', autoIncrement: true });
+                            purchaseStore.createIndex('supplier', 'supplier', { unique: false });
+                        }
+                        
+                        // Zahlungen-Tabelle
+                        if (!db.objectStoreNames.contains('payments')) {
+                            const paymentStore = db.createObjectStore('payments', { keyPath: 'id', autoIncrement: true });
+                            paymentStore.createIndex('invoiceId', 'invoiceId', { unique: false });
+                        }
+                    };
                 });
-                this.updateCalculations();
             }
             
-            recordPayment(contractId, amount, date = new Date().toISOString().split('T')[0]) {
-                this.payments.push({
-                    id: Date.now(),
-                    contractId,
-                    amount: parseFloat(amount),
-                    date,
-                    timestamp: new Date().toISOString()
-                });
+            async loadInitialData() {
+                const customers = await this.getAll('customers');
+                if (customers.length === 0) {
+                    await this.addSampleData();
+                }
                 
-                // Update contract status
-                if (contractId) {
-                    const contract = this.contracts.find(c => c.id === contractId);
-                    if (contract) {
-                        contract.status = 'paid';
+                this.updateDashboard();
+                this.loadInvoices();
+                this.loadCustomers();
+                this.loadPurchases();
+                this.loadInstallments();
+            }
+            
+            async addSampleData() {
+                // Beispiel-Kunden
+                const sampleCustomers = [
+                    { name: 'Max Mustermann', email: 'max@example.com', phone: '0123 456789', address: 'Musterstraße 1, 12345 Musterstadt' },
+                    { name: 'Erika Musterfrau', email: 'erika@example.com', phone: '0987 654321', address: 'Beispielweg 2, 54321 Beispielstadt' }
+                ];
+                
+                for (const customer of sampleCustomers) {
+                    await this.add('customers', customer);
+                }
+                
+                // Beispiel-Einkauf
+                await this.add('purchases', {
+                    supplier: 'Bürobedarf Müller',
+                    date: new Date().toISOString().split('T')[0],
+                    totalAmount: 450.00,
+                    paymentMethod: 'Überweisung',
+                    notes: 'Büromaterial für Q1',
+                    status: 'paid'
+                });
+            }
+            
+            // CRUD-Operationen
+            async add(storeName, data) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([storeName], 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.add(data);
+                    
+                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+            
+            async get(storeName, id) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([storeName], 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.get(id);
+                    
+                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+            
+            async getAll(storeName, indexName = null, range = null) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([storeName], 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const target = indexName ? store.index(indexName) : store;
+                    const request = range ? target.getAll(range) : target.getAll();
+                    
+                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+            
+            async update(storeName, id, data) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([storeName], 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.put({ ...data, id });
+                    
+                    request.onsuccess = (event) => resolve(event.target.result);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+            
+            async delete(storeName, id) {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([storeName], 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.delete(id);
+                    
+                    request.onsuccess = (event) => resolve(true);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+            
+            async generateInvoiceNumber() {
+                const invoices = await this.getAll('invoices');
+                const year = new Date().getFullYear();
+                const count = invoices.filter(inv => inv.invoiceNumber?.includes(year.toString())).length + 1;
+                return `R-${year}-${count.toString().padStart(4, '0')}`;
+            }
+            
+            async createInvoice(invoiceData, items) {
+                // Rechnungsnummer generieren
+                invoiceData.invoiceNumber = invoiceData.invoiceNumber || await this.generateInvoiceNumber();
+                
+                // Rechnung speichern
+                const invoiceId = await this.add('invoices', invoiceData);
+                
+                // Rechnungspositionen speichern
+                for (const item of items) {
+                    await this.add('invoiceItems', {
+                        ...item,
+                        invoiceId: invoiceId
+                    });
+                }
+                
+                // Bei Ratenzahlung: Ratenplan erstellen
+                if (invoiceData.paymentMethod === 'Ratenzahlung') {
+                    const installmentCount = parseInt(invoiceData.installmentCount) || 12;
+                    const installmentAmount = invoiceData.totalAmount / installmentCount;
+                    
+                    const planId = await this.add('installmentPlans', {
+                        invoiceId: invoiceId,
+                        totalInstallments: installmentCount,
+                        installmentAmount: installmentAmount,
+                        frequency: 'monthly',
+                        startDate: invoiceData.issueDate,
+                        totalAmount: invoiceData.totalAmount
+                    });
+                    
+                    // Einzelne Raten erstellen (nur monatlich)
+                    for (let i = 0; i < installmentCount; i++) {
+                        const dueDate = new Date(this.defaultInstallmentDueDate);
+                        if (i > 0) {
+                            dueDate.setMonth(dueDate.getMonth() + i);
+                        }
+                        
+                        await this.add('installments', {
+                            planId: planId,
+                            invoiceId: invoiceId,
+                            installmentNumber: i + 1,
+                            dueDate: dueDate.toISOString().split('T')[0],
+                            amount: installmentAmount,
+                            status: 'pending'
+                        });
                     }
                 }
                 
-                this.updateCalculations();
+                return invoiceId;
             }
             
-            getFilteredContracts(filter = 'all') {
-                switch(filter) {
-                    case 'paid':
-                        return this.contracts.filter(c => c.status === 'paid');
-                    case 'pending':
-                        return this.contracts.filter(c => c.status === 'pending');
-                    default:
-                        return this.contracts;
+            async recordPayment(invoiceId, paymentData) {
+                const invoice = await this.get('invoices', invoiceId);
+                if (!invoice) return false;
+                
+                // Zahlung speichern
+                const paymentId = await this.add('payments', {
+                    invoiceId: invoiceId,
+                    amount: paymentData.amount,
+                    date: paymentData.date,
+                    method: paymentData.method,
+                    notes: paymentData.notes
+                });
+                
+                // Rechnungsstatus aktualisieren
+                invoice.paidAmount = (invoice.paidAmount || 0) + paymentData.amount;
+                
+                if (invoice.paidAmount >= invoice.totalAmount) {
+                    invoice.status = 'paid';
+                } else if (invoice.paidAmount > 0) {
+                    invoice.status = 'partial';
                 }
+                
+                await this.update('invoices', invoiceId, invoice);
+                
+                // Wenn es eine Ratenzahlung ist, Ratenstatus aktualisieren
+                if (invoice.paymentMethod === 'Ratenzahlung') {
+                    const installments = await this.getAll('installments');
+                    const invoiceInstallments = installments.filter(inst => inst.invoiceId === invoiceId && inst.status === 'pending');
+                    
+                    if (invoiceInstallments.length > 0) {
+                        // Nächste offene Rate bezahlen
+                        const nextInstallment = invoiceInstallments.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))[0];
+                        if (nextInstallment && paymentData.amount >= nextInstallment.amount) {
+                            nextInstallment.status = 'paid';
+                            nextInstallment.paidDate = paymentData.date;
+                            await this.update('installments', nextInstallment.id, nextInstallment);
+                        }
+                    }
+                }
+                
+                return true;
             }
             
-            getPendingPayments() {
-                return this.contracts.filter(c => c.status === 'pending');
+            async getFinancialOverview() {
+                const invoices = await this.getAll('invoices');
+                const purchases = await this.getAll('purchases');
+                
+                // Gesamteinnahmen
+                const totalIncome = invoices.reduce((sum, inv) => sum + inv.totalAmount, 0);
+                
+                // Bereits bezahlte Beträge
+                const paidAmount = invoices.reduce((sum, inv) => sum + (inv.paidAmount || 0), 0);
+                
+                // Offene Rechnungen
+                const openInvoices = invoices.filter(inv => inv.status !== 'paid');
+                const openAmount = openInvoices.reduce((sum, inv) => sum + (inv.totalAmount - (inv.paidAmount || 0)), 0);
+                
+                // Ausgaben (Einkäufe)
+                const totalExpenses = purchases.reduce((sum, purchase) => sum + purchase.totalAmount, 0);
+                
+                // Überfällige Rechnungen
+                const today = new Date().toISOString().split('T')[0];
+                const overdueInvoices = openInvoices.filter(inv => inv.dueDate < today);
+                const overdueAmount = overdueInvoices.reduce((sum, inv) => sum + (inv.totalAmount - (inv.paidAmount || 0)), 0);
+                
+                return {
+                    totalIncome,
+                    paidAmount,
+                    openAmount,
+                    totalExpenses,
+                    profit: totalIncome - totalExpenses,
+                    overdueCount: overdueInvoices.length,
+                    overdueAmount
+                };
+            }
+            
+            async getOverdueInvoices() {
+                const invoices = await this.getAll('invoices');
+                const customers = await this.getAll('customers');
+                const today = new Date().toISOString().split('T')[0];
+                
+                return invoices
+                    .filter(inv => inv.status !== 'paid' && inv.dueDate < today)
+                    .map(inv => {
+                        const customer = customers.find(c => c.id === inv.customerId);
+                        return {
+                            ...inv,
+                            customerName: customer ? customer.name : 'Unbekannt',
+                            outstandingAmount: inv.totalAmount - (inv.paidAmount || 0)
+                        };
+                    });
+            }
+            
+            async getRecentInvoices(limit = 5) {
+                const invoices = await this.getAll('invoices');
+                const customers = await this.getAll('customers');
+                
+                return invoices
+                    .sort((a, b) => new Date(b.issueDate) - new Date(a.issueDate))
+                    .slice(0, limit)
+                    .map(inv => {
+                        const customer = customers.find(c => c.id === inv.customerId);
+                        return {
+                            ...inv,
+                            customerName: customer ? customer.name : 'Unbekannt'
+                        };
+                    });
+            }
+            
+            // UI Aktualisierungen
+            async updateDashboard() {
+                const overview = await this.getFinancialOverview();
+                
+                // Stats aktualisieren
+                const statsContainer = document.getElementById('statsContainer');
+                statsContainer.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-icon income">
+                            <i class="fas fa-euro-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Gesamteinnahmen</h3>
+                            <div class="amount">${overview.totalIncome.toFixed(2)} €</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon expense">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Ausgaben</h3>
+                            <div class="amount">${overview.totalExpenses.toFixed(2)} €</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon profit">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Gewinn</h3>
+                            <div class="amount">${overview.profit.toFixed(2)} €</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Offene Rechnungen</h3>
+                            <div class="amount">${overview.openAmount.toFixed(2)} €</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Quick Stats
+                const quickStats = document.getElementById('quickStats');
+                if (quickStats) {
+                    quickStats.innerHTML = `
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div style="background: #f0f9ff; padding: 1rem; border-radius: 8px;">
+                                <div style="font-size: 0.9rem; color: var(--secondary);">Eingegangen</div>
+                                <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">${overview.paidAmount.toFixed(2)} €</div>
+                            </div>
+                            <div style="background: #fef3c7; padding: 1rem; border-radius: 8px;">
+                                <div style="font-size: 0.9rem; color: var(--secondary);">Überfällig</div>
+                                <div style="font-size: 1.5rem; font-weight: bold; color: #92400e;">${overview.overdueAmount.toFixed(2)} €</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Aktuelle Rechnungen
+                this.updateRecentInvoices();
+                
+                // Überfällige Rechnungen
+                this.updateOverdueInvoices();
+            }
+            
+            async updateRecentInvoices() {
+                const recentInvoices = await this.getRecentInvoices(5);
+                const container = document.getElementById('recentInvoices');
+                
+                if (!container) return;
+                
+                container.innerHTML = recentInvoices.map(inv => {
+                    const statusClass = inv.status === 'paid' ? 'status-paid' : 
+                                       inv.status === 'partial' ? 'status-pending' : 
+                                       'status-pending';
+                    
+                    return `
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-file-invoice"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">${inv.invoiceNumber}</div>
+                                <div style="font-size: 0.9rem; color: var(--secondary);">
+                                    ${inv.customerName} · ${new Date(inv.issueDate).toLocaleDateString('de-DE')}
+                                </div>
+                            </div>
+                            <div>
+                                <span class="status ${statusClass}" style="font-size: 0.8rem;">
+                                    ${inv.totalAmount.toFixed(2)} €
+                                </span>
+                            </div>
+                        </li>
+                    `;
+                }).join('');
+            }
+            
+            async updateOverdueInvoices() {
+                const overdueInvoices = await this.getOverdueInvoices();
+                const container = document.querySelector('#overdueInvoicesTable tbody');
+                
+                if (!container) return;
+                
+                container.innerHTML = overdueInvoices.map(inv => `
+                    <tr>
+                        <td>${inv.invoiceNumber}</td>
+                        <td>${inv.customerName}</td>
+                        <td>${new Date(inv.dueDate).toLocaleDateString('de-DE')}</td>
+                        <td>${inv.outstandingAmount.toFixed(2)} €</td>
+                        <td>
+                            <button class="action-btn payment-btn" onclick="recordPaymentModal(${inv.id})">
+                                <i class="fas fa-euro-sign"></i> Zahlung
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            async loadInvoices() {
+                const invoices = await this.getAll('invoices');
+                const customers = await this.getAll('customers');
+                const container = document.getElementById('invoicesTable');
+                
+                if (!container) return;
+                
+                container.innerHTML = invoices.map(inv => {
+                    const customer = customers.find(c => c.id === inv.customerId);
+                    const statusClass = inv.status === 'paid' ? 'status-paid' : 
+                                       inv.status === 'partial' ? 'status-pending' : 
+                                       inv.dueDate < new Date().toISOString().split('T')[0] ? 'status-overdue' : 'status-pending';
+                    const statusText = inv.status === 'paid' ? 'Bezahlt' : 
+                                     inv.status === 'partial' ? 'Teilweise' : 
+                                     inv.dueDate < new Date().toISOString().split('T')[0] ? 'Überfällig' : 'Offen';
+                    
+                    return `
+                        <tr>
+                            <td>${inv.invoiceNumber}</td>
+                            <td>${customer ? customer.name : 'Unbekannt'}</td>
+                            <td>${new Date(inv.issueDate).toLocaleDateString('de-DE')}</td>
+                            <td>${new Date(inv.dueDate).toLocaleDateString('de-DE')}</td>
+                            <td>${inv.totalAmount.toFixed(2)} €</td>
+                            <td><span class="status ${statusClass}">${statusText}</span></td>
+                            <td class="data-actions">
+                                <button class="action-btn view-btn" onclick="viewInvoice(${inv.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn payment-btn" onclick="recordPaymentModal(${inv.id})">
+                                    <i class="fas fa-euro-sign"></i>
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deleteInvoice(${inv.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            async loadCustomers() {
+                const customers = await this.getAll('customers');
+                const invoices = await this.getAll('invoices');
+                const container = document.getElementById('customersTable');
+                
+                if (!container) return;
+                
+                container.innerHTML = customers.map(customer => {
+                    const customerInvoices = invoices.filter(inv => inv.customerId === customer.id);
+                    const totalInvoices = customerInvoices.length;
+                    
+                    // Letzte Rechnung
+                    const lastInvoice = customerInvoices.sort((a, b) => new Date(b.issueDate) - new Date(a.issueDate))[0];
+                    const lastActivity = lastInvoice ? new Date(lastInvoice.issueDate).toLocaleDateString('de-DE') : '-';
+                    
+                    return `
+                        <tr>
+                            <td>${customer.name}</td>
+                            <td>${customer.email || '-'}</td>
+                            <td>${customer.phone || '-'}</td>
+                            <td>${totalInvoices}</td>
+                            <td>${lastActivity}</td>
+                            <td class="data-actions">
+                                <button class="action-btn edit-btn" onclick="editCustomer(${customer.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deleteCustomer(${customer.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            async loadPurchases() {
+                const purchases = await this.getAll('purchases');
+                const container = document.getElementById('purchasesTable');
+                
+                if (!container) return;
+                
+                container.innerHTML = purchases.map(purchase => {
+                    const statusClass = purchase.status === 'paid' ? 'status-paid' : 'status-pending';
+                    const statusText = purchase.status === 'paid' ? 'Bezahlt' : 'Offen';
+                    
+                    return `
+                        <tr>
+                            <td>${purchase.supplier}</td>
+                            <td>${new Date(purchase.date).toLocaleDateString('de-DE')}</td>
+                            <td>${purchase.totalAmount.toFixed(2)} €</td>
+                            <td><span class="status ${statusClass}">${statusText}</span></td>
+                            <td>${purchase.notes || '-'}</td>
+                            <td class="data-actions">
+                                <button class="action-btn delete-btn" onclick="deletePurchase(${purchase.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            async loadInstallments() {
+                const installmentPlans = await this.getAll('installmentPlans');
+                const invoices = await this.getAll('invoices');
+                const customers = await this.getAll('customers');
+                const installments = await this.getAll('installments');
+                const container = document.getElementById('installmentsTable');
+                
+                if (!container) return;
+                
+                const rows = [];
+                
+                for (const plan of installmentPlans) {
+                    const invoice = invoices.find(inv => inv.id === plan.invoiceId);
+                    if (!invoice) continue;
+                    
+                    const customer = customers.find(c => c.id === invoice.customerId);
+                    
+                    // Offene Raten berechnen
+                    const planInstallments = installments.filter(inst => inst.planId === plan.id);
+                    const pendingInstallments = planInstallments.filter(inst => inst.status === 'pending');
+                    const outstandingAmount = pendingInstallments.reduce((sum, inst) => sum + inst.amount, 0);
+                    
+                    // Nächste fällige Rate
+                    const nextInstallment = pendingInstallments.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))[0];
+                    
+                    rows.push(`
+                        <tr>
+                            <td>${invoice.invoiceNumber}</td>
+                            <td>${customer ? customer.name : 'Unbekannt'}</td>
+                            <td>${plan.totalAmount.toFixed(2)} €</td>
+                            <td>${plan.totalInstallments} × ${plan.installmentAmount.toFixed(2)} €</td>
+                            <td>${outstandingAmount.toFixed(2)} €</td>
+                            <td>
+                                <span class="status ${pendingInstallments.length > 0 ? 'status-pending' : 'status-paid'}">
+                                    ${pendingInstallments.length > 0 ? 'Offen' : 'Bezahlt'}
+                                </span>
+                            </td>
+                            <td class="data-actions">
+                                <button class="action-btn payment-btn" onclick="recordPaymentModal(${invoice.id})">
+                                    <i class="fas fa-euro-sign"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `);
+                }
+                
+                container.innerHTML = rows.join('');
             }
             
             showAlert(message, type = 'success') {
@@ -877,8 +1566,8 @@
                 const alert = document.createElement('div');
                 alert.className = `alert alert-${type}`;
                 alert.innerHTML = `
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
-                    <span>${message}</span>
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'}"></i>
+                    ${message}
                 `;
                 
                 container.appendChild(alert);
@@ -888,336 +1577,576 @@
                     setTimeout(() => alert.remove(), 300);
                 }, 3000);
             }
-            
-            formatCurrency(amount) {
-                return new Intl.NumberFormat('de-DE', { 
-                    style: 'currency', 
-                    currency: 'EUR',
-                    minimumFractionDigits: 2
-                }).format(amount);
-            }
         }
-        
-        // Global instance
-        const accounting = new AccountingSystem();
-        
-        // UI Functions
-        function updateUI() {
-            updateContractsDisplay();
-            updateInvoicesDisplay();
-            updateSummary();
-            updatePendingPayments();
-            updateStats();
-        }
-        
-        function updateContractsDisplay(filter = 'all') {
-            const container = document.getElementById('contractsContainer');
-            const contracts = accounting.getFilteredContracts(filter);
-            
-            if (contracts.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1 / -1;">
-                        <i class="fas fa-file-contract"></i>
-                        <h3>Keine Verträge gefunden</h3>
-                        <p>Fügen Sie Ihren ersten Vertrag hinzu</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = contracts.map(contract => `
-                <div class="contract-item ${contract.status} ${isOverdue(contract.dueDate) && contract.status === 'pending' ? 'overdue' : ''}">
-                    <div class="contract-name">${contract.name}</div>
-                    <div class="contract-amount">${accounting.formatCurrency(contract.amount)}</div>
-                    <div class="contract-status">${contract.status === 'paid' ? 'Bezahlt' : 'Ausstehend'}</div>
-                    <div class="contract-due">
-                        ${contract.type === 'monthly' ? 'Monatlich' : 
-                          contract.type === 'quarterly' ? 'Vierteljährlich' :
-                          contract.type === 'yearly' ? 'Jährlich' : 'Einmalig'}
-                        ${contract.dueDate ? ` • Fällig: ${formatDate(contract.dueDate)}` : ''}
-                    </div>
-                    <div class="payment-controls">
-                        <button class="btn btn-success" onclick="markAsPaid(${contract.id})" ${contract.status === 'paid' ? 'disabled style="opacity:0.5"' : ''}>
-                            <i class="fas fa-check"></i> Bezahlt
-                        </button>
-                        <button class="btn" onclick="editContract(${contract.id})" style="background: var(--secondary); color: white;">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-warning" onclick="deleteContract(${contract.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-        
-        function updateInvoicesDisplay() {
-            const container = document.getElementById('invoicesContainer');
-            
-            if (accounting.invoices.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-receipt"></i>
-                        <h3>Keine Rechnungen gefunden</h3>
-                        <p>Fügen Sie Ihre erste Rechnung hinzu</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = accounting.invoices.map(invoice => `
-                <div class="invoice-item ${invoice.status === 'overdue' ? 'overdue' : ''}">
-                    <div class="invoice-info">
-                        <div class="invoice-number">${invoice.number}</div>
-                        <div class="invoice-date">
-                            ${formatDate(invoice.date)} • Fällig: ${formatDate(invoice.dueDate)}
-                            ${invoice.description ? `<br>${invoice.description}` : ''}
-                        </div>
-                    </div>
-                    <div class="invoice-amount">${accounting.formatCurrency(invoice.amount)}</div>
-                </div>
-            `).join('');
-        }
-        
-        function updatePendingPayments() {
-            const container = document.getElementById('pendingPaymentsContainer');
-            const pendingPayments = accounting.getPendingPayments();
-            
-            if (pendingPayments.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state" style="padding: 20px;">
-                        <i class="fas fa-check-circle"></i>
-                        <h3>Alle Zahlungen erledigt!</h3>
-                        <p>Keine ausstehenden Zahlungen</p>
-                    </div>
-                `;
-                document.getElementById('pendingTotal').textContent = '0,00 €';
-                return;
-            }
-            
-            container.innerHTML = pendingPayments.map(contract => `
-                <div class="summary-item">
-                    <span class="summary-label">${contract.name}</span>
-                    <span class="summary-value">${accounting.formatCurrency(contract.amount)}</span>
-                </div>
-            `).join('');
-            
-            document.getElementById('pendingTotal').textContent = accounting.formatCurrency(accounting.pendingAmount);
-        }
-        
-        function updateSummary() {
-            document.getElementById('totalContracts').textContent = accounting.totalContracts;
-            document.getElementById('paidContracts').textContent = accounting.paidContracts;
-            document.getElementById('pendingContracts').textContent = accounting.pendingContracts;
-            document.getElementById('summaryTotal').textContent = accounting.formatCurrency(accounting.totalContractAmount);
-        }
-        
-        function updateStats() {
-            // Fixed income amount from your screenshot
-            const fixedIncome = 40.45;
-            
-            document.getElementById('totalIncome').textContent = accounting.formatCurrency(fixedIncome);
-            document.getElementById('totalExpenses').textContent = accounting.formatCurrency(accounting.pendingAmount);
-            document.getElementById('remainingBalance').textContent = accounting.formatCurrency(fixedIncome - accounting.pendingAmount);
-            document.getElementById('totalBalance').textContent = accounting.formatCurrency(fixedIncome - accounting.pendingAmount);
-        }
-        
-        function filterContracts(filter) {
-            // Update active tab
-            document.querySelectorAll('.filter-tab').forEach(tab => {
+
+        // Globale Instanz
+        const accountingSystem = new AccountingSystem();
+
+        // UI-Funktionen
+        function showTab(tabName) {
+            // Tab-Inhalt verstecken
+            document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
-            event.target.classList.add('active');
             
-            // Update display
-            updateContractsDisplay(filter);
+            // Tab anzeigen
+            document.getElementById(tabName).classList.add('active');
+            
+            // Navigation aktualisieren
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // Tab-spezifische Daten laden
+            switch(tabName) {
+                case 'dashboard':
+                    accountingSystem.updateDashboard();
+                    break;
+                case 'invoices':
+                    accountingSystem.loadInvoices();
+                    break;
+                case 'installments':
+                    accountingSystem.loadInstallments();
+                    break;
+                case 'customers':
+                    accountingSystem.loadCustomers();
+                    break;
+                case 'purchases':
+                    accountingSystem.loadPurchases();
+                    break;
+            }
         }
-        
-        function isOverdue(dueDate) {
-            if (!dueDate) return false;
-            return new Date(dueDate) < new Date();
-        }
-        
-        function formatDate(dateString) {
-            if (!dateString) return '';
-            const date = new Date(dateString);
-            return date.toLocaleDateString('de-DE');
-        }
-        
-        // Modal Functions
+
+        let invoiceItems = [];
+        let currentTotal = 0;
+
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('active');
         }
-        
+
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
-        }
-        
-        function openAddContractModal() {
-            // Reset form
-            document.getElementById('contractName').value = '';
-            document.getElementById('contractAmount').value = '';
-            document.getElementById('contractType').value = 'monthly';
-            document.getElementById('contractDueDate').value = '';
-            document.getElementById('contractStatus').value = 'pending';
-            document.getElementById('contractNotes').value = '';
+            accountingSystem.currentInvoiceId = null;
+            accountingSystem.currentPaymentInvoiceId = null;
+            accountingSystem.editingCustomerId = null;
             
-            openModal('addContractModal');
+            // Rechnungsmodal zurücksetzen
+            if (modalId === 'invoiceModal') {
+                invoiceItems = [];
+                currentTotal = 0;
+                document.getElementById('invoiceItems').innerHTML = '';
+                document.getElementById('totalAmountDisplay').textContent = '0.00 €';
+                document.getElementById('installmentDisplay').innerHTML = '<p>Bitte geben Sie zuerst den Gesamtbetrag ein.</p>';
+            }
         }
-        
-        function openAddInvoiceModal() {
-            // Reset form
-            document.getElementById('invoiceNumber').value = '';
-            document.getElementById('invoiceAmount').value = '';
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('invoiceDate').value = today;
-            document.getElementById('invoiceDueDate').value = today;
-            document.getElementById('invoiceStatus').value = 'pending';
-            document.getElementById('invoiceDescription').value = '';
+
+        function addInvoiceItem() {
+            const container = document.getElementById('invoiceItems');
+            const itemId = invoiceItems.length + 1;
             
-            openModal('addInvoiceModal');
+            const itemHtml = `
+                <div class="item-row" id="item-${itemId}">
+                    <div>
+                        <label>Produkt/Beschreibung *</label>
+                        <input type="text" class="item-description" placeholder="z.B. Webdesign Paket" required onchange="calculateInvoiceTotal()">
+                    </div>
+                    <div>
+                        <label>Menge *</label>
+                        <input type="number" class="item-quantity" value="1" min="1" required onchange="calculateInvoiceTotal()">
+                    </div>
+                    <div>
+                        <label>Preis (€) *</label>
+                        <input type="number" class="item-price" step="0.01" required onchange="calculateInvoiceTotal()">
+                    </div>
+                    <div>
+                        <label>Gesamt (€)</label>
+                        <div class="item-total">0.00</div>
+                    </div>
+                    <div>
+                        <button type="button" class="remove-item" onclick="removeInvoiceItem(${itemId})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', itemHtml);
+            invoiceItems.push({ id: itemId });
         }
-        
-        function saveContract() {
-            const name = document.getElementById('contractName').value;
-            const amount = document.getElementById('contractAmount').value;
+
+        function removeInvoiceItem(itemId) {
+            const element = document.getElementById(`item-${itemId}`);
+            if (element) {
+                element.remove();
+                invoiceItems = invoiceItems.filter(item => item.id !== itemId);
+                calculateInvoiceTotal();
+            }
+        }
+
+        function calculateInvoiceTotal() {
+            let total = 0;
             
-            if (!name || !amount) {
-                accounting.showAlert('Bitte füllen Sie alle Pflichtfelder aus', 'warning');
+            document.querySelectorAll('.item-row').forEach(row => {
+                const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                const itemTotal = quantity * price;
+                
+                row.querySelector('.item-total').textContent = itemTotal.toFixed(2);
+                total += itemTotal;
+            });
+            
+            currentTotal = total;
+            document.getElementById('totalAmountDisplay').textContent = total.toFixed(2) + ' €';
+            
+            // Installment-Berechnung aktualisieren
+            calculateInstallments();
+            
+            return total;
+        }
+
+        function toggleInstallmentOptions() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const options = document.getElementById('installmentOptions');
+            const dueDateField = document.getElementById('dueDate');
+            
+            if (paymentMethod === 'Ratenzahlung') {
+                options.style.display = 'block';
+                // Fälligkeitsdatum auf 01.01.2026 setzen
+                dueDateField.value = '2026-01-01';
+                calculateInstallments();
+            } else {
+                options.style.display = 'none';
+                // Standard: 30 Tage Frist
+                const today = new Date();
+                today.setDate(today.getDate() + 30);
+                dueDateField.value = today.toISOString().split('T')[0];
+            }
+        }
+
+        function calculateInstallments() {
+            const total = currentTotal;
+            const installmentCount = parseInt(document.getElementById('installmentCount')?.value) || 12;
+            const installmentAmount = total / installmentCount;
+            const display = document.getElementById('installmentDisplay');
+            
+            if (total > 0) {
+                let html = `<h5>Ratenplan:</h5>`;
+                html += `<div class="installment-row">
+                    <span><strong>Gesamtbetrag:</strong></span>
+                    <span><strong>${total.toFixed(2)} €</strong></span>
+                </div>`;
+                html += `<div class="installment-row">
+                    <span>${installmentCount} monatliche Raten à:</span>
+                    <span>${installmentAmount.toFixed(2)} €</span>
+                </div>`;
+                html += `<div class="installment-row">
+                    <span>Erste Rate fällig am:</span>
+                    <span>01.01.2026</span>
+                </div>`;
+                
+                display.innerHTML = html;
+            }
+        }
+
+        async function openInvoiceModal() {
+            // Kunden für Dropdown laden
+            const customers = await accountingSystem.getAll('customers');
+            const customerSelect = document.getElementById('invoiceCustomer');
+            customerSelect.innerHTML = '<option value="">Kunden auswählen...</option>' +
+                customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            
+            // Formular zurücksetzen
+            document.getElementById('invoiceItems').innerHTML = '';
+            invoiceItems = [];
+            addInvoiceItem(); // Erste Position hinzufügen
+            
+            // Datum setzen
+            const today = new Date();
+            document.getElementById('invoiceDate').value = today.toISOString().split('T')[0];
+            
+            // Standard Fälligkeitsdatum: 30 Tage
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
+            
+            // Zahlungsmethode auf Standard setzen
+            document.getElementById('paymentMethod').value = '';
+            document.getElementById('installmentOptions').style.display = 'none';
+            
+            // Notizen leeren
+            document.getElementById('invoiceNotes').value = '';
+            
+            // Modal öffnen
+            openModal('invoiceModal');
+        }
+
+        async function saveInvoice() {
+            const customerId = document.getElementById('invoiceCustomer').value;
+            const issueDate = document.getElementById('invoiceDate').value;
+            const dueDate = document.getElementById('dueDate').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const installmentCount = document.getElementById('installmentCount')?.value;
+            const notes = document.getElementById('invoiceNotes').value;
+            
+            // Validierung
+            if (!customerId) {
+                accountingSystem.showAlert('Bitte wählen Sie einen Kunden aus', 'warning');
                 return;
             }
             
-            const contract = {
+            if (!paymentMethod) {
+                accountingSystem.showAlert('Bitte wählen Sie eine Zahlungsmethode', 'warning');
+                return;
+            }
+            
+            // Rechnungspositionen sammeln
+            const items = [];
+            let totalAmount = 0;
+            let hasError = false;
+            
+            document.querySelectorAll('.item-row').forEach((row, index) => {
+                const description = row.querySelector('.item-description').value;
+                const quantity = parseFloat(row.querySelector('.item-quantity').value);
+                const price = parseFloat(row.querySelector('.item-price').value);
+                
+                if (!description || isNaN(quantity) || quantity <= 0 || isNaN(price) || price <= 0) {
+                    accountingSystem.showAlert(`Position ${index + 1} ist ungültig. Bitte überprüfen Sie die Eingaben.`, 'warning');
+                    hasError = true;
+                    return;
+                }
+                
+                const itemTotal = quantity * price;
+                items.push({
+                    description: description,
+                    quantity: quantity,
+                    unitPrice: price,
+                    totalPrice: itemTotal
+                });
+                totalAmount += itemTotal;
+            });
+            
+            if (hasError) return;
+            
+            if (items.length === 0) {
+                accountingSystem.showAlert('Bitte fügen Sie mindestens eine Rechnungsposition hinzu', 'warning');
+                return;
+            }
+            
+            // Rechnung erstellen
+            const invoiceData = {
+                customerId: parseInt(customerId),
+                issueDate: issueDate,
+                dueDate: dueDate,
+                totalAmount: totalAmount,
+                paidAmount: 0,
+                status: 'open',
+                paymentMethod: paymentMethod,
+                notes: notes
+            };
+            
+            // Bei Ratenzahlung zusätzliche Daten
+            if (paymentMethod === 'Ratenzahlung') {
+                invoiceData.installmentCount = parseInt(installmentCount) || 12;
+            }
+            
+            try {
+                const invoiceId = await accountingSystem.createInvoice(invoiceData, items);
+                accountingSystem.showAlert(`Rechnung erfolgreich erstellt!`);
+                
+                // UI aktualisieren
+                closeModal('invoiceModal');
+                accountingSystem.loadInvoices();
+                accountingSystem.loadInstallments();
+                accountingSystem.updateDashboard();
+                
+            } catch (error) {
+                accountingSystem.showAlert('Fehler beim Erstellen der Rechnung: ' + error.message, 'danger');
+            }
+        }
+
+        async function recordPaymentModal(invoiceId) {
+            const invoice = await accountingSystem.get('invoices', invoiceId);
+            if (!invoice) {
+                accountingSystem.showAlert('Rechnung nicht gefunden', 'warning');
+                return;
+            }
+            
+            accountingSystem.currentPaymentInvoiceId = invoiceId;
+            document.getElementById('paymentInvoiceNumber').value = invoice.invoiceNumber;
+            document.getElementById('paymentAmount').value = (invoice.totalAmount - (invoice.paidAmount || 0)).toFixed(2);
+            
+            openModal('paymentModal');
+        }
+
+        async function recordPayment() {
+            const amount = parseFloat(document.getElementById('paymentAmount').value);
+            const date = document.getElementById('paymentDate').value;
+            const method = document.getElementById('paymentMethodSelect').value;
+            const notes = document.getElementById('paymentNotes').value;
+            
+            if (!amount || amount <= 0) {
+                accountingSystem.showAlert('Bitte geben Sie einen gültigen Betrag ein', 'warning');
+                return;
+            }
+            
+            try {
+                const success = await accountingSystem.recordPayment(
+                    accountingSystem.currentPaymentInvoiceId,
+                    {
+                        amount: amount,
+                        date: date,
+                        method: method,
+                        notes: notes
+                    }
+                );
+                
+                if (success) {
+                    accountingSystem.showAlert('Zahlung erfolgreich erfasst');
+                    closeModal('paymentModal');
+                    accountingSystem.loadInvoices();
+                    accountingSystem.loadInstallments();
+                    accountingSystem.updateDashboard();
+                }
+            } catch (error) {
+                accountingSystem.showAlert('Fehler beim Erfassen der Zahlung: ' + error.message, 'danger');
+            }
+        }
+
+        async function openCustomerModal(editId = null) {
+            const modalTitle = document.getElementById('customerModalTitle');
+            
+            if (editId) {
+                modalTitle.textContent = 'Kunde bearbeiten';
+                const customer = await accountingSystem.get('customers', editId);
+                if (customer) {
+                    document.getElementById('customerName').value = customer.name;
+                    document.getElementById('customerEmail').value = customer.email || '';
+                    document.getElementById('customerPhone').value = customer.phone || '';
+                    document.getElementById('customerAddress').value = customer.address || '';
+                    accountingSystem.editingCustomerId = editId;
+                }
+            } else {
+                modalTitle.textContent = 'Neuer Kunde';
+                document.getElementById('customerName').value = '';
+                document.getElementById('customerEmail').value = '';
+                document.getElementById('customerPhone').value = '';
+                document.getElementById('customerAddress').value = '';
+                accountingSystem.editingCustomerId = null;
+            }
+            
+            openModal('customerModal');
+        }
+
+        async function saveCustomer() {
+            const name = document.getElementById('customerName').value;
+            
+            if (!name) {
+                accountingSystem.showAlert('Bitte geben Sie einen Namen ein', 'warning');
+                return;
+            }
+            
+            const customerData = {
                 name: name,
-                amount: amount,
-                type: document.getElementById('contractType').value,
-                dueDate: document.getElementById('contractDueDate').value,
-                status: document.getElementById('contractStatus').value,
-                notes: document.getElementById('contractNotes').value
+                email: document.getElementById('customerEmail').value,
+                phone: document.getElementById('customerPhone').value,
+                address: document.getElementById('customerAddress').value
             };
             
-            accounting.addContract(contract);
-            accounting.showAlert(`Vertrag "${name}" hinzugefügt`);
-            
-            closeModal('addContractModal');
-            updateUI();
+            try {
+                if (accountingSystem.editingCustomerId) {
+                    await accountingSystem.update('customers', accountingSystem.editingCustomerId, customerData);
+                    accountingSystem.showAlert('Kunde erfolgreich aktualisiert');
+                } else {
+                    await accountingSystem.add('customers', customerData);
+                    accountingSystem.showAlert('Kunde erfolgreich hinzugefügt');
+                }
+                
+                closeModal('customerModal');
+                accountingSystem.loadCustomers();
+                
+            } catch (error) {
+                accountingSystem.showAlert('Fehler beim Speichern des Kunden: ' + error.message, 'danger');
+            }
         }
-        
-        function saveInvoice() {
-            const number = document.getElementById('invoiceNumber').value;
-            const amount = document.getElementById('invoiceAmount').value;
+
+        function openPurchaseModal() {
+            // Datum auf heute setzen
+            document.getElementById('purchaseDate').value = new Date().toISOString().split('T')[0];
+            openModal('purchaseModal');
+        }
+
+        async function savePurchase() {
+            const supplier = document.getElementById('purchaseSupplier').value;
+            const date = document.getElementById('purchaseDate').value;
+            const total = parseFloat(document.getElementById('purchaseTotal').value);
+            const notes = document.getElementById('purchaseNotes').value;
+            const paymentMethod = document.getElementById('purchasePaymentMethod').value;
             
-            if (!number || !amount) {
-                accounting.showAlert('Bitte füllen Sie alle Pflichtfelder aus', 'warning');
+            if (!supplier) {
+                accountingSystem.showAlert('Bitte geben Sie einen Lieferanten an', 'warning');
                 return;
             }
             
-            const invoice = {
-                number: number,
-                amount: amount,
-                date: document.getElementById('invoiceDate').value,
-                dueDate: document.getElementById('invoiceDueDate').value,
-                status: document.getElementById('invoiceStatus').value,
-                description: document.getElementById('invoiceDescription').value
+            if (!total || total <= 0) {
+                accountingSystem.showAlert('Bitte geben Sie einen gültigen Betrag ein', 'warning');
+                return;
+            }
+            
+            const purchaseData = {
+                supplier: supplier,
+                date: date,
+                totalAmount: total,
+                notes: notes,
+                paymentMethod: paymentMethod,
+                status: 'paid' // Einkäufe sind sofort bezahlt
             };
             
-            accounting.addInvoice(invoice);
-            accounting.showAlert(`Rechnung "${number}" hinzugefügt`);
-            
-            closeModal('addInvoiceModal');
-            updateUI();
-        }
-        
-        function markAsPaid(contractId) {
-            if (confirm('Möchten Sie diesen Vertrag als bezahlt markieren?')) {
-                accounting.updateContract(contractId, { status: 'paid' });
-                accounting.showAlert('Vertrag als bezahlt markiert');
-                updateUI();
+            try {
+                await accountingSystem.add('purchases', purchaseData);
+                accountingSystem.showAlert('Einkauf erfolgreich erfasst');
+                closeModal('purchaseModal');
+                accountingSystem.loadPurchases();
+                accountingSystem.updateDashboard();
+                
+            } catch (error) {
+                accountingSystem.showAlert('Fehler beim Speichern des Einkaufs: ' + error.message, 'danger');
             }
         }
-        
-        function markAllAsPaid() {
-            if (confirm('Möchten Sie wirklich alle Verträge als bezahlt markieren?')) {
-                accounting.markAllContractsAsPaid();
-                accounting.showAlert('Alle Verträge als bezahlt markiert');
-                updateUI();
-            }
-        }
-        
-        function editContract(contractId) {
-            const contract = accounting.contracts.find(c => c.id === contractId);
-            if (!contract) return;
-            
-            document.getElementById('contractName').value = contract.name;
-            document.getElementById('contractAmount').value = contract.amount;
-            document.getElementById('contractType').value = contract.type;
-            document.getElementById('contractDueDate').value = contract.dueDate || '';
-            document.getElementById('contractStatus').value = contract.status;
-            document.getElementById('contractNotes').value = contract.notes || '';
-            
-            openModal('addContractModal');
-            
-            // Update save function to handle edit
-            const saveBtn = document.querySelector('#addContractModal .btn-primary');
-            saveBtn.onclick = function() {
-                saveEditedContract(contractId);
-            };
-        }
-        
-        function saveEditedContract(contractId) {
-            const updates = {
-                name: document.getElementById('contractName').value,
-                amount: document.getElementById('contractAmount').value,
-                type: document.getElementById('contractType').value,
-                dueDate: document.getElementById('contractDueDate').value,
-                status: document.getElementById('contractStatus').value,
-                notes: document.getElementById('contractNotes').value
-            };
-            
-            if (accounting.updateContract(contractId, updates)) {
-                accounting.showAlert('Vertrag aktualisiert');
-                closeModal('addContractModal');
-                updateUI();
-            }
-        }
-        
-        function deleteContract(contractId) {
-            if (confirm('Möchten Sie diesen Vertrag wirklich löschen?')) {
-                if (accounting.deleteContract(contractId)) {
-                    accounting.showAlert('Vertrag gelöscht');
-                    updateUI();
+
+        async function deleteInvoice(id) {
+            if (confirm('Sind Sie sicher, dass Sie diese Rechnung löschen möchten?')) {
+                try {
+                    // Rechnungspositionen löschen
+                    const items = await accountingSystem.getAll('invoiceItems');
+                    const invoiceItems = items.filter(item => item.invoiceId === id);
+                    for (const item of invoiceItems) {
+                        await accountingSystem.delete('invoiceItems', item.id);
+                    }
+                    
+                    // Raten löschen (falls vorhanden)
+                    const installments = await accountingSystem.getAll('installments');
+                    const invoiceInstallments = installments.filter(inst => inst.invoiceId === id);
+                    for (const inst of invoiceInstallments) {
+                        await accountingSystem.delete('installments', inst.id);
+                    }
+                    
+                    // Ratenplan löschen (falls vorhanden)
+                    const plans = await accountingSystem.getAll('installmentPlans');
+                    const invoicePlan = plans.find(plan => plan.invoiceId === id);
+                    if (invoicePlan) {
+                        await accountingSystem.delete('installmentPlans', invoicePlan.id);
+                    }
+                    
+                    // Zahlungen löschen
+                    const payments = await accountingSystem.getAll('payments');
+                    const invoicePayments = payments.filter(payment => payment.invoiceId === id);
+                    for (const payment of invoicePayments) {
+                        await accountingSystem.delete('payments', payment.id);
+                    }
+                    
+                    // Rechnung löschen
+                    await accountingSystem.delete('invoices', id);
+                    
+                    accountingSystem.showAlert('Rechnung erfolgreich gelöscht');
+                    accountingSystem.loadInvoices();
+                    accountingSystem.loadInstallments();
+                    accountingSystem.updateDashboard();
+                    
+                } catch (error) {
+                    accountingSystem.showAlert('Fehler beim Löschen der Rechnung: ' + error.message, 'danger');
                 }
             }
         }
-        
-        function recordPayment() {
-            const pendingPayments = accounting.getPendingPayments();
-            if (pendingPayments.length === 0) {
-                accounting.showAlert('Keine ausstehenden Zahlungen', 'warning');
-                return;
-            }
-            
-            // Simple payment recording - in a real app, you'd have a more complex modal
-            const amount = prompt(`Gesamtbetrag der ausstehenden Zahlungen: ${accounting.formatCurrency(accounting.pendingAmount)}\n\nBitte Zahlungsbetrag eingeben:`, accounting.pendingAmount);
-            
-            if (amount && !isNaN(parseFloat(amount))) {
-                pendingPayments.forEach(contract => {
-                    accounting.recordPayment(contract.id, contract.amount);
-                });
-                
-                accounting.showAlert('Zahlung erfasst');
-                updateUI();
+
+        async function deleteCustomer(id) {
+            if (confirm('Sind Sie sicher, dass Sie diesen Kunden löschen möchten?')) {
+                try {
+                    // Prüfen, ob der Kunde Rechnungen hat
+                    const invoices = await accountingSystem.getAll('invoices');
+                    const customerInvoices = invoices.filter(inv => inv.customerId === id);
+                    
+                    if (customerInvoices.length > 0) {
+                        if (!confirm('Dieser Kunde hat noch Rechnungen. Trotzdem löschen?')) {
+                            return;
+                        }
+                    }
+                    
+                    await accountingSystem.delete('customers', id);
+                    accountingSystem.showAlert('Kunde erfolgreich gelöscht');
+                    accountingSystem.loadCustomers();
+                    
+                } catch (error) {
+                    accountingSystem.showAlert('Fehler beim Löschen des Kunden: ' + error.message, 'danger');
+                }
             }
         }
-        
-        // Initialize
+
+        async function deletePurchase(id) {
+            if (confirm('Sind Sie sicher, dass Sie diesen Einkauf löschen möchten?')) {
+                try {
+                    await accountingSystem.delete('purchases', id);
+                    accountingSystem.showAlert('Einkauf erfolgreich gelöscht');
+                    accountingSystem.loadPurchases();
+                    accountingSystem.updateDashboard();
+                    
+                } catch (error) {
+                    accountingSystem.showAlert('Fehler beim Löschen des Einkaufs: ' + error.message, 'danger');
+                }
+            }
+        }
+
+        function viewInvoice(id) {
+            accountingSystem.showAlert('Rechnungsdetails werden angezeigt', 'info');
+            // Hier könnte eine Detailansicht implementiert werden
+        }
+
+        function editCustomer(id) {
+            openCustomerModal(id);
+        }
+
+        async function exportData() {
+            try {
+                const data = {
+                    customers: await accountingSystem.getAll('customers'),
+                    invoices: await accountingSystem.getAll('invoices'),
+                    invoiceItems: await accountingSystem.getAll('invoiceItems'),
+                    installmentPlans: await accountingSystem.getAll('installmentPlans'),
+                    installments: await accountingSystem.getAll('installments'),
+                    purchases: await accountingSystem.getAll('purchases'),
+                    payments: await accountingSystem.getAll('payments')
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `buchhaltung-backup-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                accountingSystem.showAlert('Daten erfolgreich exportiert');
+                
+            } catch (error) {
+                accountingSystem.showAlert('Fehler beim Exportieren der Daten: ' + error.message, 'danger');
+            }
+        }
+
+        // Initialisierung
         document.addEventListener('DOMContentLoaded', function() {
-            updateUI();
-            
-            // Add event listener for payment method change
+            // Event Listener für Zahlungsmethode
             const paymentMethodSelect = document.getElementById('paymentMethod');
             if (paymentMethodSelect) {
                 paymentMethodSelect.addEventListener('change', toggleInstallmentOptions);
+            }
+            
+            // Event Listener für Installment Count
+            const installmentCount = document.getElementById('installmentCount');
+            if (installmentCount) {
+                installmentCount.addEventListener('change', calculateInstallments);
             }
         });
     </script>
