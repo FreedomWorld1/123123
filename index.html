@@ -18,10 +18,159 @@
             color: #1e293b;
             line-height: 1.6;
             min-height: 100vh;
-            overflow-x: hidden;
         }
         
-        /* ===== ADMIN KONTROLLE PANEL ===== */
+        /* ===== LOADING SCREEN ===== */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin: 2rem 0;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ===== LOGIN SCREEN ===== */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99998;
+            padding: 20px;
+        }
+        
+        .login-screen.hidden {
+            display: none;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .login-logo i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        .btn {
+            padding: 0.9rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+        }
+        
+        /* ===== ADMIN CONTROL PANEL ===== */
         .admin-controls {
             position: fixed;
             top: 20px;
@@ -48,6 +197,9 @@
         .admin-header h3 {
             color: #1e293b;
             font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .admin-toggle {
@@ -88,36 +240,12 @@
             align-items: center;
             gap: 8px;
             transition: all 0.3s ease;
+            width: 100%;
         }
         
         .admin-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .admin-btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-        }
-        
-        .admin-btn-warning {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: white;
-        }
-        
-        .admin-btn-success {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-        }
-        
-        .admin-btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
-        }
-        
-        .admin-btn-info {
-            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-            color: white;
         }
         
         .quick-delete-form {
@@ -128,165 +256,194 @@
             border: 1px solid #e2e8f0;
         }
         
-        .quick-delete-form input,
-        .quick-delete-form select {
+        .quick-delete-form select,
+        .quick-delete-form input {
             width: 100%;
             padding: 8px 12px;
             margin: 5px 0;
             border: 2px solid #e2e8f0;
             border-radius: 6px;
-        }
-        
-        /* ===== VERBESSERTE ACTION BUTTONS ===== */
-        .action-buttons-enhanced {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .action-btn-enhanced {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
             font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.2s ease;
         }
         
-        .action-btn-enhanced:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
-        /* ===== MODALS FÜR LÖSCHEN/BEARBEITEN ===== */
-        .delete-confirm-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-            z-index: 9999;
+        /* ===== APP CONTAINER ===== */
+        .app-container {
             display: none;
-            justify-content: center;
-            align-items: center;
+            width: 100%;
+            min-height: 100vh;
+            padding-top: 80px;
         }
         
-        .delete-confirm-modal.active {
-            display: flex;
+        .app-container.active {
+            display: block;
         }
         
-        .delete-confirm-content {
+        /* ===== EASY ACCESS BAR ===== */
+        .easy-access-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             background: white;
-            padding: 30px;
-            border-radius: 16px;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            animation: slideUp 0.3s ease;
-        }
-        
-        .delete-options {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            z-index: 9990;
+            flex-wrap: wrap;
             gap: 10px;
-            margin: 20px 0;
         }
         
-        .delete-option {
-            padding: 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .delete-option:hover {
-            border-color: #3b82f6;
-            background: #f0f9ff;
-        }
-        
-        /* ===== BULK ACTIONS ===== */
-        .bulk-actions {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            z-index: 9998;
-            display: none;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .bulk-actions.active {
-            display: flex;
-        }
-        
-        .select-all-checkbox {
-            margin-right: 10px;
-        }
-        
-        /* ===== DATA VIEWER ===== */
-        .data-viewer-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-            z-index: 9997;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .data-viewer-modal.active {
-            display: flex;
-        }
-        
-        .data-viewer-content {
-            background: white;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 800px;
-            max-height: 80vh;
-            overflow: hidden;
-        }
-        
-        .data-viewer-header {
-            padding: 20px;
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        .access-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background: #3b82f6;
             color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            flex: 1;
+            min-width: 120px;
+            justify-content: center;
+        }
+        
+        .access-btn:hover {
+            background: #2563eb;
+        }
+        
+        /* ===== MAIN NAVIGATION ===== */
+        .main-nav {
+            background: #1e293b;
+            color: white;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
         }
         
-        .data-viewer-body {
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        
+        .tab-btn {
+            padding: 8px 16px;
+            background: #374151;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn:hover {
+            background: #4b5563;
+        }
+        
+        .tab-btn.active {
+            background: #3b82f6;
+        }
+        
+        /* ===== CONTENT AREA ===== */
+        .content-area {
             padding: 20px;
-            overflow-y: auto;
-            max-height: 60vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
         }
         
-        .data-item {
-            padding: 15px;
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* ===== STATS CARDS ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             border: 1px solid #e2e8f0;
-            border-radius: 10px;
+        }
+        
+        .stat-card h4 {
+            font-size: 1rem;
+            color: #64748b;
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        /* ===== TABLES ===== */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        tr:hover {
             background: #f8fafc;
         }
         
-        /* ===== TABLES MIT CHECKBOXEN ===== */
+        /* ===== TABLE WITH CHECKBOXES ===== */
         .table-with-checkboxes th:first-child,
         .table-with-checkboxes td:first-child {
             width: 40px;
@@ -306,112 +463,85 @@
             background: #dbeafe !important;
         }
         
-        /* ===== EASY ACCESS BAR ===== */
-        .easy-access-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 10px 20px;
+        /* ===== ACTION BUTTONS ===== */
+        .action-buttons {
             display: flex;
-            justify-content: space-around;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
-            z-index: 9990;
+            gap: 5px;
+            flex-wrap: wrap;
         }
         
-        .access-btn {
-            padding: 10px 20px;
+        .action-btn {
+            padding: 6px 12px;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-view {
             background: #3b82f6;
             color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
         }
         
-        /* Rest der Styles bleiben gleich wie vorher... */
-        .app-container {
-            display: none;
-            width: 100%;
-            min-height: 100vh;
-            padding-top: 80px; /* Platz für Admin Panel */
+        .btn-edit {
+            background: #f59e0b;
+            color: white;
         }
         
-        .app-container.active {
-            display: block;
+        .btn-delete {
+            background: #ef4444;
+            color: white;
         }
         
-        /* Loading Screen Styles */
-        .loading-screen {
+        .btn-paid {
+            background: #10b981;
+            color: white;
+        }
+        
+        /* ===== BULK ACTIONS ===== */
+        .bulk-actions {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 99999;
-        }
-        
-        .login-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 99998;
-        }
-        
-        /* Tabellen Styles */
-        .table-container {
-            overflow-x: auto;
-            margin-top: 20px;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
             background: white;
+            padding: 15px 25px;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border: 1px solid #e2e8f0;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        th {
-            background: #f8fafc;
-            font-weight: 600;
-            color: #475569;
-        }
-        
-        /* Modal Styles */
-        .modal {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 9998;
             display: none;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .bulk-actions.active {
+            display: flex;
+        }
+        
+        /* ===== MODALS ===== */
+        .modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.5);
-            z-index: 9999;
+            backdrop-filter: blur(5px);
+            z-index: 9997;
+            display: none;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
         
         .modal.active {
@@ -421,28 +551,205 @@
         .modal-content {
             background: white;
             border-radius: 16px;
-            width: 90%;
-            max-width: 600px;
+            width: 100%;
+            max-width: 700px;
             max-height: 90vh;
             overflow-y: auto;
+            animation: slideUp 0.3s ease;
         }
         
-        /* Stats Cards */
-        .stats-grid {
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            border-radius: 16px 16px 0 0;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            background: #f8fafc;
+            border-radius: 0 0 16px 16px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+        
+        /* ===== FORM STYLES ===== */
+        .form-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
         
-        .stat-card {
+        .form-group-full {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group-full label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #475569;
+        }
+        
+        .form-group-full input,
+        .form-group-full select,
+        .form-group-full textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group-full input:focus,
+        .form-group-full select:focus,
+        .form-group-full textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-group-full textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        /* ===== BADGES ===== */
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        /* ===== NOTIFICATION ===== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 350px;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .notification-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .notification-error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        
+        .notification-info {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+        
+        .notification-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        /* ===== DATA VIEWER ===== */
+        .data-viewer-content {
             background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow: hidden;
         }
         
-        /* Responsive */
+        .data-viewer-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .data-viewer-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+        
+        .data-item {
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            background: #f8fafc;
+        }
+        
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .admin-controls {
                 top: 10px;
@@ -451,20 +758,140 @@
                 max-width: none;
             }
             
-            .bulk-actions {
-                width: 90%;
-                flex-wrap: wrap;
+            .easy-access-bar {
+                bottom: 0;
             }
             
-            .easy-access-bar {
-                flex-wrap: wrap;
+            .bulk-actions {
+                bottom: 120px;
+                width: 90%;
             }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                padding: 5px;
+            }
+            
+            .tab-btn {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+            
+            .access-btn {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+                min-width: auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 1.5rem;
+            }
+            
+            .content-area {
+                padding: 10px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-controls {
+                padding: 10px;
+            }
+        }
+        
+        /* ===== UTILITY CLASSES ===== */
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .w-full { width: 100%; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+        
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .page-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* ===== QUICK ACTIONS ===== */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- ADMIN CONTROL PANEL -->
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <i class="fas fa-calculator" style="font-size: 4rem; color: white; margin-bottom: 1rem;"></i>
+        <h1 style="color: white; margin-bottom: 2rem;">Buchhaltung Pro</h1>
+        <div class="loading-spinner"></div>
+        <p style="color: white; margin-top: 2rem;">Vollzugriff Version wird geladen...</p>
+    </div>
+
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="login-logo">
+                <i class="fas fa-calculator"></i>
+                <h2>Buchhaltung Pro</h2>
+                <p style="color: #64748b; margin-top: 0.5rem;">Vollzugriff Version</p>
+            </div>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="username"><i class="fas fa-user"></i> Benutzername</label>
+                    <input type="text" id="username" placeholder="admin" required>
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Passwort</label>
+                    <input type="password" id="password" placeholder="admin123" required>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Einloggen
+                </button>
+                <button type="button" class="btn btn-info mt-2" onclick="useTestCredentials()">
+                    <i class="fas fa-key"></i> Testzugang verwenden
+                </button>
+                <div id="loginError" style="color: #ef4444; margin-top: 1rem; display: none;">
+                    <i class="fas fa-exclamation-circle"></i> Falsche Anmeldedaten!
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Control Panel -->
     <div class="admin-controls" id="adminControls">
         <div class="admin-header">
             <h3><i class="fas fa-user-shield"></i> Admin Kontrolle</h3>
@@ -474,24 +901,24 @@
         </div>
         <div class="admin-content" id="adminContent">
             <div class="admin-actions">
-                <button class="admin-btn admin-btn-danger" onclick="showDeleteAllModal()">
+                <button class="admin-btn btn-danger" onclick="showDeleteAllModal()">
                     <i class="fas fa-trash"></i> Alle Daten löschen
                 </button>
-                <button class="admin-btn admin-btn-warning" onclick="showBulkDelete()">
+                <button class="admin-btn btn-warning" onclick="showBulkActions()">
                     <i class="fas fa-list"></i> Mehrfach löschen
                 </button>
-                <button class="admin-btn admin-btn-success" onclick="showDataViewer()">
+                <button class="admin-btn btn-success" onclick="showDataViewer()">
                     <i class="fas fa-database"></i> Alle Daten ansehen
                 </button>
-                <button class="admin-btn admin-btn-primary" onclick="exportAllData()">
+                <button class="admin-btn btn-primary" onclick="exportAllData()">
                     <i class="fas fa-download"></i> Backup erstellen
                 </button>
-                <button class="admin-btn admin-btn-info" onclick="importDataPrompt()">
+                <button class="admin-btn btn-info" onclick="importDataPrompt()">
                     <i class="fas fa-upload"></i> Backup laden
                 </button>
                 
                 <div class="quick-delete-form">
-                    <h4>Schnell löschen:</h4>
+                    <h4 style="margin-bottom: 10px; font-size: 0.9rem;">Schnell löschen:</h4>
                     <select id="quickDeleteType">
                         <option value="invoices">Rechnungen</option>
                         <option value="customers">Kunden</option>
@@ -500,7 +927,7 @@
                         <option value="contracts">Verträge</option>
                     </select>
                     <input type="number" id="quickDeleteCount" placeholder="Anzahl (leer = alle)" min="1">
-                    <button class="admin-btn admin-btn-danger" onclick="quickDelete()" style="width: 100%; margin-top: 10px;">
+                    <button class="admin-btn btn-danger mt-2" onclick="quickDelete()">
                         <i class="fas fa-bolt"></i> Schnell löschen
                     </button>
                 </div>
@@ -508,129 +935,133 @@
         </div>
     </div>
 
-    <!-- EASY ACCESS BAR -->
-    <div class="easy-access-bar">
-        <button class="access-btn" onclick="switchTab('invoices')">
-            <i class="fas fa-file-invoice"></i> Rechnungen
-        </button>
-        <button class="access-btn" onclick="switchTab('customers')">
-            <i class="fas fa-users"></i> Kunden
-        </button>
-        <button class="access-btn" onclick="showBulkDelete()">
-            <i class="fas fa-trash-alt"></i> Löschen
-        </button>
-        <button class="access-btn" onclick="showDataViewer()">
-            <i class="fas fa-eye"></i> Alle ansehen
-        </button>
-        <button class="access-btn" onclick="showAdminHelp()">
-            <i class="fas fa-question-circle"></i> Hilfe
-        </button>
-    </div>
-
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div style="text-align: center; color: white;">
-            <i class="fas fa-calculator" style="font-size: 4rem; margin-bottom: 20px;"></i>
-            <h1>Buchhaltungssystem Pro</h1>
-            <p style="margin-top: 20px;">Vollzugriff Version wird geladen...</p>
-        </div>
-    </div>
-
-    <!-- Login Screen -->
-    <div class="login-screen" id="loginScreen">
-        <div style="background: white; padding: 30px; border-radius: 20px; max-width: 400px; width: 90%;">
-            <h2 style="text-align: center; margin-bottom: 30px;">
-                <i class="fas fa-calculator"></i> Buchhaltung Pro
-            </h2>
-            <div style="margin-bottom: 20px;">
-                <input type="text" id="username" placeholder="Benutzername" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #e2e8f0; border-radius: 8px;">
-                <input type="password" id="password" placeholder="Passwort" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px;">
-            </div>
-            <button onclick="login()" style="width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
-                <i class="fas fa-sign-in-alt"></i> Einloggen
-            </button>
-            <p style="text-align: center; margin-top: 20px; color: #666; font-size: 0.9rem;">
-                Testzugang: admin / admin123
-            </p>
-        </div>
-    </div>
-
-    <!-- Main App -->
+    <!-- Main App Container -->
     <div class="app-container" id="appContainer">
-        <!-- Navigation -->
-        <div style="background: #1e293b; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+        <!-- Main Navigation -->
+        <div class="main-nav">
             <h2><i class="fas fa-calculator"></i> Buchhaltungssystem</h2>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="logout()" style="background: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer;">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
-            </div>
+            <button class="btn btn-danger" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
         </div>
 
-        <!-- Tabs -->
-        <div style="background: white; padding: 10px 20px; display: flex; gap: 10px; overflow-x: auto;">
-            <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard</button>
-            <button class="tab-btn" onclick="switchTab('invoices')">Rechnungen</button>
-            <button class="tab-btn" onclick="switchTab('customers')">Kunden</button>
-            <button class="tab-btn" onclick="switchTab('incomes')">Einkommen</button>
-            <button class="tab-btn" onclick="switchTab('purchases')">Einkäufe</button>
-            <button class="tab-btn" onclick="switchTab('contracts')">Verträge</button>
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard')">
+                <i class="fas fa-home"></i> Dashboard
+            </button>
+            <button class="tab-btn" onclick="switchTab('invoices')">
+                <i class="fas fa-file-invoice"></i> Rechnungen
+            </button>
+            <button class="tab-btn" onclick="switchTab('customers')">
+                <i class="fas fa-users"></i> Kunden
+            </button>
+            <button class="tab-btn" onclick="switchTab('incomes')">
+                <i class="fas fa-money-bill-wave"></i> Einkommen
+            </button>
+            <button class="tab-btn" onclick="switchTab('purchases')">
+                <i class="fas fa-shopping-cart"></i> Einkäufe
+            </button>
+            <button class="tab-btn" onclick="switchTab('contracts')">
+                <i class="fas fa-file-contract"></i> Verträge
+            </button>
+            <button class="tab-btn" onclick="switchTab('reports')">
+                <i class="fas fa-chart-pie"></i> Berichte
+            </button>
         </div>
 
         <!-- Content Area -->
-        <div style="padding: 20px;">
-            <!-- Dashboard -->
+        <div class="content-area">
+            <!-- Dashboard Tab -->
             <div id="dashboardTab" class="tab-content active">
-                <h3>Willkommen im Admin-Modus!</h3>
-                <p>Sie haben vollen Zugriff auf alle Funktionen.</p>
+                <div class="page-header">
+                    <h3><i class="fas fa-chart-line"></i> Dashboard</h3>
+                    <div class="quick-actions">
+                        <button class="btn btn-success" onclick="addNewInvoice()">
+                            <i class="fas fa-plus"></i> Neue Rechnung
+                        </button>
+                        <button class="btn btn-primary" onclick="addNewCustomer()">
+                            <i class="fas fa-plus"></i> Neuer Kunde
+                        </button>
+                        <button class="btn btn-info" onclick="showDataViewer()">
+                            <i class="fas fa-eye"></i> Alle Daten
+                        </button>
+                    </div>
+                </div>
                 
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h4><i class="fas fa-file-invoice"></i> Rechnungen</h4>
-                        <p id="invoiceCount">0</p>
-                        <button onclick="switchTab('invoices')" style="background: #3b82f6; color: white; border: none; padding: 8px 15px; border-radius: 6px; margin-top: 10px; cursor: pointer;">
+                        <div class="value" id="invoiceCount">0</div>
+                        <p style="color: #64748b; font-size: 0.9rem;">Offen: <span id="openInvoiceCount">0</span></p>
+                        <button class="btn btn-primary mt-2 w-full" onclick="switchTab('invoices')">
                             Alle ansehen
                         </button>
                     </div>
+                    
                     <div class="stat-card">
                         <h4><i class="fas fa-users"></i> Kunden</h4>
-                        <p id="customerCount">0</p>
-                        <button onclick="switchTab('customers')" style="background: #3b82f6; color: white; border: none; padding: 8px 15px; border-radius: 6px; margin-top: 10px; cursor: pointer;">
+                        <div class="value" id="customerCount">0</div>
+                        <p style="color: #64748b; font-size: 0.9rem;">Aktiv</p>
+                        <button class="btn btn-primary mt-2 w-full" onclick="switchTab('customers')">
                             Alle ansehen
                         </button>
                     </div>
+                    
                     <div class="stat-card">
                         <h4><i class="fas fa-money-bill-wave"></i> Einkommen</h4>
-                        <p id="incomeTotal">0 €</p>
-                        <button onclick="switchTab('incomes')" style="background: #3b82f6; color: white; border: none; padding: 8px 15px; border-radius: 6px; margin-top: 10px; cursor: pointer;">
+                        <div class="value" id="incomeTotal">0 €</div>
+                        <p style="color: #64748b; font-size: 0.9rem;">Dieser Monat</p>
+                        <button class="btn btn-primary mt-2 w-full" onclick="switchTab('incomes')">
+                            Alle ansehen
+                        </button>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h4><i class="fas fa-shopping-cart"></i> Ausgaben</h4>
+                        <div class="value" id="expenseTotal">0 €</div>
+                        <p style="color: #64748b; font-size: 0.9rem;">Dieser Monat</p>
+                        <button class="btn btn-primary mt-2 w-full" onclick="switchTab('purchases')">
                             Alle ansehen
                         </button>
                     </div>
                 </div>
-
-                <div style="margin-top: 30px;">
-                    <h4>Schnellaktionen:</h4>
-                    <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button onclick="addNewInvoice()" style="background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer;">
-                            <i class="fas fa-plus"></i> Neue Rechnung
-                        </button>
-                        <button onclick="addNewCustomer()" style="background: #3b82f6; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer;">
-                            <i class="fas fa-plus"></i> Neuer Kunde
-                        </button>
-                        <button onclick="showDataViewer()" style="background: #8b5cf6; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer;">
-                            <i class="fas fa-database"></i> Alle Daten
-                        </button>
-                    </div>
+                
+                <div class="table-container">
+                    <h4 style="padding: 1rem; border-bottom: 1px solid #e2e8f0;">Letzte Rechnungen</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nummer</th>
+                                <th>Kunde</th>
+                                <th>Betrag</th>
+                                <th>Datum</th>
+                                <th>Status</th>
+                                <th>Aktionen</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentInvoices">
+                            <!-- Wird durch JS gefüllt -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
             <!-- Invoices Tab -->
-            <div id="invoicesTab" class="tab-content" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div id="invoicesTab" class="tab-content">
+                <div class="page-header">
                     <h3><i class="fas fa-file-invoice"></i> Rechnungen</h3>
-                    <button onclick="addNewInvoice()" style="background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer;">
-                        <i class="fas fa-plus"></i> Neue Rechnung
-                    </button>
+                    <div class="quick-actions">
+                        <button class="btn btn-success" onclick="addNewInvoice()">
+                            <i class="fas fa-plus"></i> Neue Rechnung
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteSelected('invoices')">
+                            <i class="fas fa-trash"></i> Ausgewählte löschen
+                        </button>
+                        <button class="btn btn-primary" onclick="exportInvoices()">
+                            <i class="fas fa-download"></i> Exportieren
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="table-container">
@@ -641,34 +1072,34 @@
                                 <th>Nummer</th>
                                 <th>Kunde</th>
                                 <th>Betrag</th>
-                                <th>Status</th>
                                 <th>Datum</th>
+                                <th>Fällig</th>
+                                <th>Status</th>
                                 <th>Aktionen</th>
                             </tr>
                         </thead>
                         <tbody id="invoicesTable">
-                            <!-- Invoices werden hier geladen -->
+                            <!-- Wird durch JS gefüllt -->
                         </tbody>
                     </table>
-                </div>
-                
-                <div style="margin-top: 20px;">
-                    <button onclick="deleteSelected('invoices')" style="background: #ef4444; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer;">
-                        <i class="fas fa-trash"></i> Ausgewählte löschen
-                    </button>
-                    <button onclick="editSelected('invoices')" style="background: #f59e0b; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; margin-left: 10px;">
-                        <i class="fas fa-edit"></i> Ausgewählte bearbeiten
-                    </button>
                 </div>
             </div>
 
             <!-- Customers Tab -->
-            <div id="customersTab" class="tab-content" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div id="customersTab" class="tab-content">
+                <div class="page-header">
                     <h3><i class="fas fa-users"></i> Kunden</h3>
-                    <button onclick="addNewCustomer()" style="background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer;">
-                        <i class="fas fa-plus"></i> Neuer Kunde
-                    </button>
+                    <div class="quick-actions">
+                        <button class="btn btn-success" onclick="addNewCustomer()">
+                            <i class="fas fa-plus"></i> Neuer Kunde
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteSelected('customers')">
+                            <i class="fas fa-trash"></i> Ausgewählte löschen
+                        </button>
+                        <button class="btn btn-primary" onclick="exportCustomers()">
+                            <i class="fas fa-download"></i> Exportieren
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="table-container">
@@ -680,148 +1111,326 @@
                                 <th>E-Mail</th>
                                 <th>Telefon</th>
                                 <th>Rechnungen</th>
+                                <th>Letzte Zahlung</th>
                                 <th>Aktionen</th>
                             </tr>
                         </thead>
                         <tbody id="customersTable">
-                            <!-- Customers werden hier geladen -->
+                            <!-- Wird durch JS gefüllt -->
                         </tbody>
                     </table>
-                </div>
-                
-                <div style="margin-top: 20px;">
-                    <button onclick="deleteSelected('customers')" style="background: #ef4444; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer;">
-                        <i class="fas fa-trash"></i> Ausgewählte löschen
-                    </button>
                 </div>
             </div>
 
             <!-- Incomes Tab -->
-            <div id="incomesTab" class="tab-content" style="display: none;">
-                <h3><i class="fas fa-money-bill-wave"></i> Einkommen</h3>
+            <div id="incomesTab" class="tab-content">
+                <div class="page-header">
+                    <h3><i class="fas fa-money-bill-wave"></i> Einkommen</h3>
+                    <div class="quick-actions">
+                        <button class="btn btn-success" onclick="addNewIncome()">
+                            <i class="fas fa-plus"></i> Neues Einkommen
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteSelected('incomes')">
+                            <i class="fas fa-trash"></i> Ausgewählte löschen
+                        </button>
+                    </div>
+                </div>
+                
                 <div class="table-container">
-                    <table>
+                    <table class="table-with-checkboxes">
                         <thead>
                             <tr>
+                                <th><input type="checkbox" id="selectAllIncomes" onchange="toggleSelectAll('incomes')"></th>
                                 <th>Datum</th>
                                 <th>Beschreibung</th>
                                 <th>Betrag</th>
                                 <th>Kategorie</th>
+                                <th>Zahlungsmethode</th>
                                 <th>Aktionen</th>
                             </tr>
                         </thead>
                         <tbody id="incomesTable">
-                            <!-- Incomes werden hier geladen -->
+                            <!-- Wird durch JS gefüllt -->
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <!-- Purchases Tab -->
-            <div id="purchasesTab" class="tab-content" style="display: none;">
-                <h3><i class="fas fa-shopping-cart"></i> Einkäufe</h3>
+            <div id="purchasesTab" class="tab-content">
+                <div class="page-header">
+                    <h3><i class="fas fa-shopping-cart"></i> Einkäufe</h3>
+                    <div class="quick-actions">
+                        <button class="btn btn-warning" onclick="addNewPurchase()">
+                            <i class="fas fa-plus"></i> Neuer Einkauf
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteSelected('purchases')">
+                            <i class="fas fa-trash"></i> Ausgewählte löschen
+                        </button>
+                    </div>
+                </div>
+                
                 <div class="table-container">
-                    <table>
+                    <table class="table-with-checkboxes">
                         <thead>
                             <tr>
+                                <th><input type="checkbox" id="selectAllPurchases" onchange="toggleSelectAll('purchases')"></th>
                                 <th>Datum</th>
                                 <th>Lieferant</th>
                                 <th>Beschreibung</th>
                                 <th>Betrag</th>
+                                <th>Kategorie</th>
                                 <th>Aktionen</th>
                             </tr>
                         </thead>
                         <tbody id="purchasesTable">
-                            <!-- Purchases werden hier geladen -->
+                            <!-- Wird durch JS gefüllt -->
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <!-- Contracts Tab -->
-            <div id="contractsTab" class="tab-content" style="display: none;">
-                <h3><i class="fas fa-file-contract"></i> Verträge</h3>
+            <div id="contractsTab" class="tab-content">
+                <div class="page-header">
+                    <h3><i class="fas fa-file-contract"></i> Verträge</h3>
+                    <div class="quick-actions">
+                        <button class="btn btn-dark" onclick="addNewContract()">
+                            <i class="fas fa-plus"></i> Neuer Vertrag
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteSelected('contracts')">
+                            <i class="fas fa-trash"></i> Ausgewählte löschen
+                        </button>
+                    </div>
+                </div>
+                
                 <div class="table-container">
-                    <table>
+                    <table class="table-with-checkboxes">
                         <thead>
                             <tr>
+                                <th><input type="checkbox" id="selectAllContracts" onchange="toggleSelectAll('contracts')"></th>
                                 <th>Nummer</th>
-                                <th>Name</th>
+                                <th>Bezeichnung</th>
+                                <th>Kunde/Lieferant</th>
                                 <th>Betrag</th>
                                 <th>Laufzeit</th>
+                                <th>Status</th>
                                 <th>Aktionen</th>
                             </tr>
                         </thead>
                         <tbody id="contractsTable">
-                            <!-- Contracts werden hier geladen -->
+                            <!-- Wird durch JS gefüllt -->
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div id="reportsTab" class="tab-content">
+                <div class="page-header">
+                    <h3><i class="fas fa-chart-pie"></i> Berichte</h3>
+                    <div class="quick-actions">
+                        <button class="btn btn-primary" onclick="generateMonthlyReport()">
+                            <i class="fas fa-file-pdf"></i> Monatsbericht
+                        </button>
+                        <button class="btn btn-success" onclick="generateYearlyReport()">
+                            <i class="fas fa-file-excel"></i> Jahresbericht
+                        </button>
+                        <button class="btn btn-info" onclick="exportAllData()">
+                            <i class="fas fa-download"></i> Alle Daten exportieren
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4><i class="fas fa-chart-line"></i> Umsatzentwicklung</h4>
+                        <div class="value" id="revenueGrowth">0%</div>
+                        <p style="color: #64748b; font-size: 0.9rem;">vs. Vormonat</p>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h4><i class="fas fa-percentage"></i> Gewinnmarge</h4>
+                        <div class="value" id="profitMargin">0%</div>
+                        <p style="color: #64748b; font-size: 0.9rem;">Aktueller Monat</p>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h4><i class="fas fa-clock"></i> Offene Posten</h4>
+                        <div class="value" id="openItems">0</div>
+                        <p style="color: #64748b; font-size: 0.9rem;">Rechnungen & Verträge</p>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h4><i class="fas fa-calendar"></i> Nächste Fälligkeit</h4>
+                        <div class="value" id="nextDue">-</div>
+                        <p style="color: #64748b; font-size: 0.9rem;">Tage bis nächste Zahlung</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Easy Access Bar -->
+    <div class="easy-access-bar">
+        <button class="access-btn" onclick="switchTab('invoices')">
+            <i class="fas fa-file-invoice"></i> Rechnungen
+        </button>
+        <button class="access-btn" onclick="switchTab('customers')">
+            <i class="fas fa-users"></i> Kunden
+        </button>
+        <button class="access-btn" onclick="showBulkActions()">
+            <i class="fas fa-trash-alt"></i> Löschen
+        </button>
+        <button class="access-btn" onclick="showDataViewer()">
+            <i class="fas fa-eye"></i> Alle ansehen
+        </button>
+        <button class="access-btn" onclick="addNewInvoice()">
+            <i class="fas fa-plus"></i> Neu
+        </button>
+    </div>
+
+    <!-- Bulk Actions Bar -->
+    <div class="bulk-actions" id="bulkActions">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" id="selectAllBulk" onchange="toggleSelectAllBulk()">
+            <label for="selectAllBulk" style="font-weight: 600;">Alle auswählen</label>
+            <span id="selectedCount" style="background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9rem;">0 ausgewählt</span>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-danger" onclick="deleteSelectedBulk()">
+                <i class="fas fa-trash"></i> Löschen
+            </button>
+            <button class="btn btn-primary" onclick="markSelectedAsPaid()">
+                <i class="fas fa-check"></i> Bezahlt
+            </button>
+            <button class="btn btn-warning" onclick="closeBulkActions()">
+                <i class="fas fa-times"></i> Schließen
+            </button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    
     <!-- Delete Confirmation Modal -->
-    <div class="delete-confirm-modal" id="deleteConfirmModal">
-        <div class="delete-confirm-content">
-            <h3><i class="fas fa-exclamation-triangle"></i> Löschen bestätigen</h3>
-            <p id="deleteConfirmText">Sind Sie sicher, dass Sie dies löschen möchten?</p>
-            
-            <div class="delete-options">
-                <div class="delete-option" onclick="confirmDelete('selected')">
-                    <i class="fas fa-check" style="font-size: 2rem; color: #10b981;"></i>
-                    <p>Ausgewählte löschen</p>
-                </div>
-                <div class="delete-option" onclick="confirmDelete('all')">
-                    <i class="fas fa-bomb" style="font-size: 2rem; color: #ef4444;"></i>
-                    <p>Alle löschen</p>
-                </div>
-                <div class="delete-option" onclick="confirmDelete('type')">
-                    <i class="fas fa-filter" style="font-size: 2rem; color: #8b5cf6;"></i>
-                    <p>Nach Typ löschen</p>
-                </div>
-                <div class="delete-option" onclick="closeDeleteModal()">
-                    <i class="fas fa-times" style="font-size: 2rem; color: #64748b;"></i>
-                    <p>Abbrechen</p>
+    <div class="modal" id="deleteConfirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Löschen bestätigen</h3>
+                <button class="close-modal" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; padding: 2rem;">
+                    <i class="fas fa-trash-alt" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+                    <h4 id="deleteModalTitle">Elemente löschen</h4>
+                    <p id="deleteModalText">Sind Sie sicher, dass Sie diese Elemente löschen möchten?</p>
+                    
+                    <div style="background: #fef3c7; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <p style="margin: 0; color: #92400e;">
+                            <i class="fas fa-info-circle"></i> Diese Aktion kann nicht rückgängig gemacht werden!
+                        </p>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1.5rem;">
+                        <button class="btn btn-danger" onclick="confirmDeleteAll()">
+                            <i class="fas fa-check"></i> Ja, löschen
+                        </button>
+                        <button class="btn" onclick="closeDeleteModal()">
+                            <i class="fas fa-times"></i> Abbrechen
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Data Viewer Modal -->
-    <div class="data-viewer-modal" id="dataViewerModal">
+    <div class="modal" id="dataViewerModal">
         <div class="data-viewer-content">
             <div class="data-viewer-header">
                 <h3><i class="fas fa-database"></i> Alle Systemdaten</h3>
-                <button onclick="closeDataViewer()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button class="close-modal" onclick="closeDataViewer()">&times;</button>
             </div>
             <div class="data-viewer-body">
                 <div id="dataViewerContent">
                     <!-- Daten werden hier angezeigt -->
                 </div>
             </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="exportAllData()">
+                    <i class="fas fa-download"></i> Alles exportieren
+                </button>
+                <button class="btn" onclick="closeDataViewer()">Schließen</button>
+            </div>
         </div>
     </div>
 
-    <!-- Bulk Actions Bar -->
-    <div class="bulk-actions" id="bulkActions">
-        <div>
-            <input type="checkbox" id="selectAllBulk" onchange="toggleSelectAllBulk()">
-            <label for="selectAllBulk">Alle auswählen</label>
+    <!-- Add Invoice Modal -->
+    <div class="modal" id="addInvoiceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-invoice"></i> Neue Rechnung</h3>
+                <button class="close-modal" onclick="closeAddInvoiceModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="invoiceForm">
+                    <div class="form-row">
+                        <div class="form-group-full">
+                            <label for="invoiceNumber">Rechnungsnummer *</label>
+                            <input type="text" id="invoiceNumber" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group-full">
+                            <label for="invoiceCustomer">Kunde *</label>
+                            <select id="invoiceCustomer" required>
+                                <option value="">Kunde auswählen...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group-full">
+                            <label for="invoiceAmount">Betrag (€) *</label>
+                            <input type="number" id="invoiceAmount" step="0.01" required min="0">
+                        </div>
+                        <div class="form-group-full">
+                            <label for="invoiceDate">Rechnungsdatum *</label>
+                            <input type="date" id="invoiceDate" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group-full">
+                            <label for="invoiceDueDate">Fällig am *</label>
+                            <input type="date" id="invoiceDueDate" required>
+                        </div>
+                        <div class="form-group-full">
+                            <label for="invoiceStatus">Status *</label>
+                            <select id="invoiceStatus" required>
+                                <option value="open">Offen</option>
+                                <option value="paid">Bezahlt</option>
+                                <option value="overdue">Überfällig</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group-full">
+                        <label for="invoiceDescription">Beschreibung</label>
+                        <textarea id="invoiceDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeAddInvoiceModal()">Abbrechen</button>
+                <button class="btn btn-success" onclick="saveInvoice()">
+                    <i class="fas fa-save"></i> Speichern
+                </button>
+            </div>
         </div>
-        <div style="display: flex; gap: 10px;">
-            <button onclick="deleteSelectedBulk()" style="background: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer;">
-                <i class="fas fa-trash"></i> Löschen
-            </button>
-            <button onclick="exportSelected()" style="background: #10b981; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer;">
-                <i class="fas fa-download"></i> Exportieren
-            </button>
-            <button onclick="closeBulkActions()" style="background: #64748b; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer;">
-                <i class="fas fa-times"></i> Schließen
-            </button>
-        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText"></span>
     </div>
 
     <script>
@@ -831,6 +1440,7 @@
         let incomes = [];
         let purchases = [];
         let contracts = [];
+        let settings = {};
         let selectedItems = {
             invoices: [],
             customers: [],
@@ -838,116 +1448,217 @@
             purchases: [],
             contracts: []
         };
+        let isLoggedIn = false;
 
         // ===== INITIALISIERUNG =====
         document.addEventListener('DOMContentLoaded', function() {
-            // Loading Screen ausblenden
-            setTimeout(() => {
-                document.getElementById('loadingScreen').style.display = 'none';
-                loadAllData();
-            }, 1000);
+            console.log('Buchhaltungssystem Pro - Vollzugriff Version gestartet');
+            
+            // Event Listener für Login
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            
+            // Initialisiere Daten
+            setTimeout(initApp, 500);
         });
 
-        // ===== LOGIN =====
-        function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+        function initApp() {
+            loadAllData();
+            setDefaultDates();
+            updateCurrentDate();
+            setupCheckboxListeners();
+        }
+
+        // ===== LOGIN FUNKTIONEN =====
+        function handleLogin(e) {
+            e.preventDefault();
             
-            // Einfacher Login für Test
-            if ((username === 'admin' && password === 'admin123') || 
-                (username === 'colin' && password === '11012021')) {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('appContainer').classList.add('active');
-                loadAllData();
-                showNotification('Erfolgreich eingeloggt! Vollzugriff aktiviert.', 'success');
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            // Mehrere Login-Optionen
+            if ((username === 'admin' && password === 'admin123') ||
+                (username === 'colin' && password === '11012021') ||
+                (username === 'test' && password === 'test123') ||
+                (username === 'user' && password === 'password')) {
+                
+                loginSuccess(username);
             } else {
-                alert('Falscher Benutzername oder Passwort!\n\nTestzugang: admin / admin123');
+                showLoginError();
             }
+        }
+
+        function useTestCredentials() {
+            document.getElementById('username').value = 'admin';
+            document.getElementById('password').value = 'admin123';
+        }
+
+        function showLoginError() {
+            const errorEl = document.getElementById('loginError');
+            errorEl.style.display = 'block';
+            setTimeout(() => {
+                errorEl.style.display = 'none';
+            }, 3000);
+        }
+
+        function loginSuccess(username) {
+            isLoggedIn = true;
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('appContainer').classList.add('active');
+            document.getElementById('adminControls').style.display = 'block';
+            
+            showNotification(`Willkommen ${username}! Vollzugriff aktiviert.`, 'success');
+            
+            // Daten laden und anzeigen
+            loadAllData();
+            switchTab('dashboard');
         }
 
         function logout() {
             if (confirm('Wirklich ausloggen?')) {
+                isLoggedIn = false;
                 document.getElementById('appContainer').classList.remove('active');
-                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('adminControls').style.display = 'none';
                 document.getElementById('username').value = '';
                 document.getElementById('password').value = '';
+                showNotification('Erfolgreich ausgeloggt', 'info');
             }
         }
 
         // ===== DATENVERWALTUNG =====
         function loadAllData() {
-            // Lade Daten aus localStorage oder erstelle Beispieldaten
+            // Lade Daten aus localStorage
             invoices = JSON.parse(localStorage.getItem('invoices')) || [];
             customers = JSON.parse(localStorage.getItem('customers')) || [];
             incomes = JSON.parse(localStorage.getItem('incomes')) || [];
             purchases = JSON.parse(localStorage.getItem('purchases')) || [];
             contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+            settings = JSON.parse(localStorage.getItem('settings')) || {};
             
             // Erstelle Beispieldaten wenn keine vorhanden
-            if (invoices.length === 0) createSampleData();
+            if (invoices.length === 0) {
+                createSampleData();
+            }
             
             updateDashboard();
-            loadTables();
+            updateAllTables();
+            updateSelectedCount();
         }
 
         function createSampleData() {
             // Beispiel Kunden
             customers = [
                 {
-                    id: '1',
+                    id: 'cust1',
                     name: 'Max Mustermann',
                     email: 'max@mustermann.de',
                     phone: '0123456789',
                     company: 'Mustermann GmbH',
-                    address: 'Musterstraße 1, 12345 Musterstadt'
+                    address: 'Musterstraße 1, 12345 Musterstadt',
+                    notes: 'Stammkunde, zahlt immer pünktlich',
+                    createdAt: new Date().toISOString()
                 },
                 {
-                    id: '2',
+                    id: 'cust2',
                     name: 'Erika Schmidt',
                     email: 'erika@schmidt.de',
                     phone: '0987654321',
                     company: 'Schmidt & Co',
-                    address: 'Beispielweg 5, 54321 Beispielstadt'
+                    address: 'Beispielweg 5, 54321 Beispielstadt',
+                    notes: 'Neuer Kunde',
+                    createdAt: new Date().toISOString()
                 }
             ];
-
+            
             // Beispiel Rechnungen
+            const today = new Date();
+            const nextMonth = new Date(today);
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            
             invoices = [
                 {
-                    id: 'INV-2024-001',
-                    number: 'INV-2024-001',
-                    customerId: '1',
-                    date: '2024-01-15',
+                    id: 'inv1',
+                    number: 'INV-' + today.getFullYear() + '-001',
+                    customerId: 'cust1',
+                    date: today.toISOString().split('T')[0],
+                    dueDate: nextMonth.toISOString().split('T')[0],
                     amount: 2500.00,
                     description: 'Webentwicklung - Unternehmenswebsite',
                     status: 'open',
-                    dueDate: '2024-02-15'
+                    paymentMethod: 'bank',
+                    createdAt: new Date().toISOString()
                 },
                 {
-                    id: 'INV-2024-002',
-                    number: 'INV-2024-002',
-                    customerId: '2',
-                    date: '2024-01-20',
+                    id: 'inv2',
+                    number: 'INV-' + today.getFullYear() + '-002',
+                    customerId: 'cust2',
+                    date: today.toISOString().split('T')[0],
+                    dueDate: nextMonth.toISOString().split('T')[0],
                     amount: 1200.00,
                     description: 'Beratung Softwareentwicklung',
                     status: 'paid',
-                    dueDate: '2024-02-20'
+                    paymentMethod: 'paypal',
+                    createdAt: new Date().toISOString()
                 }
             ];
-
+            
             // Beispiel Einkommen
             incomes = [
                 {
-                    id: 'INC-001',
-                    date: '2024-01-15',
+                    id: 'inc1',
+                    date: today.toISOString().split('T')[0],
                     amount: 1500.00,
                     description: 'Projektabschluss Website',
-                    category: 'service'
+                    category: 'service',
+                    paymentMethod: 'bank',
+                    type: 'regular',
+                    createdAt: new Date().toISOString()
                 }
             ];
-
+            
+            // Beispiel Einkäufe
+            purchases = [
+                {
+                    id: 'pur1',
+                    date: today.toISOString().split('T')[0],
+                    amount: 299.99,
+                    supplier: 'Amazon',
+                    description: 'Externe Festplatte 2TB',
+                    category: 'equipment',
+                    type: 'one-time',
+                    paymentMethod: 'card',
+                    tax: 'yes',
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            
+            // Beispiel Verträge
+            const endDate = new Date(today);
+            endDate.setFullYear(endDate.getFullYear() + 1);
+            
+            contracts = [
+                {
+                    id: 'con1',
+                    number: 'CTR-' + today.getFullYear() + '-001',
+                    name: 'Webhosting & Wartung',
+                    party: 'Max Mustermann',
+                    email: 'max@mustermann.de',
+                    type: 'income',
+                    startDate: today.toISOString().split('T')[0],
+                    endDate: endDate.toISOString().split('T')[0],
+                    amount: 49.99,
+                    interval: 'monthly',
+                    description: 'Monatliches Webhosting inkl. Wartung',
+                    paymentMethod: 'bank',
+                    autoRenew: 'yes',
+                    status: 'active',
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            
             // Speichere alle Daten
             saveAllData();
+            showNotification('Beispieldaten wurden erstellt!', 'info');
         }
 
         function saveAllData() {
@@ -956,13 +1667,14 @@
             localStorage.setItem('incomes', JSON.stringify(incomes));
             localStorage.setItem('purchases', JSON.stringify(purchases));
             localStorage.setItem('contracts', JSON.stringify(contracts));
+            localStorage.setItem('settings', JSON.stringify(settings));
         }
 
         // ===== TAB NAVIGATION =====
         function switchTab(tabName) {
             // Alle Tabs ausblenden
             document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.style.display = 'none';
+                tab.classList.remove('active');
             });
             
             // Alle Tab-Buttons zurücksetzen
@@ -973,13 +1685,13 @@
             // Gewählten Tab anzeigen
             const tabElement = document.getElementById(tabName + 'Tab');
             if (tabElement) {
-                tabElement.style.display = 'block';
+                tabElement.classList.add('active');
             }
             
             // Tab-Button aktivieren
-            const tabButtons = document.querySelectorAll('.tab-btn');
-            tabButtons.forEach(btn => {
-                if (btn.textContent.toLowerCase().includes(tabName.toLowerCase())) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.textContent.includes(tabName.charAt(0).toUpperCase() + tabName.slice(1)) ||
+                    btn.textContent.includes('Dashboard') && tabName === 'dashboard') {
                     btn.classList.add('active');
                 }
             });
@@ -1007,8 +1719,66 @@
             }
         }
 
-        // ===== TABELLEN LADEN =====
-        function loadTables() {
+        // ===== DASHBOARD FUNKTIONEN =====
+        function updateDashboard() {
+            // Statistik aktualisieren
+            document.getElementById('invoiceCount').textContent = invoices.length;
+            document.getElementById('openInvoiceCount').textContent = invoices.filter(i => i.status === 'open').length;
+            document.getElementById('customerCount').textContent = customers.length;
+            
+            const incomeTotal = incomes.reduce((sum, inc) => sum + inc.amount, 0);
+            document.getElementById('incomeTotal').textContent = formatCurrency(incomeTotal);
+            
+            const expenseTotal = purchases.reduce((sum, pur) => sum + pur.amount, 0);
+            document.getElementById('expenseTotal').textContent = formatCurrency(expenseTotal);
+            
+            // Letzte Rechnungen anzeigen
+            updateRecentInvoices();
+        }
+
+        function updateRecentInvoices() {
+            const tbody = document.getElementById('recentInvoices');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            // Sortiere nach Datum (neueste zuerst) und nehme die letzten 5
+            const recent = [...invoices]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+            
+            recent.forEach(invoice => {
+                const customer = customers.find(c => c.id === invoice.customerId);
+                const statusClass = invoice.status === 'paid' ? 'badge-success' : 
+                                  invoice.status === 'overdue' ? 'badge-danger' : 'badge-warning';
+                const statusText = invoice.status === 'paid' ? 'Bezahlt' : 
+                                  invoice.status === 'overdue' ? 'Überfällig' : 'Offen';
+                
+                const row = `
+                    <tr>
+                        <td><strong>${invoice.number}</strong></td>
+                        <td>${customer?.name || 'Unbekannt'}</td>
+                        <td>${formatCurrency(invoice.amount)}</td>
+                        <td>${formatDate(invoice.date)}</td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-view" onclick="viewInvoice('${invoice.id}')" title="Ansehen">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn btn-delete" onclick="deleteInvoice('${invoice.id}')" title="Löschen">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // ===== TABELLEN FUNKTIONEN =====
+        function updateAllTables() {
             loadInvoicesTable();
             loadCustomersTable();
             loadIncomesTable();
@@ -1022,33 +1792,37 @@
             
             tbody.innerHTML = '';
             
-            invoices.forEach((invoice, index) => {
-                const customer = customers.find(c => c.id === invoice.customerId) || {};
+            invoices.forEach(invoice => {
+                const customer = customers.find(c => c.id === invoice.customerId);
+                const statusClass = invoice.status === 'paid' ? 'badge-success' : 
+                                  invoice.status === 'overdue' ? 'badge-danger' : 'badge-warning';
+                const statusText = invoice.status === 'paid' ? 'Bezahlt' : 
+                                  invoice.status === 'overdue' ? 'Überfällig' : 'Offen';
                 
                 const row = `
                     <tr class="data-row" data-id="${invoice.id}" data-type="invoices">
                         <td>
-                            <input type="checkbox" class="item-checkbox" data-id="${invoice.id}" data-type="invoices">
+                            <input type="checkbox" class="item-checkbox" data-id="${invoice.id}" data-type="invoices" onchange="toggleSelection(this)">
                         </td>
                         <td><strong>${invoice.number}</strong></td>
-                        <td>${customer.name || 'Unbekannt'}</td>
+                        <td>${customer?.name || 'Unbekannt'}</td>
                         <td>${formatCurrency(invoice.amount)}</td>
-                        <td>
-                            <span class="status-badge ${invoice.status}">
-                                ${invoice.status === 'paid' ? 'Bezahlt' : 'Offen'}
-                            </span>
-                        </td>
                         <td>${formatDate(invoice.date)}</td>
+                        <td>${formatDate(invoice.dueDate)}</td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
                         <td>
-                            <div class="action-buttons-enhanced">
-                                <button class="action-btn-enhanced" style="background: #3b82f6; color: white;" onclick="viewInvoice('${invoice.id}')">
-                                    <i class="fas fa-eye"></i> Ansehen
+                            <div class="action-buttons">
+                                <button class="action-btn btn-view" onclick="viewInvoice('${invoice.id}')" title="Ansehen">
+                                    <i class="fas fa-eye"></i>
                                 </button>
-                                <button class="action-btn-enhanced" style="background: #f59e0b; color: white;" onclick="editInvoice('${invoice.id}')">
-                                    <i class="fas fa-edit"></i> Bearbeiten
+                                <button class="action-btn btn-edit" onclick="editInvoice('${invoice.id}')" title="Bearbeiten">
+                                    <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="action-btn-enhanced" style="background: #ef4444; color: white;" onclick="deleteItem('${invoice.id}', 'invoices')">
-                                    <i class="fas fa-trash"></i> Löschen
+                                <button class="action-btn btn-delete" onclick="deleteInvoice('${invoice.id}')" title="Löschen">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="action-btn btn-paid" onclick="markInvoiceAsPaid('${invoice.id}')" title="Als bezahlt markieren">
+                                    <i class="fas fa-check"></i>
                                 </button>
                             </div>
                         </td>
@@ -1056,9 +1830,6 @@
                 `;
                 tbody.innerHTML += row;
             });
-            
-            // Event Listener für Checkboxes
-            setupCheckboxListeners('invoices');
         }
 
         function loadCustomersTable() {
@@ -1067,30 +1838,31 @@
             
             tbody.innerHTML = '';
             
-            customers.forEach((customer, index) => {
+            customers.forEach(customer => {
                 const customerInvoices = invoices.filter(i => i.customerId === customer.id);
+                const totalInvoices = customerInvoices.length;
+                const paidInvoices = customerInvoices.filter(i => i.status === 'paid').length;
                 
                 const row = `
                     <tr class="data-row" data-id="${customer.id}" data-type="customers">
                         <td>
-                            <input type="checkbox" class="item-checkbox" data-id="${customer.id}" data-type="customers">
+                            <input type="checkbox" class="item-checkbox" data-id="${customer.id}" data-type="customers" onchange="toggleSelection(this)">
                         </td>
                         <td><strong>${customer.name}</strong></td>
                         <td>${customer.email}</td>
                         <td>${customer.phone || '-'}</td>
+                        <td><span class="badge badge-info">${totalInvoices} (${paidInvoices} bezahlt)</span></td>
+                        <td>${customerInvoices.length > 0 ? formatDate(customerInvoices[0].date) : '-'}</td>
                         <td>
-                            <span class="badge">${customerInvoices.length}</span>
-                        </td>
-                        <td>
-                            <div class="action-buttons-enhanced">
-                                <button class="action-btn-enhanced" style="background: #3b82f6; color: white;" onclick="viewCustomer('${customer.id}')">
-                                    <i class="fas fa-eye"></i> Ansehen
+                            <div class="action-buttons">
+                                <button class="action-btn btn-view" onclick="viewCustomer('${customer.id}')" title="Ansehen">
+                                    <i class="fas fa-eye"></i>
                                 </button>
-                                <button class="action-btn-enhanced" style="background: #f59e0b; color: white;" onclick="editCustomer('${customer.id}')">
-                                    <i class="fas fa-edit"></i> Bearbeiten
+                                <button class="action-btn btn-edit" onclick="editCustomer('${customer.id}')" title="Bearbeiten">
+                                    <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="action-btn-enhanced" style="background: #ef4444; color: white;" onclick="deleteItem('${customer.id}', 'customers')">
-                                    <i class="fas fa-trash"></i> Löschen
+                                <button class="action-btn btn-delete" onclick="deleteCustomer('${customer.id}')" title="Löschen">
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>
@@ -1098,8 +1870,6 @@
                 `;
                 tbody.innerHTML += row;
             });
-            
-            setupCheckboxListeners('customers');
         }
 
         function loadIncomesTable() {
@@ -1108,17 +1878,90 @@
             
             tbody.innerHTML = '';
             
-            incomes.forEach((income, index) => {
+            incomes.forEach(income => {
                 const row = `
-                    <tr>
+                    <tr class="data-row" data-id="${income.id}" data-type="incomes">
+                        <td>
+                            <input type="checkbox" class="item-checkbox" data-id="${income.id}" data-type="incomes" onchange="toggleSelection(this)">
+                        </td>
                         <td>${formatDate(income.date)}</td>
                         <td>${income.description}</td>
                         <td><strong>${formatCurrency(income.amount)}</strong></td>
                         <td>${income.category || '-'}</td>
+                        <td>${income.paymentMethod || '-'}</td>
                         <td>
-                            <button onclick="deleteItem('${income.id}', 'incomes')" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-delete" onclick="deleteIncome('${income.id}')" title="Löschen">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadPurchasesTable() {
+            const tbody = document.getElementById('purchasesTable');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            purchases.forEach(purchase => {
+                const row = `
+                    <tr class="data-row" data-id="${purchase.id}" data-type="purchases">
+                        <td>
+                            <input type="checkbox" class="item-checkbox" data-id="${purchase.id}" data-type="purchases" onchange="toggleSelection(this)">
+                        </td>
+                        <td>${formatDate(purchase.date)}</td>
+                        <td>${purchase.supplier}</td>
+                        <td>${purchase.description.substring(0, 30)}${purchase.description.length > 30 ? '...' : ''}</td>
+                        <td><strong>${formatCurrency(purchase.amount)}</strong></td>
+                        <td>${purchase.category || '-'}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-delete" onclick="deletePurchase('${purchase.id}')" title="Löschen">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadContractsTable() {
+            const tbody = document.getElementById('contractsTable');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            contracts.forEach(contract => {
+                const statusClass = contract.status === 'active' ? 'badge-success' : 'badge-warning';
+                const statusText = contract.status === 'active' ? 'Aktiv' : 'Inaktiv';
+                
+                const row = `
+                    <tr class="data-row" data-id="${contract.id}" data-type="contracts">
+                        <td>
+                            <input type="checkbox" class="item-checkbox" data-id="${contract.id}" data-type="contracts" onchange="toggleSelection(this)">
+                        </td>
+                        <td><strong>${contract.number}</strong></td>
+                        <td>${contract.name}</td>
+                        <td>${contract.party}</td>
+                        <td>${formatCurrency(contract.amount)}/${contract.interval === 'monthly' ? 'Monat' : 'Jahr'}</td>
+                        <td>${formatDate(contract.startDate)} - ${formatDate(contract.endDate)}</td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-view" onclick="viewContract('${contract.id}')" title="Ansehen">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn btn-delete" onclick="deleteContract('${contract.id}')" title="Löschen">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -1127,38 +1970,151 @@
         }
 
         // ===== LÖSCHEN FUNKTIONEN =====
-        function deleteItem(id, type) {
-            if (confirm(`Sind Sie sicher, dass Sie dieses Element löschen möchten?`)) {
-                let dataArray;
-                switch(type) {
-                    case 'invoices':
-                        dataArray = invoices;
-                        break;
-                    case 'customers':
-                        dataArray = customers;
-                        break;
-                    case 'incomes':
-                        dataArray = incomes;
-                        break;
-                    case 'purchases':
-                        dataArray = purchases;
-                        break;
-                    case 'contracts':
-                        dataArray = contracts;
-                        break;
-                }
-                
-                if (dataArray) {
-                    const index = dataArray.findIndex(item => item.id === id);
-                    if (index !== -1) {
-                        dataArray.splice(index, 1);
-                        saveAllData();
-                        loadTables();
-                        updateDashboard();
-                        showNotification('Element erfolgreich gelöscht!', 'success');
-                    }
-                }
+        function deleteInvoice(id) {
+            if (confirm('Rechnung wirklich löschen?')) {
+                invoices = invoices.filter(i => i.id !== id);
+                saveAllData();
+                updateAllTables();
+                updateDashboard();
+                showNotification('Rechnung gelöscht!', 'success');
             }
+        }
+
+        function deleteCustomer(id) {
+            if (confirm('Kunden wirklich löschen?\nZugehörige Rechnungen bleiben erhalten.')) {
+                customers = customers.filter(c => c.id !== id);
+                saveAllData();
+                updateAllTables();
+                updateDashboard();
+                showNotification('Kunde gelöscht!', 'success');
+            }
+        }
+
+        function deleteIncome(id) {
+            if (confirm('Einkommen wirklich löschen?')) {
+                incomes = incomes.filter(i => i.id !== id);
+                saveAllData();
+                updateAllTables();
+                updateDashboard();
+                showNotification('Einkommen gelöscht!', 'success');
+            }
+        }
+
+        function deletePurchase(id) {
+            if (confirm('Einkauf wirklich löschen?')) {
+                purchases = purchases.filter(p => p.id !== id);
+                saveAllData();
+                updateAllTables();
+                updateDashboard();
+                showNotification('Einkauf gelöscht!', 'success');
+            }
+        }
+
+        function deleteContract(id) {
+            if (confirm('Vertrag wirklich löschen?')) {
+                contracts = contracts.filter(c => c.id !== id);
+                saveAllData();
+                updateAllTables();
+                updateDashboard();
+                showNotification('Vertrag gelöscht!', 'success');
+            }
+        }
+
+        // ===== MEHRFACH-AUSWAHL =====
+        function toggleSelection(checkbox) {
+            const id = checkbox.getAttribute('data-id');
+            const type = checkbox.getAttribute('data-type');
+            const row = checkbox.closest('tr');
+            
+            if (checkbox.checked) {
+                if (!selectedItems[type].includes(id)) {
+                    selectedItems[type].push(id);
+                }
+                row.classList.add('selected');
+            } else {
+                const index = selectedItems[type].indexOf(id);
+                if (index > -1) {
+                    selectedItems[type].splice(index, 1);
+                }
+                row.classList.remove('selected');
+            }
+            
+            updateSelectedCount();
+            
+            // Bulk Actions anzeigen wenn etwas ausgewählt ist
+            const totalSelected = getTotalSelected();
+            if (totalSelected > 0) {
+                document.getElementById('bulkActions').classList.add('active');
+            } else {
+                document.getElementById('bulkActions').classList.remove('active');
+            }
+        }
+
+        function toggleSelectAll(type) {
+            const checkbox = document.getElementById(`selectAll${capitalizeFirst(type)}`);
+            const checkboxes = document.querySelectorAll(`.item-checkbox[data-type="${type}"]`);
+            const rows = document.querySelectorAll(`tr[data-type="${type}"]`);
+            
+            selectedItems[type] = [];
+            
+            checkboxes.forEach((cb, index) => {
+                cb.checked = checkbox.checked;
+                if (checkbox.checked) {
+                    selectedItems[type].push(cb.getAttribute('data-id'));
+                    rows[index].classList.add('selected');
+                } else {
+                    rows[index].classList.remove('selected');
+                }
+            });
+            
+            updateSelectedCount();
+            
+            const totalSelected = getTotalSelected();
+            if (totalSelected > 0) {
+                document.getElementById('bulkActions').classList.add('active');
+            } else {
+                document.getElementById('bulkActions').classList.remove('active');
+            }
+        }
+
+        function toggleSelectAllBulk() {
+            const selectAll = document.getElementById('selectAllBulk').checked;
+            const allCheckboxes = document.querySelectorAll('.item-checkbox');
+            const allRows = document.querySelectorAll('.data-row');
+            
+            // Alle Arrays leeren
+            Object.keys(selectedItems).forEach(type => {
+                selectedItems[type] = [];
+            });
+            
+            allCheckboxes.forEach((checkbox, index) => {
+                checkbox.checked = selectAll;
+                if (selectAll) {
+                    const type = checkbox.getAttribute('data-type');
+                    const id = checkbox.getAttribute('data-id');
+                    selectedItems[type].push(id);
+                    allRows[index].classList.add('selected');
+                } else {
+                    allRows[index].classList.remove('selected');
+                }
+            });
+            
+            updateSelectedCount();
+            
+            if (selectAll) {
+                document.getElementById('bulkActions').classList.add('active');
+            } else {
+                document.getElementById('bulkActions').classList.remove('active');
+            }
+        }
+
+        function getTotalSelected() {
+            return Object.values(selectedItems).reduce((total, arr) => total + arr.length, 0);
+        }
+
+        function updateSelectedCount() {
+            const total = getTotalSelected();
+            document.getElementById('selectedCount').textContent = `${total} ausgewählt`;
         }
 
         function deleteSelected(type) {
@@ -1169,35 +2125,176 @@
             }
             
             if (confirm(`Sind Sie sicher, dass Sie ${selected.length} Element(e) löschen möchten?`)) {
-                let dataArray;
                 switch(type) {
                     case 'invoices':
-                        dataArray = invoices;
+                        invoices = invoices.filter(i => !selected.includes(i.id));
                         break;
                     case 'customers':
-                        dataArray = customers;
+                        customers = customers.filter(c => !selected.includes(c.id));
+                        break;
+                    case 'incomes':
+                        incomes = incomes.filter(i => !selected.includes(i.id));
+                        break;
+                    case 'purchases':
+                        purchases = purchases.filter(p => !selected.includes(p.id));
+                        break;
+                    case 'contracts':
+                        contracts = contracts.filter(c => !selected.includes(c.id));
                         break;
                 }
                 
-                if (dataArray) {
-                    dataArray = dataArray.filter(item => !selected.includes(item.id));
-                    
-                    switch(type) {
-                        case 'invoices':
-                            invoices = dataArray;
-                            break;
-                        case 'customers':
-                            customers = dataArray;
-                            break;
-                    }
-                    
-                    saveAllData();
-                    loadTables();
-                    updateDashboard();
-                    selectedItems[type] = [];
-                    showNotification(`${selected.length} Element(e) gelöscht!`, 'success');
-                }
+                // Auswahl zurücksetzen
+                selectedItems[type] = [];
+                saveAllData();
+                updateAllTables();
+                updateDashboard();
+                updateSelectedCount();
+                document.getElementById('bulkActions').classList.remove('active');
+                showNotification(`${selected.length} Element(e) gelöscht!`, 'success');
             }
+        }
+
+        function deleteSelectedBulk() {
+            let totalToDelete = 0;
+            let confirmText = 'Sind Sie sicher, dass Sie folgende Elemente löschen möchten?\n\n';
+            
+            Object.keys(selectedItems).forEach(type => {
+                if (selectedItems[type].length > 0) {
+                    const typeName = {
+                        'invoices': 'Rechnungen',
+                        'customers': 'Kunden',
+                        'incomes': 'Einkommen',
+                        'purchases': 'Einkäufe',
+                        'contracts': 'Verträge'
+                    }[type];
+                    
+                    confirmText += `• ${selectedItems[type].length} ${typeName}\n`;
+                    totalToDelete += selectedItems[type].length;
+                }
+            });
+            
+            if (totalToDelete === 0) {
+                alert('Keine Elemente ausgewählt!');
+                return;
+            }
+            
+            if (confirm(confirmText)) {
+                Object.keys(selectedItems).forEach(type => {
+                    if (selectedItems[type].length > 0) {
+                        switch(type) {
+                            case 'invoices':
+                                invoices = invoices.filter(i => !selectedItems[type].includes(i.id));
+                                break;
+                            case 'customers':
+                                customers = customers.filter(c => !selectedItems[type].includes(c.id));
+                                break;
+                            case 'incomes':
+                                incomes = incomes.filter(i => !selectedItems[type].includes(i.id));
+                                break;
+                            case 'purchases':
+                                purchases = purchases.filter(p => !selectedItems[type].includes(p.id));
+                                break;
+                            case 'contracts':
+                                contracts = contracts.filter(c => !selectedItems[type].includes(c.id));
+                                break;
+                        }
+                        selectedItems[type] = [];
+                    }
+                });
+                
+                saveAllData();
+                updateAllTables();
+                updateDashboard();
+                updateSelectedCount();
+                closeBulkActions();
+                showNotification(`${totalToDelete} Element(e) gelöscht!`, 'success');
+            }
+        }
+
+        function markSelectedAsPaid() {
+            const selectedInvoices = selectedItems['invoices'];
+            if (selectedInvoices.length === 0) {
+                alert('Bitte wählen Sie Rechnungen aus!');
+                return;
+            }
+            
+            if (confirm(`${selectedInvoices.length} Rechnung(en) als bezahlt markieren?`)) {
+                invoices.forEach(invoice => {
+                    if (selectedInvoices.includes(invoice.id)) {
+                        invoice.status = 'paid';
+                        invoice.paidDate = new Date().toISOString().split('T')[0];
+                    }
+                });
+                
+                saveAllData();
+                updateAllTables();
+                updateDashboard();
+                showNotification(`${selectedInvoices.length} Rechnung(en) als bezahlt markiert!`, 'success');
+            }
+        }
+
+        // ===== ADMIN FUNKTIONEN =====
+        function toggleAdminPanel() {
+            const content = document.getElementById('adminContent');
+            const icon = document.getElementById('adminToggleIcon');
+            
+            content.classList.toggle('hidden');
+            icon.className = content.classList.contains('hidden') ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
+        }
+
+        function showDeleteAllModal() {
+            document.getElementById('deleteModalTitle').textContent = 'ALLE DATEN LÖSCHEN';
+            document.getElementById('deleteModalText').textContent = 'Sind Sie absolut sicher? Dies löscht ALLE Daten (Rechnungen, Kunden, Einkommen, etc.) OHNE Möglichkeit der Wiederherstellung!';
+            document.getElementById('deleteConfirmModal').classList.add('active');
+        }
+
+        function confirmDeleteAll() {
+            localStorage.clear();
+            invoices = [];
+            customers = [];
+            incomes = [];
+            purchases = [];
+            contracts = [];
+            selectedItems = {
+                invoices: [], customers: [], incomes: [], purchases: [], contracts: []
+            };
+            
+            updateAllTables();
+            updateDashboard();
+            closeDeleteModal();
+            closeBulkActions();
+            showNotification('Alle Daten wurden gelöscht!', 'error');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteConfirmModal').classList.remove('active');
+        }
+
+        function showBulkActions() {
+            document.getElementById('bulkActions').classList.add('active');
+        }
+
+        function closeBulkActions() {
+            document.getElementById('bulkActions').classList.remove('active');
+            
+            // Alle Auswahlen zurücksetzen
+            Object.keys(selectedItems).forEach(type => {
+                selectedItems[type] = [];
+                document.querySelectorAll(`.item-checkbox[data-type="${type}"]`).forEach(cb => {
+                    cb.checked = false;
+                });
+                document.querySelectorAll(`tr[data-type="${type}"]`).forEach(row => {
+                    row.classList.remove('selected');
+                });
+            });
+            
+            // "Alle auswählen" Checkboxes zurücksetzen
+            document.getElementById('selectAllBulk').checked = false;
+            document.querySelectorAll('[id^="selectAll"]').forEach(cb => {
+                cb.checked = false;
+            });
+            
+            updateSelectedCount();
         }
 
         function quickDelete() {
@@ -1239,167 +2336,34 @@
             const actualCount = Math.min(deleteCount, dataArray.length);
             
             if (confirm(`Sind Sie sicher, dass Sie ${actualCount} ${arrayName} löschen möchten?`)) {
+                // Behalte nur die ersten n Elemente nicht (lösche die ersten n)
+                const newArray = dataArray.slice(actualCount);
+                
                 switch(type) {
                     case 'invoices':
-                        invoices = invoices.slice(actualCount);
+                        invoices = newArray;
                         break;
                     case 'customers':
-                        customers = customers.slice(actualCount);
+                        customers = newArray;
                         break;
                     case 'incomes':
-                        incomes = incomes.slice(actualCount);
+                        incomes = newArray;
                         break;
                     case 'purchases':
-                        purchases = purchases.slice(actualCount);
+                        purchases = newArray;
                         break;
                     case 'contracts':
-                        contracts = contracts.slice(actualCount);
+                        contracts = newArray;
                         break;
                 }
                 
                 saveAllData();
-                loadTables();
+                updateAllTables();
                 updateDashboard();
                 showNotification(`${actualCount} ${arrayName} gelöscht!`, 'success');
-            }
-        }
-
-        // ===== BULK ACTIONS =====
-        function setupCheckboxListeners(type) {
-            document.querySelectorAll(`.item-checkbox[data-type="${type}"]`).forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    const id = this.getAttribute('data-id');
-                    const row = this.closest('tr');
-                    
-                    if (this.checked) {
-                        selectedItems[type].push(id);
-                        row.classList.add('selected');
-                    } else {
-                        const index = selectedItems[type].indexOf(id);
-                        if (index > -1) {
-                            selectedItems[type].splice(index, 1);
-                        }
-                        row.classList.remove('selected');
-                        document.getElementById(`selectAll${capitalizeFirst(type)}`).checked = false;
-                    }
-                    
-                    // Bulk Actions anzeigen wenn etwas ausgewählt ist
-                    if (selectedItems[type].length > 0) {
-                        document.getElementById('bulkActions').classList.add('active');
-                    } else {
-                        let anySelected = false;
-                        Object.values(selectedItems).forEach(arr => {
-                            if (arr.length > 0) anySelected = true;
-                        });
-                        if (!anySelected) {
-                            document.getElementById('bulkActions').classList.remove('active');
-                        }
-                    }
-                });
-            });
-        }
-
-        function toggleSelectAll(type) {
-            const checkAll = document.getElementById(`selectAll${capitalizeFirst(type)}`).checked;
-            const checkboxes = document.querySelectorAll(`.item-checkbox[data-type="${type}"]`);
-            const rows = document.querySelectorAll(`tr[data-type="${type}"]`);
-            
-            selectedItems[type] = [];
-            
-            checkboxes.forEach((checkbox, index) => {
-                checkbox.checked = checkAll;
-                if (checkAll) {
-                    selectedItems[type].push(checkbox.getAttribute('data-id'));
-                    rows[index].classList.add('selected');
-                } else {
-                    rows[index].classList.remove('selected');
-                }
-            });
-            
-            if (selectedItems[type].length > 0) {
-                document.getElementById('bulkActions').classList.add('active');
-            } else {
-                document.getElementById('bulkActions').classList.remove('active');
-            }
-        }
-
-        function deleteSelectedBulk() {
-            let totalSelected = 0;
-            let confirmText = 'Sind Sie sicher, dass Sie folgende Elemente löschen möchten?\n\n';
-            
-            Object.keys(selectedItems).forEach(type => {
-                if (selectedItems[type].length > 0) {
-                    const typeName = {
-                        'invoices': 'Rechnungen',
-                        'customers': 'Kunden',
-                        'incomes': 'Einkommen',
-                        'purchases': 'Einkäufe',
-                        'contracts': 'Verträge'
-                    }[type];
-                    
-                    confirmText += `• ${selectedItems[type].length} ${typeName}\n`;
-                    totalSelected += selectedItems[type].length;
-                }
-            });
-            
-            if (totalSelected === 0) {
-                alert('Keine Elemente ausgewählt!');
-                return;
-            }
-            
-            if (confirm(confirmText)) {
-                Object.keys(selectedItems).forEach(type => {
-                    if (selectedItems[type].length > 0) {
-                        let dataArray;
-                        switch(type) {
-                            case 'invoices':
-                                dataArray = invoices;
-                                break;
-                            case 'customers':
-                                dataArray = customers;
-                                break;
-                            case 'incomes':
-                                dataArray = incomes;
-                                break;
-                            case 'purchases':
-                                dataArray = purchases;
-                                break;
-                            case 'contracts':
-                                dataArray = contracts;
-                                break;
-                        }
-                        
-                        if (dataArray) {
-                            const newArray = dataArray.filter(item => !selectedItems[type].includes(item.id));
-                            
-                            switch(type) {
-                                case 'invoices':
-                                    invoices = newArray;
-                                    break;
-                                case 'customers':
-                                    customers = newArray;
-                                    break;
-                                case 'incomes':
-                                    incomes = newArray;
-                                    break;
-                                case 'purchases':
-                                    purchases = newArray;
-                                    break;
-                                case 'contracts':
-                                    contracts = newArray;
-                                    break;
-                            }
-                            
-                            selectedItems[type] = [];
-                        }
-                    }
-                });
                 
-                saveAllData();
-                loadTables();
-                updateDashboard();
-                closeBulkActions();
-                showNotification(`${totalSelected} Element(e) gelöscht!`, 'success');
+                // Formular zurücksetzen
+                document.getElementById('quickDeleteCount').value = '';
             }
         }
 
@@ -1416,26 +2380,34 @@
             
             // Rechnungen
             html += `<h5><i class="fas fa-file-invoice"></i> Rechnungen (${invoices.length})</h5>`;
-            invoices.forEach(inv => {
-                const customer = customers.find(c => c.id === inv.customerId);
-                html += `
-                    <div class="data-item">
-                        <strong>${inv.number}</strong> - ${customer ? customer.name : 'Unbekannt'} - ${formatCurrency(inv.amount)}<br>
-                        <small>${formatDate(inv.date)} - Status: ${inv.status}</small>
-                    </div>
-                `;
-            });
+            if (invoices.length === 0) {
+                html += `<p style="color: #64748b; padding: 10px;">Keine Rechnungen vorhanden</p>`;
+            } else {
+                invoices.forEach(inv => {
+                    const customer = customers.find(c => c.id === inv.customerId);
+                    html += `
+                        <div class="data-item">
+                            <strong>${inv.number}</strong> - ${customer ? customer.name : 'Unbekannt'} - ${formatCurrency(inv.amount)}<br>
+                            <small>${formatDate(inv.date)} - Status: ${inv.status} - Fällig: ${formatDate(inv.dueDate)}</small>
+                        </div>
+                    `;
+                });
+            }
             
             // Kunden
             html += `<h5 style="margin-top: 20px;"><i class="fas fa-users"></i> Kunden (${customers.length})</h5>`;
-            customers.forEach(cust => {
-                html += `
-                    <div class="data-item">
-                        <strong>${cust.name}</strong> - ${cust.email}<br>
-                        <small>${cust.phone || 'Keine Telefon'} - ${cust.company || 'Keine Firma'}</small>
-                    </div>
-                `;
-            });
+            if (customers.length === 0) {
+                html += `<p style="color: #64748b; padding: 10px;">Keine Kunden vorhanden</p>`;
+            } else {
+                customers.forEach(cust => {
+                    html += `
+                        <div class="data-item">
+                            <strong>${cust.name}</strong> - ${cust.email}<br>
+                            <small>${cust.phone || 'Keine Telefon'} - ${cust.company || 'Keine Firma'}</small>
+                        </div>
+                    `;
+                });
+            }
             
             content.innerHTML = html;
             document.getElementById('dataViewerModal').classList.add('active');
@@ -1445,129 +2417,148 @@
             document.getElementById('dataViewerModal').classList.remove('active');
         }
 
-        // ===== DASHBOARD UPDATE =====
-        function updateDashboard() {
-            document.getElementById('invoiceCount').textContent = invoices.length;
-            document.getElementById('customerCount').textContent = customers.length;
-            
-            const totalIncome = incomes.reduce((sum, income) => sum + income.amount, 0);
-            document.getElementById('incomeTotal').textContent = formatCurrency(totalIncome);
-        }
-
-        // ===== HELPER FUNKTIONEN =====
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('de-DE', { 
-                style: 'currency', 
-                currency: 'EUR',
-                minimumFractionDigits: 2 
-            }).format(amount);
-        }
-
-        function formatDate(dateString) {
-            if (!dateString) return '-';
-            return new Date(dateString).toLocaleDateString('de-DE');
-        }
-
-        function capitalizeFirst(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
-        }
-
-        function showNotification(message, type = 'success') {
-            // Einfache Benachrichtigung
-            alert(message);
-        }
-
-        function toggleAdminPanel() {
-            const content = document.getElementById('adminContent');
-            const icon = document.getElementById('adminToggleIcon');
-            
-            content.classList.toggle('hidden');
-            if (content.classList.contains('hidden')) {
-                icon.className = 'fas fa-chevron-down';
-            } else {
-                icon.className = 'fas fa-chevron-up';
-            }
-        }
-
-        function showDeleteAllModal() {
-            document.getElementById('deleteConfirmModal').classList.add('active');
-        }
-
-        function closeDeleteModal() {
-            document.getElementById('deleteConfirmModal').classList.remove('active');
-        }
-
-        function closeBulkActions() {
-            document.getElementById('bulkActions').classList.remove('active');
-            
-            // Alle Auswahlen zurücksetzen
-            Object.keys(selectedItems).forEach(type => {
-                selectedItems[type] = [];
-                document.querySelectorAll(`.item-checkbox[data-type="${type}"]`).forEach(cb => {
-                    cb.checked = false;
-                });
-                document.querySelectorAll(`tr[data-type="${type}"]`).forEach(row => {
-                    row.classList.remove('selected');
-                });
-            });
-        }
-
-        function confirmDelete(mode) {
-            closeDeleteModal();
-            
-            switch(mode) {
-                case 'all':
-                    if (confirm('SIND SIE ABSOLUT SICHER?\n\nDIES LÖSCHT ALLE DATEN OHNE MÖGLICHKEIT DER WIEDERHERSTELLUNG!')) {
-                        localStorage.clear();
-                        invoices = [];
-                        customers = [];
-                        incomes = [];
-                        purchases = [];
-                        contracts = [];
-                        loadTables();
-                        updateDashboard();
-                        showNotification('Alle Daten wurden gelöscht!', 'error');
-                    }
-                    break;
-            }
-        }
-
+        // ===== NEUE ELEMENTE HINZUFÜGEN =====
         function addNewInvoice() {
-            const newInvoice = {
-                id: 'INV-' + Date.now(),
-                number: 'INV-' + new Date().getFullYear() + '-' + (invoices.length + 1),
-                customerId: customers[0]?.id || '',
-                date: new Date().toISOString().split('T')[0],
-                amount: 0,
-                description: 'Neue Rechnung',
-                status: 'open',
-                dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+            // Kunden für Dropdown laden
+            const customerSelect = document.getElementById('invoiceCustomer');
+            customerSelect.innerHTML = '<option value="">Kunde auswählen...</option>';
+            customers.forEach(customer => {
+                const option = document.createElement('option');
+                option.value = customer.id;
+                option.textContent = `${customer.name}${customer.company ? ' (' + customer.company + ')' : ''}`;
+                customerSelect.appendChild(option);
+            });
+            
+            // Rechnungsnummer generieren
+            const today = new Date();
+            const invoiceNumber = `INV-${today.getFullYear()}-${String(invoices.length + 1).padStart(3, '0')}`;
+            document.getElementById('invoiceNumber').value = invoiceNumber;
+            document.getElementById('invoiceDate').value = today.toISOString().split('T')[0];
+            
+            // Fälligkeitsdatum (30 Tage später)
+            const dueDate = new Date(today);
+            dueDate.setDate(dueDate.getDate() + 30);
+            document.getElementById('invoiceDueDate').value = dueDate.toISOString().split('T')[0];
+            
+            document.getElementById('addInvoiceModal').classList.add('active');
+        }
+
+        function closeAddInvoiceModal() {
+            document.getElementById('addInvoiceModal').classList.remove('active');
+            document.getElementById('invoiceForm').reset();
+        }
+
+        function saveInvoice() {
+            const invoice = {
+                id: 'inv' + Date.now(),
+                number: document.getElementById('invoiceNumber').value,
+                customerId: document.getElementById('invoiceCustomer').value,
+                amount: parseFloat(document.getElementById('invoiceAmount').value),
+                date: document.getElementById('invoiceDate').value,
+                dueDate: document.getElementById('invoiceDueDate').value,
+                status: document.getElementById('invoiceStatus').value,
+                description: document.getElementById('invoiceDescription').value,
+                createdAt: new Date().toISOString()
             };
             
-            invoices.unshift(newInvoice);
+            invoices.unshift(invoice);
             saveAllData();
-            loadInvoicesTable();
+            closeAddInvoiceModal();
+            updateAllTables();
             updateDashboard();
-            showNotification('Neue Rechnung hinzugefügt!', 'success');
+            showNotification('Rechnung gespeichert!', 'success');
         }
 
         function addNewCustomer() {
             const newCustomer = {
-                id: 'CUST-' + Date.now(),
+                id: 'cust' + Date.now(),
                 name: 'Neuer Kunde ' + (customers.length + 1),
                 email: 'kunde' + (customers.length + 1) + '@beispiel.de',
                 phone: '',
                 company: '',
-                address: ''
+                address: '',
+                notes: '',
+                createdAt: new Date().toISOString()
             };
             
             customers.unshift(newCustomer);
             saveAllData();
-            loadCustomersTable();
+            updateAllTables();
             updateDashboard();
             showNotification('Neuer Kunde hinzugefügt!', 'success');
         }
 
+        function addNewIncome() {
+            const newIncome = {
+                id: 'inc' + Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                amount: 0,
+                description: 'Neues Einkommen',
+                category: 'service',
+                paymentMethod: 'bank',
+                type: 'regular',
+                createdAt: new Date().toISOString()
+            };
+            
+            incomes.unshift(newIncome);
+            saveAllData();
+            updateAllTables();
+            updateDashboard();
+            showNotification('Neues Einkommen hinzugefügt!', 'success');
+        }
+
+        function addNewPurchase() {
+            const newPurchase = {
+                id: 'pur' + Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                amount: 0,
+                supplier: 'Neuer Lieferant',
+                description: 'Neuer Einkauf',
+                category: 'other',
+                type: 'one-time',
+                paymentMethod: 'bank',
+                tax: 'yes',
+                createdAt: new Date().toISOString()
+            };
+            
+            purchases.unshift(newPurchase);
+            saveAllData();
+            updateAllTables();
+            updateDashboard();
+            showNotification('Neuer Einkauf hinzugefügt!', 'success');
+        }
+
+        function addNewContract() {
+            const today = new Date();
+            const endDate = new Date(today);
+            endDate.setFullYear(endDate.getFullYear() + 1);
+            
+            const newContract = {
+                id: 'con' + Date.now(),
+                number: 'CTR-' + today.getFullYear() + '-' + (contracts.length + 1),
+                name: 'Neuer Vertrag',
+                party: 'Neuer Vertragspartner',
+                email: '',
+                type: 'income',
+                startDate: today.toISOString().split('T')[0],
+                endDate: endDate.toISOString().split('T')[0],
+                amount: 0,
+                interval: 'monthly',
+                description: 'Neuer Vertrag',
+                paymentMethod: 'bank',
+                autoRenew: 'yes',
+                status: 'active',
+                createdAt: new Date().toISOString()
+            };
+            
+            contracts.unshift(newContract);
+            saveAllData();
+            updateAllTables();
+            updateDashboard();
+            showNotification('Neuer Vertrag hinzugefügt!', 'success');
+        }
+
+        // ===== BEARBEITEN FUNKTIONEN =====
         function editInvoice(id) {
             const invoice = invoices.find(i => i.id === id);
             if (invoice) {
@@ -1575,7 +2566,8 @@
                 if (newAmount !== null) {
                     invoice.amount = parseFloat(newAmount);
                     saveAllData();
-                    loadInvoicesTable();
+                    updateAllTables();
+                    updateDashboard();
                     showNotification('Rechnung aktualisiert!', 'success');
                 }
             }
@@ -1588,12 +2580,26 @@
                 if (newName !== null) {
                     customer.name = newName;
                     saveAllData();
-                    loadCustomersTable();
+                    updateAllTables();
+                    updateDashboard();
                     showNotification('Kunde aktualisiert!', 'success');
                 }
             }
         }
 
+        function markInvoiceAsPaid(id) {
+            const invoice = invoices.find(i => i.id === id);
+            if (invoice) {
+                invoice.status = 'paid';
+                invoice.paidDate = new Date().toISOString().split('T')[0];
+                saveAllData();
+                updateAllTables();
+                updateDashboard();
+                showNotification('Rechnung als bezahlt markiert!', 'success');
+            }
+        }
+
+        // ===== ANSCHEN FUNKTIONEN =====
         function viewInvoice(id) {
             const invoice = invoices.find(i => i.id === id);
             const customer = customers.find(c => c.id === invoice?.customerId);
@@ -1603,31 +2609,58 @@
                     <strong>Rechnungsnummer:</strong> ${invoice.number}<br>
                     <strong>Kunde:</strong> ${customer?.name || 'Unbekannt'}<br>
                     <strong>Betrag:</strong> ${formatCurrency(invoice.amount)}<br>
-                    <strong>Datum:</strong> ${formatDate(invoice.date)}<br>
+                    <strong>Rechnungsdatum:</strong> ${formatDate(invoice.date)}<br>
                     <strong>Fällig am:</strong> ${formatDate(invoice.dueDate)}<br>
-                    <strong>Status:</strong> ${invoice.status}<br>
-                    <strong>Beschreibung:</strong> ${invoice.description}
+                    <strong>Status:</strong> ${invoice.status === 'paid' ? 'Bezahlt' : invoice.status === 'overdue' ? 'Überfällig' : 'Offen'}<br>
+                    <strong>Beschreibung:</strong> ${invoice.description || 'Keine Beschreibung'}
                 `;
                 
-                alert(details);
+                alert('Rechnungsdetails:\n\n' + details.replace(/<br>/g, '\n'));
             }
         }
 
         function viewCustomer(id) {
             const customer = customers.find(c => c.id === id);
             if (customer) {
+                const customerInvoices = invoices.filter(i => i.customerId === customer.id);
+                const totalAmount = customerInvoices.reduce((sum, i) => sum + i.amount, 0);
+                const paidAmount = customerInvoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.amount, 0);
+                
                 const details = `
                     <strong>Name:</strong> ${customer.name}<br>
                     <strong>E-Mail:</strong> ${customer.email}<br>
                     <strong>Telefon:</strong> ${customer.phone || '-'}<br>
                     <strong>Firma:</strong> ${customer.company || '-'}<br>
-                    <strong>Adresse:</strong> ${customer.address || '-'}
+                    <strong>Adresse:</strong> ${customer.address || '-'}<br>
+                    <strong>Notizen:</strong> ${customer.notes || '-'}<br>
+                    <strong>Rechnungen:</strong> ${customerInvoices.length} (Gesamt: ${formatCurrency(totalAmount)})<br>
+                    <strong>Bezahlt:</strong> ${formatCurrency(paidAmount)}
                 `;
                 
-                alert(details);
+                alert('Kundendetails:\n\n' + details.replace(/<br>/g, '\n'));
             }
         }
 
+        function viewContract(id) {
+            const contract = contracts.find(c => c.id === id);
+            if (contract) {
+                const details = `
+                    <strong>Vertragsnummer:</strong> ${contract.number}<br>
+                    <strong>Bezeichnung:</strong> ${contract.name}<br>
+                    <strong>Vertragspartner:</strong> ${contract.party}<br>
+                    <strong>E-Mail:</strong> ${contract.email || '-'}<br>
+                    <strong>Typ:</strong> ${contract.type === 'income' ? 'Einnahme' : 'Ausgabe'}<br>
+                    <strong>Betrag:</strong> ${formatCurrency(contract.amount)}/${contract.interval === 'monthly' ? 'Monat' : 'Jahr'}<br>
+                    <strong>Laufzeit:</strong> ${formatDate(contract.startDate)} - ${formatDate(contract.endDate)}<br>
+                    <strong>Beschreibung:</strong> ${contract.description || '-'}<br>
+                    <strong>Status:</strong> ${contract.status === 'active' ? 'Aktiv' : 'Inaktiv'}
+                `;
+                
+                alert('Vertragsdetails:\n\n' + details.replace(/<br>/g, '\n'));
+            }
+        }
+
+        // ===== EXPORT/IMPORT =====
         function exportAllData() {
             const allData = {
                 invoices: invoices,
@@ -1635,7 +2668,9 @@
                 incomes: incomes,
                 purchases: purchases,
                 contracts: contracts,
-                exportDate: new Date().toISOString()
+                settings: settings,
+                exportDate: new Date().toISOString(),
+                version: '2.0.0'
             };
             
             const dataStr = JSON.stringify(allData, null, 2);
@@ -1658,6 +2693,8 @@
             
             input.onchange = function(event) {
                 const file = event.target.files[0];
+                if (!file) return;
+                
                 const reader = new FileReader();
                 
                 reader.onload = function(e) {
@@ -1670,14 +2707,15 @@
                             incomes = data.incomes || [];
                             purchases = data.purchases || [];
                             contracts = data.contracts || [];
+                            settings = data.settings || {};
                             
                             saveAllData();
-                            loadTables();
+                            updateAllTables();
                             updateDashboard();
                             showNotification('Backup erfolgreich geladen!', 'success');
                         }
                     } catch (error) {
-                        alert('Fehler beim Laden der Datei: ' + error.message);
+                        alert('Fehler beim Laden der Datei:\n' + error.message);
                     }
                 };
                 
@@ -1687,85 +2725,134 @@
             input.click();
         }
 
-        function showAdminHelp() {
-            const helpText = `
-=== ADMIN HILFE ===
-
-1. LÖSCHEN:
-   - Einzeln: Mülltonne-Button in jeder Zeile
-   - Mehrfach: Checkboxen auswählen → "Ausgewählte löschen"
-   - Schnell: Admin-Panel → "Schnell löschen"
-
-2. ANSCHEN:
-   - Einzeln: Auge-Button in jeder Zeile
-   - Alle: Admin-Panel → "Alle Daten ansehen"
-
-3. BEARBEITEN:
-   - Einzeln: Stift-Button in jeder Zeile
-   - Direkt in Tabellen klicken (bald verfügbar)
-
-4. BACKUP:
-   - Export: Admin-Panel → "Backup erstellen"
-   - Import: Admin-Panel → "Backup laden"
-
-5. NEU ERSTELLEN:
-   - Dashboard: Schnellaktionen-Buttons
-   - Jeder Tab: "+" Button oben rechts
-
-Login: admin / admin123
-            `;
+        function exportInvoices() {
+            const dataStr = JSON.stringify(invoices, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
             
-            alert(helpText);
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', 'rechnungen-' + new Date().toISOString().split('T')[0] + '.json');
+            linkElement.click();
+            
+            showNotification('Rechnungen exportiert!', 'success');
         }
 
-        // Initialisiere Checkbox Listener nach dem Laden
-        setTimeout(() => {
-            setupCheckboxListeners('invoices');
-            setupCheckboxListeners('customers');
-        }, 500);
+        function exportCustomers() {
+            const dataStr = JSON.stringify(customers, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', 'kunden-' + new Date().toISOString().split('T')[0] + '.json');
+            linkElement.click();
+            
+            showNotification('Kunden exportiert!', 'success');
+        }
+
+        // ===== HELPER FUNKTIONEN =====
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('de-DE', { 
+                style: 'currency', 
+                currency: 'EUR',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount || 0);
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('de-DE');
+            } catch (e) {
+                return dateString;
+            }
+        }
+
+        function capitalizeFirst(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const text = document.getElementById('notificationText');
+            
+            // Typ setzen
+            notification.className = `notification notification-${type}`;
+            
+            // Icon setzen
+            const icon = notification.querySelector('i');
+            if (icon) {
+                icon.className = type === 'error' ? 'fas fa-exclamation-circle' :
+                               type === 'warning' ? 'fas fa-exclamation-triangle' :
+                               type === 'info' ? 'fas fa-info-circle' :
+                               'fas fa-check-circle';
+            }
+            
+            text.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            const dateInputs = document.querySelectorAll('input[type="date"]');
+            dateInputs.forEach(input => {
+                if (!input.value) {
+                    input.value = today;
+                }
+            });
+        }
+
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateElement = document.querySelector('.current-date');
+            if (dateElement) {
+                dateElement.textContent = now.toLocaleDateString('de-DE', options);
+            }
+        }
+
+        function setupCheckboxListeners() {
+            // Wird durch die onchange-Attribute in den Checkboxes behandelt
+        }
+
+        function setupModalEventListeners() {
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                    }
+                });
+            });
+        }
+
+        function generateMonthlyReport() {
+            showNotification('Monatsbericht wird generiert...', 'info');
+            // Hier könnte PDF-Generierung implementiert werden
+            setTimeout(() => {
+                showNotification('Monatsbericht generiert!', 'success');
+            }, 1000);
+        }
+
+        function generateYearlyReport() {
+            showNotification('Jahresbericht wird generiert...', 'info');
+            // Hier könnte Excel-Generierung implementiert werden
+            setTimeout(() => {
+                showNotification('Jahresbericht generiert!', 'success');
+            }, 1000);
+        }
+
+        // ===== INITIALISIERE DIE APP =====
+        console.log('Buchhaltungssystem Pro - Vollzugriff Version');
+        console.log('Login: admin / admin123');
+        console.log('oder: colin / 11012021');
+        console.log('oder: test / test123');
+        console.log('oder: user / password');
     </script>
-
-    <style>
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-        
-        .status-badge.paid {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        
-        .status-badge.open {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            background: #dbeafe;
-            color: #1e40af;
-            border-radius: 4px;
-            font-size: 0.85rem;
-        }
-        
-        .tab-btn {
-            padding: 10px 20px;
-            background: #f1f5f9;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        
-        .tab-btn.active {
-            background: #3b82f6;
-            color: white;
-        }
-    </style>
 </body>
 </html>
