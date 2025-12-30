@@ -3621,6 +3621,9 @@
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
             
+            console.log('Login versuch:', { username, password });
+            
+            // Überprüfe Anmeldedaten
             if (username === 'colin' && password === '11012021') {
                 loginSuccess();
             } else {
@@ -4095,7 +4098,7 @@
             showNotification('Einstellungen gespeichert!', 'success');
         }
         
-        // ===== MODAL FUNKTIONEN (gleiche wie PC) =====
+        // ===== MODAL FUNKTIONEN =====
         function openInvoiceModal() {
             console.log('Öffne Rechnungs-Modal');
             document.getElementById('invoiceModal').classList.add('active');
@@ -4114,8 +4117,111 @@
             setDefaultDates();
         }
         
-        // ... alle anderen Modal-Funktionen bleiben gleich wie im PC-Code ...
-        // (openIncomeModal, closeIncomeModal, openCustomerModal, etc.)
+        function openIncomeModal() {
+            console.log('Öffne Einkommen-Modal');
+            document.getElementById('incomeModal').classList.add('active');
+        }
+        
+        function closeIncomeModal() {
+            document.getElementById('incomeModal').classList.remove('active');
+            document.getElementById('incomeForm').reset();
+            setDefaultDates();
+        }
+        
+        function openCustomerModal() {
+            console.log('Öffne Kunden-Modal');
+            document.getElementById('customerModal').classList.add('active');
+        }
+        
+        function closeCustomerModal() {
+            document.getElementById('customerModal').classList.remove('active');
+            document.getElementById('customerForm').reset();
+        }
+        
+        function openPurchaseModal() {
+            console.log('Öffne Einkauf-Modal');
+            document.getElementById('purchaseModal').classList.add('active');
+        }
+        
+        function closePurchaseModal() {
+            document.getElementById('purchaseModal').classList.remove('active');
+            document.getElementById('purchaseForm').reset();
+            document.getElementById('recurringOptions').style.display = 'none';
+            setDefaultDates();
+        }
+        
+        function openInstallmentModal() {
+            console.log('Öffne Raten-Modal');
+            document.getElementById('installmentModal').classList.add('active');
+            loadInvoicesForInstallment();
+        }
+        
+        function closeInstallmentModal() {
+            document.getElementById('installmentModal').classList.remove('active');
+            document.getElementById('installmentForm').reset();
+            setDefaultDates();
+        }
+        
+        function openContractModal() {
+            console.log('Öffne Vertrag-Modal');
+            document.getElementById('contractModal').classList.add('active');
+        }
+        
+        function closeContractModal() {
+            document.getElementById('contractModal').classList.remove('active');
+            document.getElementById('contractForm').reset();
+            setDefaultDates();
+        }
+        
+        function openEmailReportModal() {
+            console.log('Öffne Email-Report-Modal');
+            document.getElementById('emailReportModal').classList.add('active');
+        }
+        
+        function closeEmailReportModal() {
+            document.getElementById('emailReportModal').classList.remove('active');
+            document.getElementById('emailReportForm').reset();
+        }
+        
+        function openResetMonthModal() {
+            console.log('Öffne Reset-Month-Modal');
+            document.getElementById('resetMonthModal').classList.add('active');
+            
+            const monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+                              'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+            const now = new Date();
+            const currentMonth = monthNames[now.getMonth()];
+            
+            document.getElementById('resetMonthName').textContent = currentMonth + ' ' + now.getFullYear();
+        }
+        
+        function closeResetMonthModal() {
+            document.getElementById('resetMonthModal').classList.remove('active');
+            document.getElementById('resetPassword').value = '';
+        }
+        
+        function openPaymentModal() {
+            console.log('Öffne Payment-Modal');
+            document.getElementById('paymentModal').classList.add('active');
+            setDefaultDates();
+        }
+        
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+            document.getElementById('paymentForm').reset();
+            document.getElementById('paymentInvoiceSelect').style.display = 'none';
+            document.getElementById('paymentInstallmentSelect').style.display = 'none';
+            document.getElementById('paymentContractSelect').style.display = 'none';
+        }
+        
+        function openQuickAddModal() {
+            console.log('Öffne Quick-Add-Modal');
+            document.getElementById('quickAddModal').classList.add('active');
+        }
+        
+        function closeQuickAddModal() {
+            document.getElementById('quickAddModal').classList.remove('active');
+        }
         
         // ===== HELPER FUNKTIONEN =====
         function populateCustomerSelect() {
@@ -4164,30 +4270,19 @@
             return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         }
         
-        function updateMonthlyStat(type, amount) {
-            const currentMonth = getCurrentMonth();
-            
-            if (!monthlyStats[currentMonth]) {
-                monthlyStats[currentMonth] = {
-                    income: 0,
-                    expenses: 0,
-                    invoices: 0,
-                    contracts: 0,
-                    installments: 0
-                };
+        function updateElement(id, value) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
             }
-            
-            if (type === 'income') {
-                monthlyStats[currentMonth].income += amount;
-            } else if (type === 'expenses') {
-                monthlyStats[currentMonth].expenses += amount;
-            } else if (type === 'invoices') {
-                monthlyStats[currentMonth].invoices += amount;
-            } else if (type === 'contracts') {
-                monthlyStats[currentMonth].contracts += amount;
-            }
-            
-            saveMonthlyStats();
+        }
+        
+        function updateDataCount() {
+            const totalData = invoices.length + incomes.length + customers.length + 
+                            purchases.length + installments.length + contracts.length + payments.length;
+            document.getElementById('dataCount').textContent = totalData;
+            document.getElementById('lastBackup').textContent = new Date().toLocaleDateString('de-DE');
+            document.getElementById('storageUsed').textContent = Math.round(JSON.stringify(localStorage).length / 1024) + ' KB';
         }
         
         // ===== DARK MODE =====
@@ -4234,7 +4329,7 @@
             // Monatliche Fixkosten (Verträge + Raten)
             const monthlyInstallments = installments
                 .filter(i => i.status === 'active')
-                .reduce((sum, i) => sum + i.monthlyPayment, 0);
+                .reduce((sum, i) => sum + parseFloat(i.monthlyPayment), 0);
             
             const contractExpenses = activeContractsList
                 .filter(c => c.type === 'expense')
@@ -4271,13 +4366,6 @@
             
             // Mobile Stats synchronisieren
             updateMobileDashboard();
-        }
-        
-        function updateElement(id, value) {
-            const element = document.getElementById(id);
-            if (element) {
-                element.textContent = value;
-            }
         }
         
         function initializeCharts() {
@@ -4565,8 +4653,235 @@
             });
         }
         
-        // ... alle anderen Tabellen-Ladefunktionen bleiben gleich wie im PC-Code ...
-        // (loadIncomeTable, loadCustomersTable, etc.)
+        function loadIncomeTable() {
+            const tbody = document.getElementById('incomeTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            incomes.forEach(income => {
+                const categoryText = {
+                    'service': 'Dienstleistung',
+                    'product': 'Produktverkauf',
+                    'contract': 'Vertrag',
+                    'installment': 'Ratenzahlung',
+                    'other': 'Sonstiges'
+                }[income.category] || income.category;
+                
+                const row = `
+                    <tr>
+                        <td>${formatDate(income.date)}</td>
+                        <td>${income.description}</td>
+                        <td><strong>${formatCurrency(income.amount)}</strong></td>
+                        <td>${categoryText}</td>
+                        <td>${income.paymentMethod === 'bank' ? 'Bank' : 
+                             income.paymentMethod === 'cash' ? 'Bar' : 
+                             income.paymentMethod === 'card' ? 'Karte' : 'PayPal'}</td>
+                        <td>${income.type === 'regular' ? 'Regulär' : 
+                             income.type === 'contract' ? 'Vertrag' : 'Raten'}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-danger" onclick="deleteIncome('${income.id}')" title="Löschen">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+        
+        function loadCustomersTable() {
+            const tbody = document.getElementById('customersTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            customers.forEach(customer => {
+                const customerInvoices = invoices.filter(i => i.customerId === customer.id);
+                const totalInvoices = customerInvoices.length;
+                const pendingAmount = customerInvoices
+                    .filter(i => i.status !== 'paid')
+                    .reduce((sum, i) => sum + i.amount, 0);
+                
+                const latestInvoice = customerInvoices.sort((a, b) => 
+                    new Date(b.date) - new Date(a.date)
+                )[0];
+                
+                const lastPayment = latestInvoice ? formatDate(latestInvoice.date) : '-';
+                
+                const row = `
+                    <tr>
+                        <td><strong>${customer.name}</strong></td>
+                        <td>${customer.email}</td>
+                        <td>${customer.phone || '-'}</td>
+                        <td>${customer.address ? customer.address.substring(0, 20) + '...' : '-'}</td>
+                        <td><span class="badge badge-info">${totalInvoices}</span></td>
+                        <td>${formatCurrency(pendingAmount)}</td>
+                        <td>${lastPayment}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-primary" onclick="viewCustomer('${customer.id}')" title="Ansehen">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn btn-danger" onclick="deleteCustomer('${customer.id}')" title="Löschen">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+        
+        function loadPurchasesTable() {
+            const tbody = document.getElementById('purchasesTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            purchases.forEach(purchase => {
+                const categoryText = {
+                    'office': 'Bürobedarf',
+                    'equipment': 'Geräte & Hardware',
+                    'software': 'Software',
+                    'services': 'Dienstleistungen',
+                    'material': 'Material',
+                    'marketing': 'Marketing',
+                    'travel': 'Reisekosten',
+                    'other': 'Sonstiges'
+                }[purchase.category] || purchase.category;
+                
+                const typeText = {
+                    'one-time': 'Einmalig',
+                    'recurring': 'Wiederkehrend',
+                    'contract': 'Vertrag'
+                }[purchase.type] || purchase.type;
+                
+                const row = `
+                    <tr>
+                        <td>${formatDate(purchase.date)}</td>
+                        <td>${purchase.supplier}</td>
+                        <td>${purchase.description.substring(0, 30)}${purchase.description.length > 30 ? '...' : ''}</td>
+                        <td><strong>${formatCurrency(purchase.amount)}</strong></td>
+                        <td>${categoryText}</td>
+                        <td>${typeText}</td>
+                        <td>${purchase.paymentMethod === 'bank' ? 'Bank' : 
+                             purchase.paymentMethod === 'cash' ? 'Bar' : 
+                             purchase.paymentMethod === 'card' ? 'Karte' : 'PayPal'}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-danger" onclick="deletePurchase('${purchase.id}')" title="Löschen">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+        
+        function loadInstallmentsTable() {
+            const tbody = document.getElementById('installmentsTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            installments.forEach(installment => {
+                const invoice = invoices.find(i => i.id === installment.invoiceId);
+                const customer = customers.find(c => c.id === installment.customerId);
+                
+                const paidPercent = Math.round((installment.paidMonths / installment.months) * 100);
+                const statusClass = paidPercent === 100 ? 'badge-success' : 
+                                  installment.status === 'active' ? 'badge-info' : 'badge-warning';
+                
+                const row = `
+                    <tr>
+                        <td>${invoice ? invoice.number : 'Unbekannt'}</td>
+                        <td>${customer ? customer.name : 'Unbekannt'}</td>
+                        <td><strong>${formatCurrency(installment.totalAmount)}</strong></td>
+                        <td><span class="badge badge-info">${installment.paidMonths}/${installment.months}</span></td>
+                        <td>${formatDate(installment.startDate)}</td>
+                        <td>${formatDate(installment.endDate)}</td>
+                        <td><strong>${formatCurrency(installment.monthlyPayment)}</strong></td>
+                        <td><span class="badge ${statusClass}">${paidPercent}%</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-primary" onclick="viewInstallment('${installment.id}')" title="Ansehen">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn btn-success" onclick="markInstallmentPayment('${installment.id}')" title="Zahlung erfassen">
+                                    <i class="fas fa-money-check"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+        
+        function loadContractsTable() {
+            const tbody = document.getElementById('contractsTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            contracts.forEach(contract => {
+                const typeClass = contract.type === 'income' ? 'badge-success' : 'badge-danger';
+                const typeText = contract.type === 'income' ? 'Einnahme' : 'Ausgabe';
+                const intervalText = {
+                    'monthly': 'Monatlich',
+                    'quarterly': 'Vierteljährlich',
+                    'yearly': 'Jährlich'
+                }[contract.interval] || contract.interval;
+                
+                const row = `
+                    <tr>
+                        <td><strong>${contract.number}</strong></td>
+                        <td>${contract.name}</td>
+                        <td>${contract.party}</td>
+                        <td>${formatDate(contract.startDate)}</td>
+                        <td>${formatDate(contract.endDate)}</td>
+                        <td><strong>${formatCurrency(contract.amount)}</strong></td>
+                        <td>${intervalText}</td>
+                        <td><span class="badge ${typeClass}">${typeText}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-primary" onclick="viewContract('${contract.id}')" title="Ansehen">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn btn-danger" onclick="deleteContract('${contract.id}')" title="Löschen">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+        
+        function loadReports() {
+            // Diese Funktion würde die Report-Daten laden
+            // Hier nur Platzhalter
+            updateElement('reportIncome', formatCurrency(0));
+            updateElement('reportExpenses', formatCurrency(0));
+            updateElement('reportProfit', formatCurrency(0));
+            updateElement('reportMargin', '0%');
+        }
+        
+        function loadSettings() {
+            // Fülle die Einstellungsfelder
+            document.getElementById('companyName').value = settings.companyName || '';
+            document.getElementById('currency').value = settings.currency || 'EUR';
+            document.getElementById('taxRate').value = settings.taxRate || 19;
+            document.getElementById('reportEmail').value = settings.reportEmail || 'pokemon25364@gmail.com';
+            document.getElementById('autoSendReports').value = settings.autoSendReports || 'monthly';
+        }
         
         // ===== SPEICHER FUNKTIONEN =====
         function saveInvoices() {
@@ -4633,7 +4948,63 @@
             }
         }
         
-        // ... alle anderen Delete-Funktionen bleiben gleich ...
+        function deleteIncome(id) {
+            if (confirm('Einkommen wirklich löschen?')) {
+                incomes = incomes.filter(i => i.id !== id);
+                saveIncomes();
+                if (currentDevice === 'pc') {
+                    loadIncomeTable();
+                } else {
+                    loadMobileIncomeTable();
+                }
+                updateDashboard();
+                updateMobileDashboard();
+                showNotification('Einkommen gelöscht!', 'success');
+            }
+        }
+        
+        function deleteCustomer(id) {
+            if (confirm('Kunden wirklich löschen? Alle zugehörigen Rechnungen bleiben erhalten.')) {
+                customers = customers.filter(c => c.id !== id);
+                saveCustomers();
+                if (currentDevice === 'pc') {
+                    loadCustomersTable();
+                } else {
+                    loadMobileCustomersTable();
+                }
+                showNotification('Kunde gelöscht!', 'success');
+            }
+        }
+        
+        function deletePurchase(id) {
+            if (confirm('Einkauf wirklich löschen?')) {
+                purchases = purchases.filter(p => p.id !== id);
+                savePurchases();
+                if (currentDevice === 'pc') {
+                    loadPurchasesTable();
+                } else {
+                    loadMobilePurchasesTable();
+                }
+                updateDashboard();
+                updateMobileDashboard();
+                showNotification('Einkauf gelöscht!', 'success');
+            }
+        }
+        
+        function deleteContract(id) {
+            if (confirm('Vertrag wirklich löschen?')) {
+                contracts = contracts.filter(c => c.id !== id);
+                saveContracts();
+                if (currentDevice === 'pc') {
+                    loadContractsTable();
+                } else {
+                    loadMobileContractsTable();
+                }
+                updateDashboard();
+                updateMobileDashboard();
+                showNotification('Vertrag gelöscht!', 'success');
+            }
+        }
         
         // ===== BEZAHLEN FUNKTIONEN =====
         function markInvoiceAsPaid(id) {
@@ -4652,6 +5023,36 @@
                 updateDashboard();
                 updateMobileDashboard();
                 showNotification(`Rechnung ${invoice.number} als bezahlt markiert!`, 'success');
+            }
+        }
+        
+        function markInstallmentPayment(id) {
+            const installment = installments.find(i => i.id === id);
+            if (installment && installment.paidMonths < installment.months) {
+                installment.paidMonths++;
+                
+                // Markiere nächste ausstehende Rate als bezahlt
+                const nextPending = installment.paymentSchedule.find(p => p.status === 'pending');
+                if (nextPending) {
+                    nextPending.status = 'paid';
+                    nextPending.paidDate = new Date().toISOString().split('T')[0];
+                }
+                
+                if (installment.paidMonths === installment.months) {
+                    installment.status = 'completed';
+                }
+                
+                saveInstallments();
+                
+                if (currentDevice === 'pc') {
+                    loadInstallmentsTable();
+                } else {
+                    loadMobileInstallmentsTable();
+                }
+                
+                updateDashboard();
+                updateMobileDashboard();
+                showNotification(`Rate ${installment.paidMonths}/${installment.months} als bezahlt markiert!`, 'success');
             }
         }
         
@@ -4690,6 +5091,177 @@
                 if (chart) chart.destroy();
             });
             charts = {};
+        }
+        
+        // ===== PLATZHALTER FUNKTIONEN FÜR NICHT IMPLEMENTIERTE FEATURES =====
+        function saveInvoice() {
+            const invoiceNumber = document.getElementById('invoiceNumber').value;
+            const customerId = document.getElementById('customerSelect').value;
+            
+            if (!customerId) {
+                showNotification('Bitte wählen Sie einen Kunden aus!', 'error');
+                return;
+            }
+            
+            const invoice = {
+                id: generateId(),
+                number: invoiceNumber,
+                date: document.getElementById('invoiceDate').value,
+                customerId: customerId,
+                amount: parseFloat(document.getElementById('invoiceAmount').value),
+                dueDate: document.getElementById('dueDate').value,
+                description: document.getElementById('invoiceDescription').value,
+                paymentMethod: document.getElementById('paymentMethod').value,
+                status: 'open',
+                installmentPlan: document.getElementById('installmentOption').value === 'yes',
+                createdAt: new Date().toISOString()
+            };
+            
+            invoices.push(invoice);
+            saveInvoices();
+            
+            if (currentDevice === 'pc') {
+                loadInvoicesTable();
+            } else {
+                loadMobileInvoicesTable();
+            }
+            
+            closeInvoiceModal();
+            updateDashboard();
+            updateMobileDashboard();
+            showNotification('Rechnung gespeichert!', 'success');
+        }
+        
+        function saveIncome() {
+            const income = {
+                id: generateId(),
+                date: document.getElementById('incomeDate').value,
+                amount: parseFloat(document.getElementById('incomeAmount').value),
+                description: document.getElementById('incomeDescription').value,
+                category: document.getElementById('incomeCategory').value,
+                paymentMethod: document.getElementById('incomePaymentMethod').value,
+                type: document.getElementById('incomeType').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            incomes.push(income);
+            saveIncomes();
+            
+            // Monatsstatistik aktualisieren
+            updateMonthlyStat('income', income.amount);
+            
+            if (currentDevice === 'pc') {
+                loadIncomeTable();
+            } else {
+                loadMobileIncomeTable();
+            }
+            
+            closeIncomeModal();
+            updateDashboard();
+            updateMobileDashboard();
+            showNotification('Einkommen gespeichert!', 'success');
+        }
+        
+        function saveCustomer() {
+            const customer = {
+                id: generateId(),
+                name: document.getElementById('customerName').value,
+                email: document.getElementById('customerEmail').value,
+                phone: document.getElementById('customerPhone').value || '',
+                company: document.getElementById('customerCompany').value || '',
+                address: document.getElementById('customerAddress').value || '',
+                notes: document.getElementById('customerNotes').value || '',
+                createdAt: new Date().toISOString()
+            };
+            
+            customers.push(customer);
+            saveCustomers();
+            
+            if (currentDevice === 'pc') {
+                loadCustomersTable();
+            } else {
+                loadMobileCustomersTable();
+            }
+            
+            closeCustomerModal();
+            showNotification('Kunde gespeichert!', 'success');
+        }
+        
+        function savePurchase() {
+            const purchase = {
+                id: generateId(),
+                date: document.getElementById('purchaseDate').value,
+                amount: parseFloat(document.getElementById('purchaseAmount').value),
+                supplier: document.getElementById('purchaseSupplier').value,
+                description: document.getElementById('purchaseDescription').value,
+                category: document.getElementById('purchaseCategory').value,
+                type: document.getElementById('purchaseType').value,
+                paymentMethod: document.getElementById('purchasePaymentMethod').value,
+                tax: document.getElementById('purchaseTax').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            purchases.push(purchase);
+            savePurchases();
+            
+            // Monatsstatistik aktualisieren
+            updateMonthlyStat('expenses', purchase.amount);
+            
+            if (currentDevice === 'pc') {
+                loadPurchasesTable();
+            } else {
+                loadMobilePurchasesTable();
+            }
+            
+            closePurchaseModal();
+            updateDashboard();
+            updateMobileDashboard();
+            showNotification('Einkauf gespeichert!', 'success');
+        }
+        
+        function saveContract() {
+            const contract = {
+                id: generateId(),
+                number: document.getElementById('contractNumber').value,
+                name: document.getElementById('contractName').value,
+                party: document.getElementById('contractParty').value,
+                email: document.getElementById('contractEmail').value || '',
+                type: document.getElementById('contractType').value,
+                startDate: document.getElementById('contractStartDate').value,
+                endDate: document.getElementById('contractEndDate').value,
+                amount: parseFloat(document.getElementById('contractAmount').value),
+                interval: document.getElementById('contractInterval').value,
+                description: document.getElementById('contractDescription').value || '',
+                paymentMethod: document.getElementById('contractPaymentMethod').value,
+                autoRenew: document.getElementById('contractAutoRenew').value,
+                status: 'active',
+                createdAt: new Date().toISOString()
+            };
+            
+            contracts.push(contract);
+            saveContracts();
+            
+            if (currentDevice === 'pc') {
+                loadContractsTable();
+            } else {
+                loadMobileContractsTable();
+            }
+            
+            closeContractModal();
+            updateDashboard();
+            updateMobileDashboard();
+            showNotification('Vertrag gespeichert!', 'success');
+        }
+        
+        function saveSettings() {
+            settings.companyName = document.getElementById('companyName').value;
+            settings.currency = document.getElementById('currency').value;
+            settings.taxRate = parseFloat(document.getElementById('taxRate').value);
+            settings.reportEmail = document.getElementById('reportEmail').value;
+            settings.autoSendReports = document.getElementById('autoSendReports').value;
+            
+            saveSettings();
+            showNotification('Einstellungen gespeichert!', 'success');
         }
         
         // ===== SYSTEM INITIALISIERT =====
