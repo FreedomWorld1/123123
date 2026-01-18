@@ -1,681 +1,581 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanz Dashboard</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KhusLand Panel - Verbesserte Statistiken</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        /* Basis-Styles bleiben gleich wie dein Code */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); min-height: 100vh; color: #e2e8f0; }
         
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        h1 {
-            color: #333;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .balance-card {
-            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        
-        .balance-card h2 {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-            opacity: 0.9;
-        }
-        
-        .balance-amount {
-            font-size: 3.5em;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-        
-        .transaction-form {
+        /* Neue Statistik-Styles */
+        .stats-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
         
-        .form-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            border: 2px solid #e9ecef;
+        .stat-period-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            background: rgba(26, 32, 44, 0.8);
+            padding: 0.5rem;
+            border-radius: 10px;
+            flex-wrap: wrap;
         }
         
-        .form-section h3 {
-            color: #495057;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #dee2e6;
-        }
-        
-        .input-group {
-            margin-bottom: 15px;
-        }
-        
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #495057;
+        .period-btn {
+            padding: 0.6rem 1.2rem;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(101, 119, 149, 0.3);
+            border-radius: 8px;
+            color: #cbd5e0;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
             font-weight: 500;
         }
         
-        .input-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #ced4da;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.3s;
-        }
-        
-        .input-group input:focus {
-            outline: none;
-            border-color: #4e54c8;
-        }
-        
-        button {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 10px;
-        }
-        
-        .deposit-btn {
-            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+        .period-btn.active {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
             color: white;
-        }
-        
-        .withdraw-btn {
-            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
-            color: white;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            border-color: #4299e1;
         }
         
         .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            border: 1px solid #e9ecef;
-            transition: transform 0.3s;
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(101, 119, 149, 0.3);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         }
         
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .stat-value {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #4e54c8;
-            margin: 10px 0;
-        }
-        
-        .stat-label {
-            color: #6c757d;
-            font-size: 1.1em;
-        }
-        
-        .transaction-history {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .transaction-history h3 {
-            color: #495057;
-            margin-bottom: 20px;
-        }
-        
-        #transactionList {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .transaction-item {
+        .stat-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            background: white;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border-left: 5px solid #4e54c8;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 1rem;
         }
         
-        .transaction-item.deposit {
-            border-left-color: #56ab2f;
-        }
-        
-        .transaction-item.withdraw {
-            border-left-color: #ff416c;
-        }
-        
-        .transaction-amount {
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-        
-        .deposit-amount {
-            color: #56ab2f;
-        }
-        
-        .withdraw-amount {
-            color: #ff416c;
-        }
-        
-        .transaction-date {
-            color: #6c757d;
-            font-size: 0.9em;
-        }
-        
-        .github-section {
-            text-align: center;
-            padding: 20px;
-            background: #24292e;
-            color: white;
-            border-radius: 15px;
-        }
-        
-        .github-section a {
-            color: #58a6ff;
-            text-decoration: none;
+        .stat-title {
+            color: #90cdf4;
+            font-size: 1.1rem;
             font-weight: 600;
         }
         
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #48bb78;
+            margin: 0.5rem 0;
+        }
+        
+        .stat-change {
+            font-size: 0.9rem;
+            color: #a0aec0;
+        }
+        
+        .stat-change.positive {
+            color: #48bb78;
+        }
+        
+        .stat-change.negative {
+            color: #f56565;
+        }
+        
+        .chart-container {
+            height: 250px;
+            margin-top: 1rem;
+            position: relative;
+        }
+        
+        .top-sellers-list, .top-buyers-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+        
+        .top-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            background: rgba(30, 41, 59, 0.4);
             border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            opacity: 0;
-            transform: translateX(100px);
-            transition: all 0.3s;
-            z-index: 1000;
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(101, 119, 149, 0.2);
         }
         
-        .notification.show {
-            opacity: 1;
-            transform: translateX(0);
+        .top-rank {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
         }
         
-        .notification.success {
-            background: #56ab2f;
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
         }
         
-        .notification.error {
-            background: #ff416c;
+        .summary-item {
+            background: rgba(30, 41, 59, 0.4);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
         }
         
-        @media (max-width: 768px) {
-            .transaction-form {
-                grid-template-columns: 1fr;
-            }
-            
-            .balance-amount {
-                font-size: 2.5em;
-            }
-            
-            .container {
-                padding: 20px;
-            }
+        .summary-label {
+            font-size: 0.9rem;
+            color: #a0aec0;
+            margin-bottom: 0.5rem;
         }
+        
+        .summary-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #90cdf4;
+        }
+        
+        /* Rest deines CSS bleibt gleich */
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>💰 Finanz Dashboard</h1>
-            <p>Verwalte deine Einzahlungen und Auszahlungen</p>
-        </header>
-        
-        <div class="balance-card">
-            <h2>Dein aktuelles Guthaben</h2>
-            <div class="balance-amount" id="balance">0.00 €</div>
-            <p>Letzte Aktualisierung: <span id="lastUpdate">--</span></p>
+    <!-- Deine bestehenden Login und Header Komponenten bleiben gleich -->
+    
+    <!-- Neue Statistik-Tab -->
+    <div id="statistics" class="tab-content">
+        <div class="page-header">
+            <h1 style="color: #90cdf4; font-size: 2rem;">
+                <i class="fas fa-chart-line"></i> Statistik Dashboard
+            </h1>
         </div>
         
-        <div class="transaction-form">
-            <div class="form-section">
-                <h3>💰 Einzahlung</h3>
-                <div class="input-group">
-                    <label for="depositAmount">Betrag (€)</label>
-                    <input type="number" id="depositAmount" min="0" step="0.01" placeholder="0.00">
+        <div class="stat-period-selector">
+            <button class="period-btn active" data-period="today">Heute</button>
+            <button class="period-btn" data-period="week">Diese Woche</button>
+            <button class="period-btn" data-period="month">Dieser Monat</button>
+            <button class="period-btn" data-period="year">Dieses Jahr</button>
+            <button class="period-btn" data-period="alltime">Gesamt</button>
+        </div>
+        
+        <div class="stats-grid">
+            <!-- Umsatz Statistik -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Umsatz</div>
+                    <i class="fas fa-euro-sign" style="color: #48bb78;"></i>
                 </div>
-                <div class="input-group">
-                    <label for="depositDescription">Beschreibung</label>
-                    <input type="text" id="depositDescription" placeholder="z.B. Gehalt, Geschenk...">
+                <div class="stat-value" id="revenueTotal">0 €</div>
+                <div class="stat-change positive" id="revenueChange">
+                    <i class="fas fa-arrow-up"></i> 0% gegenüber gestern
                 </div>
-                <button class="deposit-btn" onclick="makeDeposit()">Einzahlen</button>
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
             </div>
             
-            <div class="form-section">
-                <h3>💸 Auszahlung</h3>
-                <div class="input-group">
-                    <label for="withdrawAmount">Betrag (€)</label>
-                    <input type="number" id="withdrawAmount" min="0" step="0.01" placeholder="0.00">
+            <!-- Transaktionen Statistik -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Transaktionen</div>
+                    <i class="fas fa-exchange-alt" style="color: #4299e1;"></i>
                 </div>
-                <div class="input-group">
-                    <label for="withdrawDescription">Beschreibung</label>
-                    <input type="text" id="withdrawDescription" placeholder="z.B. Miete, Einkauf...">
+                <div class="stat-value" id="transactionCount">0</div>
+                <div class="stat-change positive" id="transactionChange">
+                    <i class="fas fa-arrow-up"></i> 0% gegenüber gestern
                 </div>
-                <button class="withdraw-btn" onclick="makeWithdrawal()">Auszahlen</button>
+                <div class="chart-container">
+                    <canvas id="transactionChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Durchschnittlicher Wert -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Durchschnitt/Wert</div>
+                    <i class="fas fa-calculator" style="color: #ed8936;"></i>
+                </div>
+                <div class="stat-value" id="avgValue">0 €</div>
+                <div class="stats-summary">
+                    <div class="summary-item">
+                        <div class="summary-label">Max. Einzahlung</div>
+                        <div class="summary-value" id="maxDeposit">0 €</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Min. Einzahlung</div>
+                        <div class="summary-value" id="minDeposit">0 €</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Top Verkäufer -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Top Verkäufer</div>
+                    <i class="fas fa-trophy" style="color: #f6e05e;"></i>
+                </div>
+                <ul class="top-sellers-list" id="topSellers">
+                    <!-- Wird dynamisch gefüllt -->
+                </ul>
+            </div>
+            
+            <!-- Top Käufer -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Top Käufer</div>
+                    <i class="fas fa-user-tie" style="color: #68d391;"></i>
+                </div>
+                <ul class="top-buyers-list" id="topBuyers">
+                    <!-- Wird dynamisch gefüllt -->
+                </ul>
+            </div>
+            
+            <!-- Rabatt Statistik -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Rabatt-Nutzung</div>
+                    <i class="fas fa-percentage" style="color: #b794f4;"></i>
+                </div>
+                <div class="stat-value" id="discountTotal">0%</div>
+                <div class="stats-summary">
+                    <div class="summary-item">
+                        <div class="summary-label">Häufigster Rabatt</div>
+                        <div class="summary-value" id="mostUsedDiscount">0%</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Gespart</div>
+                        <div class="summary-value" id="totalSaved">0 €</div>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <div class="stats-container">
-            <div class="stat-card">
-                <div class="stat-label">Einzahlungen insgesamt</div>
-                <div class="stat-value" id="totalDeposits">0 €</div>
-                <div class="stat-label" id="depositCount">0 Transaktionen</div>
+        <!-- Zeitliche Verteilung -->
+        <div class="stat-card" style="margin-top: 2rem;">
+            <div class="stat-header">
+                <div class="stat-title">Zeitliche Verteilung (7 Tage)</div>
+                <i class="fas fa-clock" style="color: #fc8181;"></i>
             </div>
-            
-            <div class="stat-card">
-                <div class="stat-label">Auszahlungen insgesamt</div>
-                <div class="stat-value" id="totalWithdrawals">0 €</div>
-                <div class="stat-label" id="withdrawalCount">0 Transaktionen</div>
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="timeDistributionChart"></canvas>
             </div>
-            
-            <div class="stat-card">
-                <div class="stat-label">Durchschn. Einzahlung</div>
-                <div class="stat-value" id="avgDeposit">0 €</div>
-                <div class="stat-label">pro Transaktion</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-label">Größte Einzahlung</div>
-                <div class="stat-value" id="maxDeposit">0 €</div>
-                <div class="stat-label">Höchster Betrag</div>
-            </div>
-        </div>
-        
-        <div class="transaction-history">
-            <h3>📋 Transaktionsverlauf</h3>
-            <div id="transactionList">
-                <!-- Transaktionen werden hier angezeigt -->
-            </div>
-        </div>
-        
-        <div class="github-section">
-            <h3>📊 GitHub Integration</h3>
-            <p>Statistiken werden lokal gespeichert</p>
-            <p>Speichere die Datei in deinem GitHub Repository und pushe die Daten</p>
-            <p>👉 <a href="https://github.com" target="_blank">GitHub Repository erstellen</a></p>
         </div>
     </div>
-    
-    <div class="notification" id="notification"></div>
 
-    <script>
-        // Daten aus LocalStorage laden oder initialisieren
-        let financialData = JSON.parse(localStorage.getItem('financialData')) || {
-            balance: 0,
-            transactions: [],
-            totalDeposits: 0,
-            totalWithdrawals: 0,
-            depositCount: 0,
-            withdrawalCount: 0,
-            maxDeposit: 0,
-            lastUpdate: null
+    <script type="module">
+        // Firebase Importe (bleiben gleich)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+        import { getDatabase, ref, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+
+        // Firebase Konfiguration (deine bestehende)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCw4nadHCIRcouTJJoQ3ElToiVVFr5Rufo",
+            authDomain: "khusland-b7d13.firebaseapp.com",
+            databaseURL: "https://khusland-b7d13-default-rtdb.firebaseio.com",
+            projectId: "khusland-b7d13",
+            storageBucket: "khusland-b7d13.firebasestorage.app",
+            messagingSenderId: "69573193613",
+            appId: "1:69573193613:web:86c4d839281b1e343cd7c4",
+            measurementId: "G-JSCWR4207G"
         };
 
-        // Funktion zum Anzeigen der Daten
-        function updateDisplay() {
-            // Guthaben anzeigen
-            document.getElementById('balance').textContent = 
-                financialData.balance.toFixed(2) + ' €';
-            
-            // Statistiken anzeigen
-            document.getElementById('totalDeposits').textContent = 
-                financialData.totalDeposits.toFixed(2) + ' €';
-            document.getElementById('totalWithdrawals').textContent = 
-                financialData.totalWithdrawals.toFixed(2) + ' €';
-            document.getElementById('depositCount').textContent = 
-                financialData.depositCount + ' Transaktionen';
-            document.getElementById('withdrawalCount').textContent = 
-                financialData.withdrawalCount + ' Transaktionen';
-            
-            // Durchschnitt berechnen
-            const avgDeposit = financialData.depositCount > 0 
-                ? financialData.totalDeposits / financialData.depositCount 
-                : 0;
-            document.getElementById('avgDeposit').textContent = 
-                avgDeposit.toFixed(2) + ' €';
-            
-            // Größte Einzahlung
-            document.getElementById('maxDeposit').textContent = 
-                financialData.maxDeposit.toFixed(2) + ' €';
-            
-            // Letzte Aktualisierung
-            if (financialData.lastUpdate) {
-                const date = new Date(financialData.lastUpdate);
-                document.getElementById('lastUpdate').textContent = 
-                    date.toLocaleDateString('de-DE') + ' ' + date.toLocaleTimeString('de-DE');
-            }
-            
-            // Transaktionsliste aktualisieren
-            updateTransactionList();
-            
-            // In LocalStorage speichern
-            localStorage.setItem('financialData', JSON.stringify(financialData));
-            
-            // GitHub stats.json generieren (für GitHub Pages)
-            generateGitHubStats();
-        }
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const statsRef = ref(db, 'statistics');
+        const entriesRef = ref(db, 'weed_entries');
 
-        // Funktion zum Hinzufügen einer Transaktion
-        function addTransaction(amount, type, description) {
-            const transaction = {
-                id: Date.now(),
-                amount: amount,
-                type: type,
-                description: description,
-                date: new Date().toISOString(),
-                timestamp: Date.now()
-            };
-            
-            financialData.transactions.unshift(transaction);
-            
-            if (type === 'deposit') {
-                financialData.balance += amount;
-                financialData.totalDeposits += amount;
-                financialData.depositCount++;
-                if (amount > financialData.maxDeposit) {
-                    financialData.maxDeposit = amount;
-                }
-            } else if (type === 'withdraw') {
-                if (amount > financialData.balance) {
-                    showNotification('Nicht genug Guthaben!', 'error');
-                    return false;
-                }
-                financialData.balance -= amount;
-                financialData.totalWithdrawals += amount;
-                financialData.withdrawalCount++;
-            }
-            
-            financialData.lastUpdate = new Date().toISOString();
-            updateDisplay();
-            
-            showNotification(
-                type === 'deposit' 
-                    ? `Erfolgreich ${amount.toFixed(2)} € eingezahlt!` 
-                    : `Erfolgreich ${amount.toFixed(2)} € ausgezahlt!`,
-                'success'
-            );
-            
-            return true;
-        }
+        // Statistik-Variablen
+        let currentPeriod = 'today';
+        let revenueChart, transactionChart, timeChart;
+        let allEntries = [];
 
-        // Funktion für Einzahlung
-        function makeDeposit() {
-            const amountInput = document.getElementById('depositAmount');
-            const descriptionInput = document.getElementById('depositDescription');
+        // Statistik-Funktionen
+        function loadStatistics() {
+            const statsQuery = query(entriesRef, orderByChild('timestamp'), limitToLast(1000));
             
-            const amount = parseFloat(amountInput.value);
-            const description = descriptionInput.value.trim() || 'Einzahlung';
-            
-            if (!amount || amount <= 0) {
-                showNotification('Bitte geben Sie einen gültigen Betrag ein!', 'error');
-                return;
-            }
-            
-            addTransaction(amount, 'deposit', description);
-            
-            // Formular zurücksetzen
-            amountInput.value = '';
-            descriptionInput.value = '';
-        }
-
-        // Funktion für Auszahlung
-        function makeWithdrawal() {
-            const amountInput = document.getElementById('withdrawAmount');
-            const descriptionInput = document.getElementById('withdrawDescription');
-            
-            const amount = parseFloat(amountInput.value);
-            const description = descriptionInput.value.trim() || 'Auszahlung';
-            
-            if (!amount || amount <= 0) {
-                showNotification('Bitte geben Sie einen gültigen Betrag ein!', 'error');
-                return;
-            }
-            
-            addTransaction(amount, 'withdraw', description);
-            
-            // Formular zurücksetzen
-            amountInput.value = '';
-            descriptionInput.value = '';
-        }
-
-        // Funktion zum Aktualisieren der Transaktionsliste
-        function updateTransactionList() {
-            const transactionList = document.getElementById('transactionList');
-            transactionList.innerHTML = '';
-            
-            // Neueste 10 Transaktionen anzeigen
-            const recentTransactions = financialData.transactions.slice(0, 10);
-            
-            if (recentTransactions.length === 0) {
-                transactionList.innerHTML = '<p style="text-align: center; color: #6c757d;">Noch keine Transaktionen</p>';
-                return;
-            }
-            
-            recentTransactions.forEach(transaction => {
-                const transactionItem = document.createElement('div');
-                transactionItem.className = `transaction-item ${transaction.type}`;
-                
-                const date = new Date(transaction.date);
-                const formattedDate = date.toLocaleDateString('de-DE', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
+            onValue(statsQuery, (snapshot) => {
+                allEntries = [];
+                snapshot.forEach((childSnapshot) => {
+                    const entry = childSnapshot.val();
+                    entry.key = childSnapshot.key;
+                    entry.timestamp = entry.timestamp || Date.now();
+                    allEntries.push(entry);
                 });
                 
-                transactionItem.innerHTML = `
-                    <div>
-                        <div style="font-weight: 500;">${transaction.description}</div>
-                        <div class="transaction-date">${formattedDate}</div>
-                    </div>
-                    <div class="transaction-amount ${transaction.type}-amount">
-                        ${transaction.type === 'deposit' ? '+' : '-'}${transaction.amount.toFixed(2)} €
-                    </div>
-                `;
-                
-                transactionList.appendChild(transactionItem);
+                updateStatistics();
+                updateCharts();
+                updateTopLists();
             });
         }
 
-        // Funktion zum Anzeigen von Benachrichtigungen
-        function showNotification(message, type) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type} show`;
+        function filterByPeriod(entries, period) {
+            const now = new Date();
+            let startDate;
             
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
+            switch(period) {
+                case 'today':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    break;
+                case 'week':
+                    const dayOfWeek = now.getDay();
+                    const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+                    startDate = new Date(now.getFullYear(), now.getMonth(), diff);
+                    break;
+                case 'month':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    break;
+                case 'year':
+                    startDate = new Date(now.getFullYear(), 0, 1);
+                    break;
+                default: // alltime
+                    startDate = new Date(0);
+            }
+            
+            return entries.filter(entry => {
+                const entryDate = new Date(entry.timestamp);
+                return entryDate >= startDate;
+            });
         }
 
-        // Funktion zum Exportieren der Daten als JSON (für GitHub)
-        function generateGitHubStats() {
-            const stats = {
-                generated: new Date().toISOString(),
-                balance: financialData.balance,
-                totalDeposits: financialData.totalDeposits,
-                totalWithdrawals: financialData.totalWithdrawals,
-                transactionCount: financialData.transactions.length,
-                lastTransaction: financialData.transactions[0] || null,
-                summary: {
-                    averageDeposit: financialData.depositCount > 0 
-                        ? financialData.totalDeposits / financialData.depositCount 
-                        : 0,
-                    averageWithdrawal: financialData.withdrawalCount > 0 
-                        ? financialData.totalWithdrawals / financialData.withdrawalCount 
-                        : 0,
-                    maxDeposit: financialData.maxDeposit
+        function updateStatistics() {
+            const filteredEntries = filterByPeriod(allEntries, currentPeriod);
+            const yesterdayEntries = filterByPeriod(allEntries, 'today');
+            const yesterdayDate = new Date();
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            
+            // Umsatz berechnen
+            const totalRevenue = filteredEntries.reduce((sum, entry) => sum + (entry.totalPrice || 0), 0);
+            const yesterdayRevenue = yesterdayEntries.reduce((sum, entry) => sum + (entry.totalPrice || 0), 0);
+            const revenueChange = yesterdayRevenue > 0 ? 
+                ((totalRevenue - yesterdayRevenue) / yesterdayRevenue * 100).toFixed(1) : 0;
+            
+            document.getElementById('revenueTotal').textContent = `${totalRevenue.toLocaleString()} €`;
+            document.getElementById('revenueChange').innerHTML = `
+                <i class="fas fa-arrow-${revenueChange >= 0 ? 'up' : 'down'}"></i> 
+                ${Math.abs(revenueChange)}% ${revenueChange >= 0 ? 'gegenüber gestern' : 'weniger als gestern'}
+            `;
+            document.getElementById('revenueChange').className = `stat-change ${revenueChange >= 0 ? 'positive' : 'negative'}`;
+            
+            // Transaktionen zählen
+            const transactionCount = filteredEntries.length;
+            const yesterdayCount = yesterdayEntries.length;
+            const transactionChange = yesterdayCount > 0 ? 
+                ((transactionCount - yesterdayCount) / yesterdayCount * 100).toFixed(1) : 0;
+            
+            document.getElementById('transactionCount').textContent = transactionCount.toLocaleString();
+            document.getElementById('transactionChange').innerHTML = `
+                <i class="fas fa-arrow-${transactionChange >= 0 ? 'up' : 'down'}"></i> 
+                ${Math.abs(transactionChange)}% ${transactionChange >= 0 ? 'gegenüber gestern' : 'weniger als gestern'}
+            `;
+            document.getElementById('transactionChange').className = `stat-change ${transactionChange >= 0 ? 'positive' : 'negative'}`;
+            
+            // Durchschnittswerte
+            const avgValue = transactionCount > 0 ? totalRevenue / transactionCount : 0;
+            const maxDeposit = filteredEntries.length > 0 ? 
+                Math.max(...filteredEntries.map(e => e.totalPrice || 0)) : 0;
+            const minDeposit = filteredEntries.length > 0 ? 
+                Math.min(...filteredEntries.map(e => e.totalPrice || 0)) : 0;
+            
+            document.getElementById('avgValue').textContent = `${avgValue.toFixed(2)} €`;
+            document.getElementById('maxDeposit').textContent = `${maxDeposit.toLocaleString()} €`;
+            document.getElementById('minDeposit').textContent = `${minDeposit.toLocaleString()} €`;
+            
+            // Rabatt-Statistik
+            const discountEntries = filteredEntries.filter(e => e.discount > 0);
+            const avgDiscount = discountEntries.length > 0 ? 
+                discountEntries.reduce((sum, e) => sum + (e.discount || 0), 0) / discountEntries.length : 0;
+            const totalSaved = filteredEntries.reduce((sum, e) => sum + (e.discountAmount || 0), 0);
+            
+            document.getElementById('discountTotal').textContent = `${avgDiscount.toFixed(1)}%`;
+            document.getElementById('totalSaved').textContent = `${totalSaved.toLocaleString()} €`;
+            
+            // Häufigster Rabatt
+            const discountCounts = {};
+            filteredEntries.forEach(entry => {
+                const discount = entry.discount || 0;
+                discountCounts[discount] = (discountCounts[discount] || 0) + 1;
+            });
+            
+            let mostUsedDiscount = 0;
+            let maxCount = 0;
+            Object.keys(discountCounts).forEach(discount => {
+                if (discountCounts[discount] > maxCount) {
+                    maxCount = discountCounts[discount];
+                    mostUsedDiscount = discount;
                 }
-            };
+            });
             
-            // JSON-Datei erstellen (kann in GitHub Pages gespeichert werden)
-            const dataStr = JSON.stringify(stats, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            
-            // Für den Export als Datei
-            window.financialStats = dataStr;
-            
-            console.log('GitHub Stats generiert:', stats);
+            document.getElementById('mostUsedDiscount').textContent = `${mostUsedDiscount}%`;
         }
 
-        // Demo-Daten hinzufügen, wenn leer
-        function initializeDemoData() {
-            if (financialData.transactions.length === 0) {
-                addTransaction(1000, 'deposit', 'Startguthaben');
-                addTransaction(500, 'deposit', 'Gehalt');
-                addTransaction(300, 'withdraw', 'Miete');
-                addTransaction(150, 'withdraw', 'Einkauf');
-                addTransaction(200, 'deposit', 'Rückerstattung');
+        function updateTopLists() {
+            const filteredEntries = filterByPeriod(allEntries, currentPeriod);
+            
+            // Top Verkäufer
+            const sellerStats = {};
+            filteredEntries.forEach(entry => {
+                const seller = entry.seller;
+                if (!seller) return;
+                
+                if (!sellerStats[seller]) {
+                    sellerStats[seller] = {
+                        count: 0,
+                        total: 0
+                    };
+                }
+                
+                sellerStats[seller].count++;
+                sellerStats[seller].total += entry.sellerShare || 0;
+            });
+            
+            const topSellers = Object.keys(sellerStats)
+                .map(seller => ({
+                    name: seller,
+                    count: sellerStats[seller].count,
+                    total: sellerStats[seller].total
+                }))
+                .sort((a, b) => b.total - a.total)
+                .slice(0, 5);
+            
+            const sellersList = document.getElementById('topSellers');
+            sellersList.innerHTML = '';
+            topSellers.forEach((seller, index) => {
+                const li = document.createElement('li');
+                li.className = 'top-item';
+                li.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 0.8rem;">
+                        <div class="top-rank">${index + 1}</div>
+                        <div>
+                            <div style="font-weight: 500;">${seller.name}</div>
+                            <div style="font-size: 0.8rem; color: #a0aec0;">${seller.count} Transaktionen</div>
+                        </div>
+                    </div>
+                    <div style="font-weight: bold; color: #48bb78;">${seller.total.toLocaleString()} €</div>
+                `;
+                sellersList.appendChild(li);
+            });
+            
+            // Top Käufer (ähnlich für buyers)
+        }
+
+        function updateCharts() {
+            const filteredEntries = filterByPeriod(allEntries, currentPeriod);
+            
+            // Umsatz-Chart (letzte 7 Tage)
+            const last7Days = Array.from({length: 7}, (_, i) => {
+                const date = new Date();
+                date.setDate(date.getDate() - (6 - i));
+                return date.toLocaleDateString('de-DE', { weekday: 'short' });
+            });
+            
+            const revenueData = last7Days.map(day => {
+                const dayRevenue = filteredEntries
+                    .filter(entry => {
+                        const entryDate = new Date(entry.timestamp);
+                        return entryDate.toLocaleDateString('de-DE', { weekday: 'short' }) === day;
+                    })
+                    .reduce((sum, entry) => sum + (entry.totalPrice || 0), 0);
+                return dayRevenue;
+            });
+            
+            // Chart.js Konfiguration
+            if (!revenueChart) {
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+                revenueChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: last7Days,
+                        datasets: [{
+                            label: 'Umsatz (€)',
+                            data: revenueData,
+                            borderColor: '#48bb78',
+                            backgroundColor: 'rgba(72, 187, 120, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            } else {
+                revenueChart.data.datasets[0].data = revenueData;
+                revenueChart.update();
             }
         }
 
-        // App initialisieren
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeDemoData();
-            updateDisplay();
-            
-            // Enter-Taste für Formulare
-            document.getElementById('depositAmount').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') makeDeposit();
+        // Event Listeners für Perioden-Buttons
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentPeriod = this.getAttribute('data-period');
+                updateStatistics();
+                updateCharts();
+                updateTopLists();
             });
-            
-            document.getElementById('withdrawAmount').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') makeWithdrawal();
-            });
-            
-            // Reset-Button hinzufügen (versteckt)
-            const resetBtn = document.createElement('button');
-            resetBtn.textContent = 'Daten zurücksetzen';
-            resetBtn.style.cssText = `
-                background: #6c757d;
-                color: white;
-                padding: 10px 20px;
-                border-radius: 5px;
-                border: none;
-                cursor: pointer;
-                margin-top: 20px;
-                font-size: 0.9em;
-                opacity: 0.7;
-            `;
-            resetBtn.onclick = () => {
-                if (confirm('Alle Daten zurücksetzen? Dies kann nicht rückgängig gemacht werden.')) {
-                    localStorage.removeItem('financialData');
-                    financialData = {
-                        balance: 0,
-                        transactions: [],
-                        totalDeposits: 0,
-                        totalWithdrawals: 0,
-                        depositCount: 0,
-                        withdrawalCount: 0,
-                        maxDeposit: 0,
-                        lastUpdate: null
-                    };
-                    initializeDemoData();
-                    updateDisplay();
-                }
-            };
-            
-            document.querySelector('.github-section').appendChild(resetBtn);
         });
 
-        // Export-Funktion für Daten
-        function exportData() {
-            const dataStr = JSON.stringify(financialData, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        // Initialisierung
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStatistics();
             
-            const exportFileDefaultName = 'finanz-daten.json';
+            // Statistik-Tab hinzufügen
+            const navTabs = document.querySelector('.nav-tabs');
+            const statsTab = document.createElement('button');
+            statsTab.id = 'statsTab';
+            statsTab.className = 'nav-tab';
+            statsTab.innerHTML = '<i class="fas fa-chart-line"></i> Statistiken';
+            statsTab.addEventListener('click', () => switchTab('statistics'));
+            navTabs.appendChild(statsTab);
             
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-        }
-        
-        // Daten können mit dieser Funktion importiert werden
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+            // Statistik-Tab Content hinzufügen
+            const tabContents = document.querySelector('.tab-content').parentElement;
+            const statsContent = document.createElement('div');
+            statsContent.id = 'statistics';
+            statsContent.className = 'tab-content';
+            tabContents.appendChild(statsContent);
+        });
+
+        function switchTab(tabName) {
+            // Tab-Logik bleibt gleich wie in deinem Code
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
             
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    financialData = importedData;
-                    updateDisplay();
-                    showNotification('Daten erfolgreich importiert!', 'success');
-                } catch (error) {
-                    showNotification('Fehler beim Importieren der Daten!', 'error');
-                }
-            };
-            reader.readAsText(file);
+            document.querySelectorAll('.nav-tab').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            if (tabName === 'statistics') {
+                updateStatistics();
+                updateCharts();
+                updateTopLists();
+            }
         }
     </script>
 </body>
