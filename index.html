@@ -386,6 +386,13 @@
             padding: 3rem;
             color: #a0aec0;
         }
+        
+        /* Import/Export Buttons */
+        .import-export-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-left: auto;
+        }
     </style>
 </head>
 <body>
@@ -395,11 +402,14 @@
             <h1 style="color: #90cdf4; font-size: 2rem;">
                 <i class="fas fa-chart-line"></i> Finanz Management mit Hold-Funktion
             </h1>
-            <div style="color: #cbd5e0; display: flex; align-items: center;">
-                <i class="fas fa-sync-alt"></i> Echtzeit-Daten
-                <button class="btn-secondary" id="checkReleases">
-                    <i class="fas fa-calendar-check"></i> Freigaben prüfen
+            <div class="import-export-buttons">
+                <button class="btn-secondary" id="exportData">
+                    <i class="fas fa-download"></i> Export
                 </button>
+                <button class="btn-secondary" id="importData">
+                    <i class="fas fa-upload"></i> Import
+                </button>
+                <input type="file" id="importFile" accept=".json" style="display: none;">
             </div>
         </div>
         
@@ -614,12 +624,35 @@
 
     <script>
         // Storage Keys
-        const HOLD_STORAGE_KEY = 'financial_hold_data';
-        const BALANCE_STORAGE_KEY = 'available_balance';
+        const STORAGE_KEY = 'financial_hold_data_v2';
         
         let holdTransactions = [];
         let availableBalance = 0;
         let holdDistributionChart = null;
+        
+        // Beispiel-Daten aus deiner Anfrage
+        const EXAMPLE_DATA = [
+            {
+                id: Date.now() + 1,
+                amount: 105390,
+                source: 'verkauf',
+                description: 'Großauftrag - Shopify Store',
+                purchaseDate: '2026-01-17',
+                releaseDate: '2026-01-19',
+                status: 'pending',
+                createdAt: Date.now()
+            },
+            {
+                id: Date.now() + 2,
+                amount: 7440,
+                source: 'einnahme',
+                description: 'Tagesumsatz',
+                purchaseDate: '2026-01-18',
+                releaseDate: '2026-01-20',
+                status: 'pending',
+                createdAt: Date.now() + 1
+            }
+        ];
         
         // Initialisierung
         document.addEventListener('DOMContentLoaded', function() {
@@ -634,73 +667,42 @@
             document.getElementById('holdDate').value = today;
             updateReleaseDate();
             
-            // Beispiel-Daten hinzufügen (kann später entfernt werden)
+            // Beispiel-Daten nur hinzufügen, wenn keine Daten vorhanden sind
             if (holdTransactions.length === 0) {
                 addExampleData();
             }
         });
         
-        // Beispiel-Daten für Demo
+        // Beispiel-Daten hinzufügen
         function addExampleData() {
-            // Beispiel: Betrag der am 19.01.2026 freigegeben wird
-            const release1 = new Date('2026-01-19');
-            const purchase1 = new Date(release1);
-            purchase1.setDate(purchase1.getDate() - 2); // 2 Tage vorher
-            
-            // Beispiel: Betrag der am 20.01.2026 freigegeben wird
-            const release2 = new Date('2026-01-20');
-            const purchase2 = new Date(release2);
-            purchase2.setDate(purchase2.getDate() - 2); // 2 Tage vorher
-            
-            const examples = [
-                {
-                    id: Date.now() + 1,
-                    amount: 105390,
-                    source: 'verkauf',
-                    description: 'Großauftrag - Shopify Store',
-                    purchaseDate: purchase1.toISOString().split('T')[0],
-                    releaseDate: '2026-01-19',
-                    status: 'pending',
-                    createdAt: Date.now()
-                },
-                {
-                    id: Date.now() + 2,
-                    amount: 7440,
-                    source: 'einnahme',
-                    description: 'Tagesumsatz',
-                    purchaseDate: purchase2.toISOString().split('T')[0],
-                    releaseDate: '2026-01-20',
-                    status: 'pending',
-                    createdAt: Date.now() + 1
-                }
-            ];
-            
-            examples.forEach(example => {
+            EXAMPLE_DATA.forEach(example => {
                 holdTransactions.push(example);
             });
             
-            saveHoldData();
+            saveData();
             updateDisplay();
+            showNotification('Beispiel-Daten wurden geladen', 'info');
         }
         
         // Daten laden
         function loadData() {
-            const savedHoldData = localStorage.getItem(HOLD_STORAGE_KEY);
-            const savedBalance = localStorage.getItem(BALANCE_STORAGE_KEY);
+            const savedData = localStorage.getItem(STORAGE_KEY);
             
-            if (savedHoldData) {
-                holdTransactions = JSON.parse(savedHoldData);
-            }
-            
-            if (savedBalance) {
-                availableBalance = parseFloat(savedBalance);
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                holdTransactions = data.holdTransactions || [];
+                availableBalance = data.availableBalance || 0;
             }
         }
         
-        // Hold Daten speichern
-        function saveHoldData() {
-            localStorage.setItem(HOLD_STORAGE_KEY, JSON.stringify(holdTransactions));
-            localStorage.setItem(BALANCE_STORAGE_KEY, availableBalance.toString());
+        // Daten speichern
+        function saveData() {
+            const data = {
+                holdTransactions: holdTransactions,
+                availableBalance: availableBalance,
+                lastUpdated: new Date().toISOString()
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         }
         
         // Event Listeners
@@ -715,6 +717,9 @@
             document.getElementById('cancelHold').addEventListener('click', () => {
                 document.getElementById('holdModal').classList.remove('active');
                 document.getElementById('holdForm').reset();
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('holdDate').value = today;
+                updateReleaseDate();
             });
             
             document.getElementById('holdForm').addEventListener('submit', function(e) {
@@ -761,16 +766,24 @@
                 document.getElementById('releaseModal').classList.remove('active');
             });
             
-            // Check Releases Button
-            document.getElementById('checkReleases').addEventListener('click', () => {
-                checkPendingReleases();
-                showNotification('Freigaben wurden geprüft', 'info');
-            });
-            
             // Refresh Chart Button
             document.getElementById('refreshChart').addEventListener('click', () => {
                 updateHoldChart();
                 showNotification('Chart aktualisiert', 'info');
+            });
+            
+            // Export Button
+            document.getElementById('exportData').addEventListener('click', () => {
+                exportData();
+            });
+            
+            // Import Button
+            document.getElementById('importData').addEventListener('click', () => {
+                document.getElementById('importFile').click();
+            });
+            
+            document.getElementById('importFile').addEventListener('change', function(e) {
+                importData(e);
             });
         }
         
@@ -809,12 +822,12 @@
                 description: description || 'Keine Beschreibung',
                 purchaseDate: purchaseDate,
                 releaseDate: releaseDate,
-                status: 'pending', // pending, released
+                status: 'pending',
                 createdAt: Date.now()
             };
             
             holdTransactions.push(transaction);
-            saveHoldData();
+            saveData();
             
             // Modal schließen
             document.getElementById('holdModal').classList.remove('active');
@@ -860,7 +873,7 @@
                 status: 'released'
             });
             
-            saveHoldData();
+            saveData();
             
             // Modal schließen
             document.getElementById('depositModal').classList.remove('active');
@@ -899,7 +912,16 @@
                 timestamp: Date.now()
             };
             
-            saveHoldData();
+            // In holdTransactions speichern
+            holdTransactions.push({
+                ...transaction,
+                source: 'auszahlung',
+                purchaseDate: transaction.date,
+                releaseDate: transaction.date,
+                status: 'released'
+            });
+            
+            saveData();
             
             // Modal schließen
             document.getElementById('withdrawModal').classList.remove('active');
@@ -923,7 +945,7 @@
             });
             
             if (anyReleased) {
-                saveHoldData();
+                saveData();
                 updateDisplay();
                 showNotification('Neue Beträge wurden freigegeben und sind jetzt verfügbar!', 'success');
             }
@@ -969,7 +991,7 @@
             if (transaction) {
                 transaction.status = 'released';
                 availableBalance += transaction.amount;
-                saveHoldData();
+                saveData();
                 updateDisplay();
                 
                 document.getElementById('releaseModal').classList.remove('active');
@@ -1160,6 +1182,56 @@
             setTimeout(() => {
                 notification.classList.remove('show');
             }, duration);
+        }
+        
+        // Export Funktion
+        function exportData() {
+            const dataStr = JSON.stringify({
+                holdTransactions: holdTransactions,
+                availableBalance: availableBalance,
+                exportDate: new Date().toISOString(),
+                note: "Finanzdaten mit Hold-Funktion"
+            }, null, 2);
+            
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+            const link = document.createElement('a');
+            link.setAttribute('href', dataUri);
+            link.setAttribute('download', `finanz-daten-hold-${new Date().toISOString().split('T')[0]}.json`);
+            link.click();
+            
+            showNotification('Daten exportiert', 'success');
+        }
+        
+        // Import Funktion
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (confirm('Möchten Sie die vorhandenen Daten durch die importierten Daten ersetzen?')) {
+                        if (importedData.holdTransactions && importedData.availableBalance !== undefined) {
+                            holdTransactions = importedData.holdTransactions;
+                            availableBalance = importedData.availableBalance;
+                            saveData();
+                            updateDisplay();
+                            showNotification('Daten erfolgreich importiert!', 'success');
+                        } else {
+                            showNotification('Ungültiges Datenformat!', 'error');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Importieren der Daten:', error);
+                    showNotification('Fehler beim Importieren der Daten!', 'error');
+                }
+                
+                // File input zurücksetzen
+                event.target.value = '';
+            };
+            reader.readAsText(file);
         }
         
         // Globale Funktionen
