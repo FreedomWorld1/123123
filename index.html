@@ -1,465 +1,1132 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop Dashboard - Einnahmenverwaltung</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Finanz Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
+            min-height: 100vh; 
+            color: #e2e8f0;
             padding: 20px;
-            color: #333;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
         
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-        
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 2.2rem;
-        }
-        
-        .subtitle {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-        }
-        
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-        }
-        
-        .card-title {
+        .header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            color: #2c3e50;
-            font-size: 1.4rem;
+            margin-bottom: 2rem;
+            background: rgba(26, 32, 44, 0.9);
+            padding: 1.5rem 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(101, 119, 149, 0.3);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
         
-        .card-title i {
-            margin-right: 12px;
-            font-size: 1.6rem;
-            color: #3498db;
+        .balance-card {
+            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         
         .balance-amount {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: bold;
+            margin: 1rem 0;
+        }
+        
+        .transaction-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+        
+        .transaction-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .deposit-btn {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+        }
+        
+        .withdraw-btn {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+        
+        .transaction-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: rgba(26, 32, 44, 0.95);
+            padding: 2.5rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 1px solid rgba(101, 119, 149, 0.3);
+        }
+        
+        .modal-content h3 {
+            color: #90cdf4;
+            margin-bottom: 1.5rem;
             text-align: center;
-            margin: 20px 0;
-            color: #e74c3c;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #90cdf4;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.9rem;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(101, 119, 149, 0.3);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #e2e8f0;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            border: none;
+            padding: 0.9rem 1.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-secondary {
+            background: rgba(66, 153, 225, 0.15);
+            color: #90cdf4;
+            border: 1px solid #4299e1;
+            padding: 0.9rem 1.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 12px;
+            padding: 1.8rem;
+            border: 1px solid rgba(101, 119, 149, 0.3);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-title {
+            color: #90cdf4;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #48bb78;
+            margin: 0.5rem 0;
+        }
+        
+        .chart-container {
+            height: 250px;
+            margin-top: 1.5rem;
+            position: relative;
+        }
+        
+        .transactions-table {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 12px;
+            padding: 1.8rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(101, 119, 149, 0.3);
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .table th {
+            background: rgba(30, 41, 59, 0.6);
+            padding: 1rem;
+            text-align: left;
+            color: #90cdf4;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(101, 119, 149, 0.3);
+        }
+        
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(101, 119, 149, 0.2);
+            color: #cbd5e0;
+        }
+        
+        .deposit-row {
+            border-left: 4px solid #48bb78;
+        }
+        
+        .withdraw-row {
+            border-left: 4px solid #f56565;
+        }
+        
+        .positive-amount {
+            color: #48bb78;
+            font-weight: bold;
+        }
+        
+        .negative-amount {
+            color: #f56565;
+            font-weight: bold;
+        }
+        
+        .delete-btn {
+            background: rgba(245, 101, 101, 0.2);
+            color: #fc8181;
+            border: 1px solid rgba(245, 101, 101, 0.3);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        
+        .delete-btn:hover {
+            background: rgba(245, 101, 101, 0.3);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 1001;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+        
+        .notification.error {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+        }
+        
+        .notification.info {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+        }
+        
+        .time-distribution {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 12px;
+            padding: 1.8rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(101, 119, 149, 0.3);
+        }
+        
+        .distribution-chart {
+            height: 300px;
+            margin-top: 1rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #a0aec0;
+        }
+        
+        .category-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .category-income {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
+        }
+        
+        .category-expense {
+            background: rgba(245, 101, 101, 0.2);
+            color: #f56565;
+        }
+        
+        .period-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            background: rgba(26, 32, 44, 0.8);
+            padding: 0.8rem;
+            border-radius: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .period-btn {
+            padding: 0.7rem 1.4rem;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(101, 119, 149, 0.3);
+            border-radius: 8px;
+            color: #cbd5e0;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .period-btn.active {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            border-color: #4299e1;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .summary-card {
+            background: rgba(30, 41, 59, 0.4);
+            padding: 1.2rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .summary-label {
+            font-size: 0.9rem;
+            color: #a0aec0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #90cdf4;
         }
         
         .balance-zero {
-            color: #e74c3c;
+            color: #e2e8f0 !important;
         }
         
-        .info-box {
-            background: #f8f9fa;
-            border-left: 4px solid #3498db;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 0 8px 8px 0;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        
-        .revenue-list {
-            list-style: none;
-        }
-        
-        .revenue-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .revenue-item:last-child {
-            border-bottom: none;
-        }
-        
-        .revenue-amount {
-            font-weight: bold;
-            font-size: 1.4rem;
-            color: #27ae60;
-        }
-        
-        .release-date {
-            background: #f1f8ff;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: 600;
-            color: #2980b9;
-        }
-        
-        .footer-note {
-            text-align: center;
-            padding: 20px;
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            margin-top: 30px;
-            border-top: 1px solid #eee;
-        }
-        
-        .highlight {
-            color: #e74c3c;
-            font-weight: bold;
-        }
-        
-        .date-note {
-            display: inline-block;
-            background: #fff3cd;
-            color: #856404;
-            padding: 8px 15px;
-            border-radius: 6px;
-            margin-top: 15px;
-            font-size: 0.9rem;
-        }
-        
-        .total-revenue {
-            background: #e8f5e9;
-            padding: 15px;
+        .reset-btn {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
             border-radius: 8px;
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin-left: 1rem;
         }
         
-        .total-label {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2e7d32;
-        }
-        
-        .total-amount {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #1b5e20;
-        }
-        
-        @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-            
-            .balance-amount {
-                font-size: 2.5rem;
-            }
-            
-            h1 {
-                font-size: 1.8rem;
-            }
-            
-            .revenue-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            
-            .release-date {
-                align-self: flex-end;
-            }
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(237, 137, 54, 0.4);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1><i class="fas fa-store"></i> Shop Dashboard</h1>
-            <p class="subtitle">Verwalten Sie Ihre Einnahmen und Ausgaben</p>
-        </header>
+        <!-- Header -->
+        <div class="header">
+            <h1 style="color: #90cdf4; font-size: 2rem;">
+                <i class="fas fa-chart-line"></i> Finanz Management System
+            </h1>
+            <div style="color: #cbd5e0; display: flex; align-items: center;">
+                <i class="fas fa-sync-alt"></i> Echtzeit-Daten
+                <button class="reset-btn" id="resetBalance">
+                    <i class="fas fa-redo"></i> Guthaben auf 0 setzen
+                </button>
+            </div>
+        </div>
         
-        <div class="dashboard">
-            <div class="card">
-                <div class="card-title">
-                    <i class="fas fa-wallet"></i>
-                    <h2>Kontostand</h2>
+        <!-- Balance Card -->
+        <div class="balance-card">
+            <h2 style="font-size: 1.3rem; opacity: 0.9; margin-bottom: 0.5rem;">Aktuelles Guthaben</h2>
+            <div class="balance-amount balance-zero" id="currentBalance">0 $</div>
+            <div style="opacity: 0.8; font-size: 0.9rem;">
+                Letzte Aktualisierung: <span id="lastUpdate">--</span>
+            </div>
+        </div>
+        
+        <!-- Transaction Buttons -->
+        <div class="transaction-buttons">
+            <button class="transaction-btn deposit-btn" id="openDepositModal">
+                <i class="fas fa-plus-circle"></i> Einzahlen
+            </button>
+            <button class="transaction-btn withdraw-btn" id="openWithdrawModal">
+                <i class="fas fa-minus-circle"></i> Auszahlen
+            </button>
+        </div>
+        
+        <!-- Period Selector -->
+        <div class="period-selector">
+            <button class="period-btn active" data-period="today">Heute</button>
+            <button class="period-btn" data-period="week">Diese Woche</button>
+            <button class="period-btn" data-period="month">Dieser Monat</button>
+            <button class="period-btn" data-period="year">Dieses Jahr</button>
+            <button class="period-btn" data-period="all">Gesamt</button>
+        </div>
+        
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-label">Einzahlungen</div>
+                <div class="summary-value positive-amount" id="totalDeposits">0 $</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Auszahlungen</div>
+                <div class="summary-value negative-amount" id="totalWithdrawals">0 $</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Transaktionen</div>
+                <div class="summary-value" id="transactionCount">0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Durchschnitt</div>
+                <div class="summary-value" id="averageTransaction">0 $</div>
+            </div>
+        </div>
+        
+        <!-- Statistics Grid -->
+        <div class="stats-grid">
+            <!-- Time Distribution Chart -->
+            <div class="time-distribution">
+                <div class="stat-header">
+                    <div class="stat-title">Zeitliche Verteilung (7 Tage)</div>
+                    <i class="fas fa-calendar-alt" style="color: #4299e1;"></i>
                 </div>
-                <div id="balanceAmount" class="balance-amount balance-zero">0,00 $</div>
-                <p style="text-align: center; color: #7f8c8d; margin-bottom: 15px;">Aktuelles verfügbares Guthaben</p>
-                <div class="info-box">
-                    <p><strong>Hinweis:</strong> Ihre Einnahmen werden erst 2 Tage nach dem Kauf freigegeben. Die angezeigten Einnahmen werden zurückgehalten und für Einkäufe für Ihren Shop genutzt!</p>
+                <div class="distribution-chart">
+                    <canvas id="timeDistributionChart"></canvas>
                 </div>
             </div>
             
-            <div class="card">
-                <div class="card-title">
-                    <i class="fas fa-money-bill-wave"></i>
-                    <h2>Ausstehende Einnahmen</h2>
+            <!-- Categories Distribution -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Kategorien Verteilung</div>
+                    <i class="fas fa-chart-pie" style="color: #ed8936;"></i>
                 </div>
-                <ul class="revenue-list">
-                    <li class="revenue-item">
-                        <div>
-                            <div class="revenue-amount">105.390 $</div>
-                            <div class="date-note">Wird für Shop-Einkäufe verwendet</div>
-                        </div>
-                        <div class="release-date">Freigabe: <span class="release-date-1">19.01.2026</span></div>
-                    </li>
-                    <li class="revenue-item">
-                        <div>
-                            <div class="revenue-amount">7.440 $</div>
-                            <div class="date-note">Wird für Shop-Einkäufe verwendet</div>
-                        </div>
-                        <div class="release-date">Freigabe: <span class="release-date-2">20.01.2026</span></div>
-                    </li>
-                </ul>
-                
-                <div class="total-revenue">
-                    <div class="total-label">Gesamt ausstehend:</div>
-                    <div id="totalRevenue" class="total-amount">112.830 $</div>
-                </div>
-                
-                <div class="info-box">
-                    <p>Diese Beträge sind noch nicht auf Ihrem Konto verfügbar. Sie können sie nach dem Freigabedatum für Ausgaben in Ihrem Shop verwenden.</p>
+                <div class="chart-container">
+                    <canvas id="categoriesChart"></canvas>
                 </div>
             </div>
         </div>
         
-        <div class="card">
-            <div class="card-title">
-                <i class="fas fa-info-circle"></i>
-                <h2>Wie funktioniert das?</h2>
+        <!-- Recent Transactions -->
+        <div class="transactions-table">
+            <div class="stat-header">
+                <div class="stat-title">Letzte Transaktionen</div>
+                <button class="btn-secondary" id="refreshTransactions">
+                    <i class="fas fa-sync"></i> Aktualisieren
+                </button>
             </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                <div style="padding: 15px;">
-                    <h3 style="color: #3498db; margin-bottom: 10px;"><i class="fas fa-clock"></i> 2-Tage Wartezeit</h3>
-                    <p>Alle Einnahmen aus Verkäufen werden für 2 Tage zurückgehalten, bevor sie freigegeben werden.</p>
-                </div>
-                <div style="padding: 15px;">
-                    <h3 style="color: #27ae60; margin-bottom: 10px;"><i class="fas fa-shopping-cart"></i> Shop-Einkäufe</h3>
-                    <p>Die zurückgehaltenen Einnahmen können direkt für Einkäufe in Ihrem Shop verwendet werden.</p>
-                </div>
-                <div style="padding: 15px;">
-                    <h3 style="color: #e74c3c; margin-bottom: 10px;"><i class="fas fa-calendar-check"></i> Freigabedatum</h3>
-                    <p>Nach dem aufgelisteten Freigabedatum stehen die Einnahmen auf Ihrem Konto zur Verfügung.</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="footer-note">
-            <p>Dashboard aktualisiert am <span id="currentDate" class="highlight">18.01.2026</span> | Alle Beträge in US-Dollar ($)</p>
-            <p><i class="fas fa-exclamation-triangle"></i> Ihr Konto zeigt weiterhin <span class="highlight">0,00 $</span>, da die Einnahmen noch nicht freigegeben sind.</p>
+            
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>Typ</th>
+                        <th>Kategorie</th>
+                        <th>Beschreibung</th>
+                        <th>Betrag ($)</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionsList">
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <p>Noch keine Transaktionen vorhanden</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
+    
+    <!-- Deposit Modal -->
+    <div id="depositModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3><i class="fas fa-plus-circle"></i> Einzahlung tätigen</h3>
+            <form id="depositForm">
+                <div class="form-group">
+                    <label for="depositAmount">Betrag ($)</label>
+                    <input type="number" id="depositAmount" min="0" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label for="depositCategory">Kategorie</label>
+                    <select id="depositCategory" required>
+                        <option value="">Bitte auswählen</option>
+                        <option value="gehalt">Gehalt</option>
+                        <option value="verkauf">Verkauf</option>
+                        <option value="investment">Investment</option>
+                        <option value="geschenk">Geschenk</option>
+                        <option value="rückerstattung">Rückerstattung</option>
+                        <option value="sonstiges">Sonstiges</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="depositDescription">Beschreibung</label>
+                    <textarea id="depositDescription" rows="3" placeholder="Beschreibung der Einzahlung..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="depositDate">Datum</label>
+                    <input type="date" id="depositDate" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" id="cancelDeposit">Abbrechen</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-check"></i> Einzahlen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Withdrawal Modal -->
+    <div id="withdrawModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3><i class="fas fa-minus-circle"></i> Auszahlung tätigen</h3>
+            <form id="withdrawForm">
+                <div class="form-group">
+                    <label for="withdrawAmount">Betrag ($)</label>
+                    <input type="number" id="withdrawAmount" min="0" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label for="withdrawCategory">Kategorie</label>
+                    <select id="withdrawCategory" required>
+                        <option value="">Bitte auswählen</option>
+                        <option value="miete">Miete</option>
+                        <option value="lebensmittel">Lebensmittel</option>
+                        <option value="transport">Transport</option>
+                        <option value="unterhaltung">Unterhaltung</option>
+                        <option value="gesundheit">Gesundheit</option>
+                        <option value="bildung">Bildung</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="rechnung">Rechnung</option>
+                        <option value="sonstiges">Sonstiges</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="withdrawDescription">Beschreibung</label>
+                    <textarea id="withdrawDescription" rows="3" placeholder="Beschreibung der Auszahlung..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="withdrawDate">Datum</label>
+                    <input type="date" id="withdrawDate" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" id="cancelWithdraw">Abbrechen</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-check"></i> Auszahlen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div id="notification" class="notification hidden"></div>
 
     <script>
-        // Vollständiges JavaScript für das Dashboard
+        // Firebase Configuration (LokalStorage als Fallback)
+        const STORAGE_KEY = 'financial_data_v2';
+        let transactions = [];
+        let currentPeriod = 'today';
+        let charts = {};
+        
+        // Initialisierung
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Shop Dashboard geladen');
+            loadData();
+            initializeCharts();
+            setupEventListeners();
+            updateDisplay();
             
-            // Heutiges Datum anzeigen
-            updateCurrentDate();
+            // Setze heutiges Datum in den Formularen
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('depositDate').value = today;
+            document.getElementById('withdrawDate').value = today;
             
-            // Berechne Gesamtsumme der ausstehenden Einnahmen
-            calculateTotalRevenue();
-            
-            // Füge Interaktivität zu den Revenue-Items hinzu
-            setupRevenueItems();
-            
-            // Simuliere eine tägliche Aktualisierung
-            setupDailyUpdate();
-            
-            // Zeige eine Willkommensnachricht
-            showWelcomeMessage();
-            
-            // Überprüfe, ob Freigabetermine erreicht wurden
-            checkReleaseDates();
+            // Balance auf 0 setzen
+            document.getElementById('currentBalance').textContent = "0 $";
         });
         
-        function updateCurrentDate() {
-            const today = new Date();
-            const formattedDate = formatGermanDate(today);
-            document.getElementById('currentDate').textContent = formattedDate;
+        // Daten laden
+        function loadData() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                transactions = data.transactions || [];
+            }
             
-            console.log('Datum aktualisiert auf:', formattedDate);
+            // Keine Demo-Daten - alles startet bei 0
         }
         
-        function formatGermanDate(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}.${month}.${year}`;
+        // Daten speichern
+        function saveData() {
+            const data = {
+                transactions: transactions,
+                lastUpdated: new Date().toISOString()
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         }
         
-        function calculateTotalRevenue() {
-            const revenue1 = 105390;
-            const revenue2 = 7440;
-            const total = revenue1 + revenue2;
+        // Event Listeners
+        function setupEventListeners() {
+            // Modals öffnen
+            document.getElementById('openDepositModal').addEventListener('click', () => {
+                document.getElementById('depositModal').classList.add('active');
+            });
             
-            // Formatieren mit Tausendertrennzeichen
-            const formattedTotal = total.toLocaleString('de-DE') + ' $';
-            document.getElementById('totalRevenue').textContent = formattedTotal;
+            document.getElementById('openWithdrawModal').addEventListener('click', () => {
+                document.getElementById('withdrawModal').classList.add('active');
+            });
             
-            console.log('Gesamte ausstehende Einnahmen berechnet:', formattedTotal);
-        }
-        
-        function setupRevenueItems() {
-            const revenueItems = document.querySelectorAll('.revenue-item');
+            // Modals schließen
+            document.getElementById('cancelDeposit').addEventListener('click', () => {
+                document.getElementById('depositModal').classList.remove('active');
+                document.getElementById('depositForm').reset();
+            });
             
-            revenueItems.forEach((item, index) => {
-                // Hover-Effekt
-                item.addEventListener('mouseenter', function() {
-                    this.style.backgroundColor = '#f9f9f9';
-                    this.style.transition = 'background-color 0.3s';
+            document.getElementById('cancelWithdraw').addEventListener('click', () => {
+                document.getElementById('withdrawModal').classList.remove('active');
+                document.getElementById('withdrawForm').reset();
+            });
+            
+            // Forms verarbeiten
+            document.getElementById('depositForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addTransaction('deposit');
+            });
+            
+            document.getElementById('withdrawForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addTransaction('withdraw');
+            });
+            
+            // Period Buttons
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentPeriod = this.getAttribute('data-period');
+                    updateDisplay();
                 });
-                
-                item.addEventListener('mouseleave', function() {
-                    this.style.backgroundColor = 'transparent';
-                });
-                
-                // Klick-Effekt für Details
-                item.addEventListener('click', function() {
-                    const amountElement = this.querySelector('.revenue-amount');
-                    const amountText = amountElement.textContent;
-                    
-                    alert(`Einnahme ${index + 1}: ${amountText}\nDiese Einnahme wird für Shop-Einkäufe verwendet und ist noch nicht auf Ihrem Konto verfügbar.`);
-                });
-                
-                // Tastatur-Zugänglichkeit
-                item.setAttribute('tabindex', '0');
-                item.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        this.click();
-                    }
-                });
+            });
+            
+            // Refresh Button
+            document.getElementById('refreshTransactions').addEventListener('click', () => {
+                updateDisplay();
+                showNotification('Daten aktualisiert', 'info');
+            });
+            
+            // Reset Balance Button
+            document.getElementById('resetBalance').addEventListener('click', () => {
+                if (confirm('Möchten Sie alle Transaktionen löschen und das Guthaben auf 0 setzen?')) {
+                    transactions = [];
+                    saveData();
+                    updateDisplay();
+                    showNotification('Alle Transaktionen gelöscht. Guthaben auf 0 gesetzt.', 'success');
+                }
             });
         }
         
-        function setupDailyUpdate() {
-            // Simuliere eine tägliche Aktualisierung um Mitternacht
-            console.log('Tägliche Aktualisierung eingerichtet');
+        // Transaktion hinzufügen
+        function addTransaction(type) {
+            const form = type === 'deposit' ? 
+                document.getElementById('depositForm') : 
+                document.getElementById('withdrawForm');
             
-            // Zeige eine Nachricht, wenn die Seite neu geladen wird
-            window.addEventListener('beforeunload', function() {
-                console.log('Dashboard wird geschlossen');
-            });
+            const amount = parseFloat(
+                type === 'deposit' ? 
+                document.getElementById('depositAmount').value : 
+                document.getElementById('withdrawAmount').value
+            );
+            
+            const category = type === 'deposit' ? 
+                document.getElementById('depositCategory').value : 
+                document.getElementById('withdrawCategory').value;
+            
+            const description = type === 'deposit' ? 
+                document.getElementById('depositDescription').value : 
+                document.getElementById('withdrawDescription').value;
+            
+            const date = type === 'deposit' ? 
+                document.getElementById('depositDate').value : 
+                document.getElementById('withdrawDate').value;
+            
+            if (!amount || amount <= 0) {
+                showNotification('Bitte geben Sie einen gültigen Betrag ein!', 'error');
+                return;
+            }
+            
+            if (!category) {
+                showNotification('Bitte wählen Sie eine Kategorie aus!', 'error');
+                return;
+            }
+            
+            const transaction = {
+                id: Date.now(),
+                type: type,
+                amount: amount,
+                category: category,
+                description: description || 'Keine Beschreibung',
+                date: date,
+                timestamp: Date.now()
+            };
+            
+            transactions.unshift(transaction);
+            saveData();
+            
+            // Modal schließen und Form zurücksetzen
+            document.getElementById(type === 'deposit' ? 'depositModal' : 'withdrawModal').classList.remove('active');
+            form.reset();
+            
+            // Heutiges Datum wieder setzen
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('depositDate').value = today;
+            document.getElementById('withdrawDate').value = today;
+            
+            updateDisplay();
+            showNotification(
+                `${type === 'deposit' ? 'Einzahlung' : 'Auszahlung'} über ${amount.toFixed(2)} $ erfolgreich!`, 
+                'success'
+            );
         }
         
-        function showWelcomeMessage() {
+        // Transaktion löschen
+        function deleteTransaction(id) {
+            if (confirm('Möchten Sie diese Transaktion wirklich löschen?')) {
+                transactions = transactions.filter(t => t.id !== id);
+                saveData();
+                updateDisplay();
+                showNotification('Transaktion gelöscht', 'success');
+            }
+        }
+        
+        // Transaktionen filtern nach Periode
+        function filterTransactions() {
             const now = new Date();
-            const hour = now.getHours();
-            let greeting = '';
+            let filtered = [...transactions];
             
-            if (hour < 12) {
-                greeting = 'Guten Morgen';
-            } else if (hour < 18) {
-                greeting = 'Guten Tag';
-            } else {
-                greeting = 'Guten Abend';
+            switch(currentPeriod) {
+                case 'today':
+                    const today = now.toISOString().split('T')[0];
+                    filtered = filtered.filter(t => t.date === today);
+                    break;
+                case 'week':
+                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    filtered = filtered.filter(t => new Date(t.date) >= weekAgo);
+                    break;
+                case 'month':
+                    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                    filtered = filtered.filter(t => new Date(t.date) >= monthStart);
+                    break;
+                case 'year':
+                    const yearStart = new Date(now.getFullYear(), 0, 1);
+                    filtered = filtered.filter(t => new Date(t.date) >= yearStart);
+                    break;
+                // 'all' - keine Filterung
             }
             
-            console.log(`${greeting}! Willkommen bei Ihrem Shop Dashboard.`);
-            console.log('Ihr Konto zeigt 0,00 $ an, da die Einnahmen erst nach dem Freigabedatum verfügbar sind.');
+            return filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
         }
         
-        function checkReleaseDates() {
-            const today = new Date();
-            const releaseDate1 = new Date(2026, 0, 19); // 19.01.2026
-            const releaseDate2 = new Date(2026, 0, 20); // 20.01.2026
+        // Anzeige aktualisieren
+        function updateDisplay() {
+            const filteredTransactions = filterTransactions();
             
-            // Vergleiche die Daten
-            if (today >= releaseDate1) {
-                const element1 = document.querySelector('.release-date-1');
-                if (element1) {
-                    element1.innerHTML = '19.01.2026 <i class="fas fa-check-circle" style="color: #27ae60; margin-left: 5px;"></i>';
-                    element1.parentElement.style.backgroundColor = '#e8f5e9';
-                    console.log('Erste Einnahme freigegeben!');
-                }
+            // Balance ist IMMER 0
+            document.getElementById('currentBalance').textContent = "0 $";
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('de-DE');
+            
+            // Summary Cards - zeigen nur Transaktionen der Periode an
+            const periodDeposits = filteredTransactions
+                .filter(t => t.type === 'deposit')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const periodWithdrawals = filteredTransactions
+                .filter(t => t.type === 'withdraw')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            document.getElementById('totalDeposits').textContent = `${periodDeposits.toFixed(2)} $`;
+            document.getElementById('totalWithdrawals').textContent = `${periodWithdrawals.toFixed(2)} $`;
+            document.getElementById('transactionCount').textContent = filteredTransactions.length;
+            
+            const avgTransaction = filteredTransactions.length > 0 ? 
+                (periodDeposits + periodWithdrawals) / filteredTransactions.length : 0;
+            document.getElementById('averageTransaction').textContent = `${avgTransaction.toFixed(2)} $`;
+            
+            // Transaktionen anzeigen
+            updateTransactionsTable(filteredTransactions);
+            
+            // Charts aktualisieren
+            updateChartsData();
+        }
+        
+        // Transaktionstabelle aktualisieren
+        function updateTransactionsTable(transactions) {
+            const tbody = document.getElementById('transactionsList');
+            tbody.innerHTML = '';
+            
+            if (transactions.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <p>Keine Transaktionen in dieser Periode</p>
+                        </td>
+                    </tr>
+                `;
+                return;
             }
             
-            if (today >= releaseDate2) {
-                const element2 = document.querySelector('.release-date-2');
-                if (element2) {
-                    element2.innerHTML = '20.01.2026 <i class="fas fa-check-circle" style="color: #27ae60; margin-left: 5px;"></i>';
-                    element2.parentElement.style.backgroundColor = '#e8f5e9';
-                    console.log('Zweite Einnahme freigegeben!');
-                }
-            }
-            
-            // Wenn beide Daten erreicht sind, zeige eine Nachricht an
-            if (today >= releaseDate1 && today >= releaseDate2) {
-                console.log('Alle Einnahmen sind jetzt freigegeben!');
+            transactions.forEach(transaction => {
+                const row = document.createElement('tr');
+                row.className = transaction.type === 'deposit' ? 'deposit-row' : 'withdraw-row';
                 
-                // Optional: Eine Nachricht anzeigen
+                // Kategorie Namen
+                const categoryNames = {
+                    'gehalt': 'Gehalt', 'verkauf': 'Verkauf', 'investment': 'Investment',
+                    'geschenk': 'Geschenk', 'rückerstattung': 'Rückerstattung', 'sonstiges': 'Sonstiges',
+                    'miete': 'Miete', 'lebensmittel': 'Lebensmittel', 'transport': 'Transport',
+                    'unterhaltung': 'Unterhaltung', 'gesundheit': 'Gesundheit', 'bildung': 'Bildung',
+                    'shopping': 'Shopping', 'rechnung': 'Rechnung'
+                };
+                
+                row.innerHTML = `
+                    <td>${new Date(transaction.date).toLocaleDateString('de-DE')}</td>
+                    <td>
+                        <span class="category-badge ${transaction.type === 'deposit' ? 'category-income' : 'category-expense'}">
+                            ${transaction.type === 'deposit' ? 'Einzahlung' : 'Auszahlung'}
+                        </span>
+                    </td>
+                    <td>${categoryNames[transaction.category] || transaction.category}</td>
+                    <td>${transaction.description}</td>
+                    <td class="${transaction.type === 'deposit' ? 'positive-amount' : 'negative-amount'}">
+                        ${transaction.type === 'deposit' ? '+' : '-'}${transaction.amount.toFixed(2)} $
+                    </td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteTransaction(${transaction.id})">
+                            <i class="fas fa-trash"></i> Löschen
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Charts initialisieren
+        function initializeCharts() {
+            // Zeitliche Verteilung Chart
+            const timeCtx = document.getElementById('timeDistributionChart').getContext('2d');
+            charts.timeDistribution = new Chart(timeCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Einzahlungen ($)',
+                            data: [],
+                            backgroundColor: 'rgba(72, 187, 120, 0.7)',
+                            borderColor: '#48bb78',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Auszahlungen ($)',
+                            data: [],
+                            backgroundColor: 'rgba(245, 101, 101, 0.7)',
+                            borderColor: '#f56565',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#cbd5e0' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#a0aec0' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#a0aec0' }
+                        }
+                    }
+                }
+            });
+            
+            // Kategorien Chart
+            const catCtx = document.getElementById('categoriesChart').getContext('2d');
+            charts.categories = new Chart(catCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#4299e1', '#48bb78', '#ed8936', '#f56565',
+                            '#9f7aea', '#ed64a6', '#667eea', '#f6ad55'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: '#cbd5e0' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Charts Daten aktualisieren
+        function updateChartsData() {
+            // Letzte 7 Tage
+            const last7Days = [];
+            const depositsData = [];
+            const withdrawalsData = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const dayName = date.toLocaleDateString('de-DE', { weekday: 'short' });
+                
+                last7Days.push(dayName);
+                
+                const dayDeposits = transactions
+                    .filter(t => t.date === dateStr && t.type === 'deposit')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                const dayWithdrawals = transactions
+                    .filter(t => t.date === dateStr && t.type === 'withdraw')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                depositsData.push(dayDeposits);
+                withdrawalsData.push(dayWithdrawals);
+            }
+            
+            // Zeitliche Verteilung aktualisieren
+            charts.timeDistribution.data.labels = last7Days;
+            charts.timeDistribution.data.datasets[0].data = depositsData;
+            charts.timeDistribution.data.datasets[1].data = withdrawalsData;
+            charts.timeDistribution.update();
+            
+            // Kategorien Daten
+            const categoryTotals = {};
+            transactions.forEach(t => {
+                if (!categoryTotals[t.category]) {
+                    categoryTotals[t.category] = 0;
+                }
+                categoryTotals[t.category] += t.amount;
+            });
+            
+            const categoryLabels = Object.keys(categoryTotals);
+            const categoryData = Object.values(categoryTotals);
+            
+            charts.categories.data.labels = categoryLabels;
+            charts.categories.data.datasets[0].data = categoryData;
+            charts.categories.update();
+        }
+        
+        // Notification System
+        function showNotification(message, type = 'info', duration = 4000) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.remove('hidden');
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
                 setTimeout(() => {
-                    alert('Alle Einnahmen sind jetzt freigegeben und sollten auf Ihrem Konto erscheinen!');
-                }, 1000);
-            }
+                    notification.classList.add('hidden');
+                }, 300);
+            }, duration);
         }
         
-        // Erweiterte Funktion: Formatierung von Währungsbeträgen
-        function formatCurrency(amount, currency = '$') {
-            return amount.toLocaleString('de-DE') + ' ' + currency;
+        // Globale Funktionen für Buttons
+        window.deleteTransaction = deleteTransaction;
+        
+        // Export-Funktion
+        function exportData() {
+            const dataStr = JSON.stringify({
+                transactions: transactions,
+                exportDate: new Date().toISOString(),
+                note: "Guthaben ist immer 0 - zeigt nur Transaktionshistorie"
+            }, null, 2);
+            
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+            const link = document.createElement('a');
+            link.setAttribute('href', dataUri);
+            link.setAttribute('download', `finanz-daten-${new Date().toISOString().split('T')[0]}.json`);
+            link.click();
+            
+            showNotification('Daten exportiert', 'success');
         }
         
-        // Erweiterte Funktion: Tage bis zur Freigabe berechnen
-        function daysUntilRelease(releaseDate) {
-            const today = new Date();
-            const release = new Date(releaseDate);
-            const diffTime = release - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            return diffDays;
+        // Import-Funktion
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (importedData.transactions) {
+                        transactions = importedData.transactions;
+                        saveData();
+                        updateDisplay();
+                        showNotification('Daten erfolgreich importiert! Guthaben bleibt 0.', 'success');
+                    }
+                } catch (error) {
+                    showNotification('Fehler beim Importieren der Daten!', 'error');
+                }
+            };
+            reader.readAsText(file);
         }
         
-        // Initialisiere die Tage-until-Berechnung
-        window.onload = function() {
-            const days1 = daysUntilRelease('2026-01-19');
-            const days2 = daysUntilRelease('2026-01-20');
-            
-            console.log(`Noch ${days1} Tage bis zur Freigabe der ersten Einnahme`);
-            console.log(`Noch ${days2} Tage bis zur Freigabe der zweiten Einnahme`);
-            
-            // Optional: Zeige die Tage in der Konsole für Entwickler
-            if (days1 > 0) {
-                console.log(`Erste Einnahme (105.390 $) wird in ${days1} Tagen freigegeben.`);
-            }
-            
-            if (days2 > 0) {
-                console.log(`Zweite Einnahme (7.440 $) wird in ${days2} Tagen freigegeben.`);
-            }
-        };
+        // Debug-Export Button hinzufügen
+        const header = document.querySelector('.header');
+        const exportBtn = document.createElement('button');
+        exportBtn.className = 'btn-secondary';
+        exportBtn.innerHTML = '<i class="fas fa-download"></i> Export';
+        exportBtn.onclick = exportData;
+        header.appendChild(exportBtn);
+        
+        // Import Input
+        const importInput = document.createElement('input');
+        importInput.type = 'file';
+        importInput.accept = '.json';
+        importInput.style.display = 'none';
+        importInput.onchange = importData;
+        document.body.appendChild(importInput);
+        
+        const importBtn = document.createElement('button');
+        importBtn.className = 'btn-secondary';
+        importBtn.innerHTML = '<i class="fas fa-upload"></i> Import';
+        importBtn.onclick = () => importInput.click();
+        header.appendChild(importBtn);
     </script>
-</body>
-</html>
 </body>
 </html>
