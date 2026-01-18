@@ -446,11 +446,11 @@
         <!-- Loading State -->
         <div id="loading" class="loading">
             <div class="spinner"></div>
-            <p>Lade Daten von Firebase...</p>
+            <p>Verbinde mit Firebase...</p>
         </div>
         
         <!-- Transaction Buttons -->
-        <div class="transaction-buttons" id="transactionButtons" style="display: none;">
+        <div class="transaction-buttons" id="transactionButtons">
             <button class="transaction-btn hold-btn" id="openHoldModal">
                 <i class="fas fa-pause-circle"></i>
                 <span>Betrag zurückhalten</span>
@@ -466,7 +466,7 @@
         </div>
         
         <!-- Summary Cards -->
-        <div class="summary-cards" id="summaryCards" style="display: none;">
+        <div class="summary-cards" id="summaryCards">
             <div class="summary-card">
                 <div class="summary-label">Heute fällig</div>
                 <div class="summary-value positive-amount" id="dueToday">0 $</div>
@@ -482,7 +482,7 @@
         </div>
         
         <!-- Pending Releases -->
-        <div class="pending-releases" id="pendingReleasesContainer" style="display: none;">
+        <div class="pending-releases" id="pendingReleasesContainer">
             <h3 style="color: #90cdf4; margin-bottom: 1rem;">
                 <i class="fas fa-clock"></i> Anstehende Freigaben
             </h3>
@@ -495,7 +495,7 @@
         </div>
         
         <!-- Hold Distribution Chart -->
-        <div class="hold-distribution" id="holdDistribution" style="display: none;">
+        <div class="hold-distribution" id="holdDistribution">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h3 style="color: #90cdf4;">
                     <i class="fas fa-chart-bar"></i> Freigabe-Verteilung (Nächste 30 Tage)
@@ -579,7 +579,7 @@
     <div id="notification" class="notification"></div>
 
     <script>
-        // Firebase Konfiguration (benutze deine eigenen Credentials)
+        // Firebase Konfiguration
         const firebaseConfig = {
             apiKey: "AIzaSyCw4nadHCIRcouTJJoQ3ElToiVVFr5Rufo",
             authDomain: "khusland-b7d13.firebaseapp.com",
@@ -595,12 +595,34 @@
         const db = firebase.firestore();
         
         // Firestore Collections
-        const transactionsRef = db.collection('transactions');
-        const balanceRef = db.collection('balance').doc('current');
+        const transactionsRef = db.collection('finanz_transactions');
+        const balanceRef = db.collection('finanz_balance').doc('current');
         
         let holdTransactions = [];
         let availableBalance = 0;
         let holdDistributionChart = null;
+        
+        // Beispiel-Daten
+        const EXAMPLE_DATA = [
+            {
+                id: 'example1',
+                amount: 105390,
+                purchaseDate: '2026-01-17',
+                releaseDate: '2026-01-19',
+                status: 'pending',
+                type: 'hold',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 'example2',
+                amount: 7440,
+                purchaseDate: '2026-01-18',
+                releaseDate: '2026-01-20',
+                status: 'pending',
+                type: 'hold',
+                createdAt: new Date().toISOString()
+            }
+        ];
         
         // Initialisierung
         document.addEventListener('DOMContentLoaded', function() {
@@ -613,51 +635,82 @@
             updateReleaseDate();
             
             // Daten von Firebase laden
-            loadDataFromFirebase();
+            initializeFirebase();
         });
         
-        // Daten von Firebase laden
-        async function loadDataFromFirebase() {
+        // Firebase initialisieren und Daten laden
+        async function initializeFirebase() {
             try {
                 showLoading(true);
                 
-                // Transaktionen laden
-                const transactionsSnapshot = await transactionsRef
-                    .orderBy('createdAt', 'desc')
-                    .get();
+                // Auf Firestore Connection warten
+                await db.collection('test').doc('test').get().catch(() => {});
                 
-                holdTransactions = [];
-                transactionsSnapshot.forEach(doc => {
-                    const data = doc.data();
-                    holdTransactions.push({
-                        id: doc.id,
-                        ...data
-                    });
-                });
+                // Transaktionen laden
+                loadTransactionsFromFirebase();
                 
                 // Balance laden
-                const balanceDoc = await balanceRef.get();
-                if (balanceDoc.exists) {
-                    const balanceData = balanceDoc.data();
+                loadBalanceFromFirebase();
+                
+                showLoading(false);
+                
+            } catch (error) {
+                console.error('Fehler bei Firebase Initialisierung:', error);
+                showNotification('Fehler bei der Verbindung zu Firebase!', 'error');
+                showLoading(false);
+                
+                // Beispiel-Daten laden als Fallback
+                holdTransactions = [...EXAMPLE_DATA];
+                availableBalance = 0;
+                updateDisplay();
+            }
+        }
+        
+        // Transaktionen von Firebase laden
+        function loadTransactionsFromFirebase() {
+            transactionsRef
+                .orderBy('createdAt', 'desc')
+                .onSnapshot((snapshot) => {
+                    holdTransactions = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        holdTransactions.push({
+                            id: doc.id,
+                            ...data,
+                            // Timestamp in Date umwandeln
+                            createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt)
+                        });
+                    });
+                    
+                    // Beispiel-Daten nur hinzufügen, wenn keine Daten vorhanden sind
+                    if (holdTransactions.length === 0) {
+                        // Beispiel-Daten nicht automatisch laden - startet leer
+                    }
+                    
+                    updateDisplay();
+                    checkPendingReleases();
+                }, (error) => {
+                    console.error('Fehler beim Laden der Transaktionen:', error);
+                });
+        }
+        
+        // Balance von Firebase laden
+        function loadBalanceFromFirebase() {
+            balanceRef.onSnapshot((doc) => {
+                if (doc.exists) {
+                    const balanceData = doc.data();
                     availableBalance = balanceData.amount || 0;
+                    updateDisplay();
                 } else {
                     // Initiale Balance erstellen
-                    await balanceRef.set({
+                    balanceRef.set({
                         amount: 0,
                         lastUpdated: new Date().toISOString()
                     });
-                    availableBalance = 0;
                 }
-                
-                showLoading(false);
-                updateDisplay();
-                checkPendingReleases();
-                
-            } catch (error) {
-                console.error('Fehler beim Laden der Daten:', error);
-                showNotification('Fehler beim Laden der Daten von Firebase!', 'error');
-                showLoading(false);
-            }
+            }, (error) => {
+                console.error('Fehler beim Laden der Balance:', error);
+            });
         }
         
         // Event Listeners
@@ -751,13 +804,7 @@
                 };
                 
                 // Zu Firebase hinzufügen
-                const docRef = await transactionsRef.add(transaction);
-                
-                // Lokal hinzufügen
-                holdTransactions.unshift({
-                    id: docRef.id,
-                    ...transaction
-                });
+                await transactionsRef.add(transaction);
                 
                 // Modal schließen
                 document.getElementById('holdModal').classList.remove('active');
@@ -768,7 +815,6 @@
                 document.getElementById('holdDate').value = today;
                 updateReleaseDate();
                 
-                updateDisplay();
                 showNotification(`Betrag von ${amount} $ wurde zurückgehalten (Freigabe: ${releaseDate})`, 'success');
                 
             } catch (error) {
@@ -793,8 +839,6 @@
                     lastUpdated: new Date().toISOString()
                 });
                 
-                availableBalance += amount;
-                
                 // Transaktion in Firebase speichern
                 const transaction = {
                     amount: amount,
@@ -806,19 +850,12 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
                 
-                const docRef = await transactionsRef.add(transaction);
-                
-                // Lokal hinzufügen
-                holdTransactions.unshift({
-                    id: docRef.id,
-                    ...transaction
-                });
+                await transactionsRef.add(transaction);
                 
                 // Modal schließen
                 document.getElementById('depositModal').classList.remove('active');
                 document.getElementById('depositForm').reset();
                 
-                updateDisplay();
                 showNotification(`Einzahlung von ${amount} $ war erfolgreich`, 'success');
                 
             } catch (error) {
@@ -848,8 +885,6 @@
                     lastUpdated: new Date().toISOString()
                 });
                 
-                availableBalance -= amount;
-                
                 // Transaktion in Firebase speichern
                 const transaction = {
                     amount: amount,
@@ -861,19 +896,12 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
                 
-                const docRef = await transactionsRef.add(transaction);
-                
-                // Lokal hinzufügen
-                holdTransactions.unshift({
-                    id: docRef.id,
-                    ...transaction
-                });
+                await transactionsRef.add(transaction);
                 
                 // Modal schließen
                 document.getElementById('withdrawModal').classList.remove('active');
                 document.getElementById('withdrawForm').reset();
                 
-                updateDisplay();
                 showNotification(`Auszahlung von ${amount} $ war erfolgreich`, 'success');
                 
             } catch (error) {
@@ -914,7 +942,6 @@
             if (anyReleased) {
                 try {
                     await Promise.all(updatePromises);
-                    updateDisplay();
                     showNotification('Neue Beträge wurden freigegeben und sind jetzt verfügbar!', 'success');
                 } catch (error) {
                     console.error('Fehler beim Aktualisieren der Freigaben:', error);
@@ -958,12 +985,6 @@
             
             // Chart aktualisieren
             updateHoldChart();
-            
-            // Content anzeigen
-            document.getElementById('transactionButtons').style.display = 'grid';
-            document.getElementById('summaryCards').style.display = 'grid';
-            document.getElementById('pendingReleasesContainer').style.display = 'block';
-            document.getElementById('holdDistribution').style.display = 'block';
         }
         
         // Pending Releases Liste aktualisieren
@@ -1058,6 +1079,7 @@
                             grid: { display: false },
                             ticks: { color: '#a0aec0' }
                         }
+                    }
                 }
             });
         }
