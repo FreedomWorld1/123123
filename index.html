@@ -624,7 +624,7 @@
     <div id="holdModal" class="modal-overlay">
         <div class="modal-content">
             <h3><i class="fas fa-pause-circle"></i> Betrag zurückhalten</h3>
-            <form id="holdForm">
+            <div id="holdForm">
                 <div class="form-group">
                     <label for="holdAmount">Betrag ($)</label>
                     <input type="number" id="holdAmount" min="0" step="1" placeholder="0" required>
@@ -639,11 +639,11 @@
                 </div>
                 <div class="modal-buttons">
                     <button type="button" class="btn-secondary" id="cancelHoldBtn">Abbrechen</button>
-                    <button type="submit" class="btn-primary" id="submitHoldBtn">
+                    <button type="button" class="btn-primary" id="submitHoldBtn">
                         <i class="fas fa-check"></i> Zurückhalten
                     </button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
     
@@ -651,18 +651,18 @@
     <div id="depositModal" class="modal-overlay">
         <div class="modal-content">
             <h3><i class="fas fa-plus-circle"></i> Direkte Einzahlung</h3>
-            <form id="depositForm">
+            <div id="depositForm">
                 <div class="form-group">
                     <label for="depositAmount">Betrag ($)</label>
                     <input type="number" id="depositAmount" min="0" step="1" placeholder="0" required>
                 </div>
                 <div class="modal-buttons">
                     <button type="button" class="btn-secondary" id="cancelDepositBtn">Abbrechen</button>
-                    <button type="submit" class="btn-primary" id="submitDepositBtn">
+                    <button type="button" class="btn-primary" id="submitDepositBtn">
                         <i class="fas fa-check"></i> Einzahlen
                     </button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
     
@@ -670,18 +670,18 @@
     <div id="withdrawModal" class="modal-overlay">
         <div class="modal-content">
             <h3><i class="fas fa-minus-circle"></i> Auszahlung</h3>
-            <form id="withdrawForm">
+            <div id="withdrawForm">
                 <div class="form-group">
                     <label for="withdrawAmount">Betrag ($)</label>
                     <input type="number" id="withdrawAmount" min="0" step="1" placeholder="0" required>
                 </div>
                 <div class="modal-buttons">
                     <button type="button" class="btn-secondary" id="cancelWithdrawBtn">Abbrechen</button>
-                    <button type="submit" class="btn-primary" id="submitWithdrawBtn">
+                    <button type="button" class="btn-primary" id="submitWithdrawBtn">
                         <i class="fas fa-check"></i> Auszahlen
                     </button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
     
@@ -856,63 +856,35 @@
                 console.error("❌ Initialisierungsfehler:", error);
                 resetAllBalancesToZero();
             }
-            
-            // Event Listener für Buttons direkt hinzufügen
-            addDirectEventListeners();
         });
 
-        // Direkte Event Listener für Buttons
-        function addDirectEventListeners() {
-            console.log("🎯 Füge direkte Event Listener hinzu...");
+        // Alle Event Listeners einrichten
+        function setupAllEventListeners() {
+            console.log('🎯 Event Listener einrichten...');
             
             // Modal öffnen Buttons
-            document.getElementById('openHoldModalBtn').addEventListener('click', function() {
-                console.log("Hold Modal Button geklickt");
-                openHoldModal();
-            });
-            
-            document.getElementById('openDepositModalBtn').addEventListener('click', function() {
-                console.log("Deposit Modal Button geklickt");
-                openDepositModal();
-            });
-            
-            document.getElementById('openWithdrawModalBtn').addEventListener('click', function() {
-                console.log("Withdraw Modal Button geklickt");
-                openWithdrawModal();
-            });
+            document.getElementById('openHoldModalBtn').addEventListener('click', openHoldModal);
+            document.getElementById('openDepositModalBtn').addEventListener('click', openDepositModal);
+            document.getElementById('openWithdrawModalBtn').addEventListener('click', openWithdrawModal);
             
             // Modal Abbrechen Buttons
-            document.getElementById('cancelHoldBtn').addEventListener('click', function() {
-                console.log("Cancel Hold Button geklickt");
-                closeHoldModal();
-            });
-            
-            document.getElementById('cancelDepositBtn').addEventListener('click', function() {
-                console.log("Cancel Deposit Button geklickt");
-                closeDepositModal();
-            });
-            
-            document.getElementById('cancelWithdrawBtn').addEventListener('click', function() {
-                console.log("Cancel Withdraw Button geklickt");
-                closeWithdrawModal();
-            });
+            document.getElementById('cancelHoldBtn').addEventListener('click', closeHoldModal);
+            document.getElementById('cancelDepositBtn').addEventListener('click', closeDepositModal);
+            document.getElementById('cancelWithdrawBtn').addEventListener('click', closeWithdrawModal);
             
             // Form Submit Buttons - WICHTIG: Click-Listener statt Form-Submit
             document.getElementById('submitHoldBtn').addEventListener('click', function(e) {
-                console.log("Submit Hold Button geklickt");
-                e.preventDefault();
+                console.log("✅ Submit Hold Button geklickt");
                 addHoldTransaction();
             });
             
             document.getElementById('submitDepositBtn').addEventListener('click', function(e) {
-                console.log("Submit Deposit Button geklickt");
-                e.preventDefault();
+                console.log("✅ Submit Deposit Button geklickt");
                 addDirectDeposit();
             });
             
             document.getElementById('submitWithdrawBtn').addEventListener('click', function(e) {
-                console.log("Submit Withdraw Button geklickt");
-                e.preventDefault();
+                console.log("✅ Submit Withdraw Button geklickt");
                 processWithdrawal();
             });
             
@@ -920,6 +892,12 @@
             document.getElementById('refreshChartBtn').addEventListener('click', function() {
                 console.log("Refresh Chart Button geklickt");
                 refreshChart();
+            });
+            
+            // Datum Änderung
+            document.getElementById('holdDate').addEventListener('change', function() {
+                console.log("Hold Date geändert");
+                updateReleaseDate();
             });
             
             // Period Buttons
@@ -934,19 +912,7 @@
                 });
             });
             
-            // Datum Änderung
-            document.getElementById('holdDate').addEventListener('change', function() {
-                console.log("Hold Date geändert");
-                updateReleaseDate();
-            });
-            
-            console.log("✅ Alle direkten Event Listener hinzugefügt");
-        }
-
-        // Alle Event Listeners einrichten (ältere Methode)
-        function setupAllEventListeners() {
-            console.log('🎯 Event Listener einrichten...');
-            // Diese Funktion wird jetzt nicht mehr primär verwendet
+            console.log("✅ Alle Event Listener eingerichtet");
         }
 
         // Modal Funktionen
@@ -1071,10 +1037,10 @@
                 // Modal schließen
                 closeHoldModal();
                 
-                showNotification(`✅ Betrag von ${amount} $ wurde zurückgehalten (Freigabe: ${releaseDate})`, 'success');
-                
-                // Display aktualisieren
+                // Display SOFORT aktualisieren
                 updateDisplay();
+                
+                showNotification(`✅ Betrag von ${amount} $ wurde zurückgehalten (Freigabe: ${releaseDate})`, 'success');
                 
             } catch (error) {
                 console.error('❌ Fehler beim Speichern:', error);
@@ -1133,10 +1099,10 @@
                 // Modal schließen
                 closeDepositModal();
                 
-                showNotification(`✅ Einzahlung von ${amount} $ war erfolgreich`, 'success');
-                
-                // Display aktualisieren
+                // Display SOFORT aktualisieren
                 updateDisplay();
+                
+                showNotification(`✅ Einzahlung von ${amount} $ war erfolgreich`, 'success');
                 
             } catch (error) {
                 console.error('❌ Fehler bei der Einzahlung:', error);
@@ -1201,10 +1167,10 @@
                 // Modal schließen
                 closeWithdrawModal();
                 
-                showNotification(`✅ Auszahlung von ${amount} $ war erfolgreich`, 'success');
-                
-                // Display aktualisieren
+                // Display SOFORT aktualisieren
                 updateDisplay();
+                
+                showNotification(`✅ Auszahlung von ${amount} $ war erfolgreich`, 'success');
                 
             } catch (error) {
                 console.error('❌ Fehler bei der Auszahlung:', error);
@@ -1248,16 +1214,25 @@
             }
         }
         
-        // Anzeige aktualisieren
+        // Anzeige aktualisieren - KORRIGIERT
         function updateDisplay() {
             console.log('🔄 Aktualisiere Anzeige...');
-            const today = new Date().toISOString().split('T')[0];
             
             // Berechnungen
             const pendingTransactions = holdTransactions.filter(t => t.status === 'pending');
             const releasedTransactions = holdTransactions.filter(t => t.status === 'released');
             
+            // Zurückgehaltene Beträge berechnen
             const totalHoldBalance = pendingTransactions.reduce((sum, t) => sum + t.amount, 0);
+            
+            // Balances anzeigen - SOFORT
+            document.getElementById('holdBalance').textContent = `${totalHoldBalance} $`;
+            document.getElementById('availableBalance').textContent = `${availableBalance} $`;
+            
+            console.log("📊 Anzeige aktualisiert - Hold:", totalHoldBalance, "Available:", availableBalance);
+            
+            // Weitere Berechnungen nur wenn nötig
+            const today = new Date().toISOString().split('T')[0];
             
             // Heute fällige Beträge
             const dueToday = pendingTransactions
@@ -1284,23 +1259,12 @@
             
             const dailyBalance = dailyDeposits - dailyWithdrawals;
             
-            // Balances anzeigen
-            const holdBalanceEl = document.getElementById('holdBalance');
-            const availableBalanceEl = document.getElementById('availableBalance');
-            const dueTodayEl = document.getElementById('dueToday');
-            const dueNextWeekEl = document.getElementById('dueNextWeek');
-            const pendingCountEl = document.getElementById('pendingCount');
-            const dailyBalanceEl = document.getElementById('dailyBalance');
-            
-            if (holdBalanceEl) holdBalanceEl.textContent = `${totalHoldBalance} $`;
-            if (availableBalanceEl) availableBalanceEl.textContent = `${availableBalance} $`;
-            if (dueTodayEl) dueTodayEl.textContent = `${dueToday} $`;
-            if (dueNextWeekEl) dueNextWeekEl.textContent = `${dueNextWeek} $`;
-            if (pendingCountEl) pendingCountEl.textContent = pendingTransactions.length;
-            if (dailyBalanceEl) {
-                dailyBalanceEl.textContent = `${dailyBalance} $`;
-                dailyBalanceEl.className = `summary-value ${dailyBalance >= 0 ? 'positive-amount' : 'negative-amount'}`;
-            }
+            // Restliche Balances anzeigen
+            document.getElementById('dueToday').textContent = `${dueToday} $`;
+            document.getElementById('dueNextWeek').textContent = `${dueNextWeek} $`;
+            document.getElementById('pendingCount').textContent = pendingTransactions.length;
+            document.getElementById('dailyBalance').textContent = `${dailyBalance} $`;
+            document.getElementById('dailyBalance').className = `summary-value ${dailyBalance >= 0 ? 'positive-amount' : 'negative-amount'}`;
             
             // Pending Releases anzeigen
             updatePendingReleasesList(pendingTransactions);
@@ -1311,7 +1275,7 @@
             // Chart aktualisieren
             updateHoldChart();
             
-            console.log('✅ Anzeige aktualisiert');
+            console.log('✅ Anzeige komplett aktualisiert');
         }
         
         // Pending Releases Liste aktualisieren
