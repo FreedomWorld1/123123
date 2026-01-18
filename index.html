@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -385,6 +388,28 @@
             padding: 3rem;
             color: #a0aec0;
         }
+        
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #4299e1;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -418,8 +443,14 @@
             </div>
         </div>
         
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Lade Daten von Firebase...</p>
+        </div>
+        
         <!-- Transaction Buttons -->
-        <div class="transaction-buttons">
+        <div class="transaction-buttons" id="transactionButtons" style="display: none;">
             <button class="transaction-btn hold-btn" id="openHoldModal">
                 <i class="fas fa-pause-circle"></i>
                 <span>Betrag zurückhalten</span>
@@ -435,7 +466,7 @@
         </div>
         
         <!-- Summary Cards -->
-        <div class="summary-cards">
+        <div class="summary-cards" id="summaryCards" style="display: none;">
             <div class="summary-card">
                 <div class="summary-label">Heute fällig</div>
                 <div class="summary-value positive-amount" id="dueToday">0 $</div>
@@ -451,7 +482,7 @@
         </div>
         
         <!-- Pending Releases -->
-        <div class="pending-releases">
+        <div class="pending-releases" id="pendingReleasesContainer" style="display: none;">
             <h3 style="color: #90cdf4; margin-bottom: 1rem;">
                 <i class="fas fa-clock"></i> Anstehende Freigaben
             </h3>
@@ -464,7 +495,7 @@
         </div>
         
         <!-- Hold Distribution Chart -->
-        <div class="hold-distribution">
+        <div class="hold-distribution" id="holdDistribution" style="display: none;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h3 style="color: #90cdf4;">
                     <i class="fas fa-chart-bar"></i> Freigabe-Verteilung (Nächste 30 Tage)
@@ -548,66 +579,85 @@
     <div id="notification" class="notification"></div>
 
     <script>
-        // Storage Keys
-        const STORAGE_KEY = 'cc_shop_finanz_data';
+        // Firebase Konfiguration (benutze deine eigenen Credentials)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCw4nadHCIRcouTJJoQ3ElToiVVFr5Rufo",
+            authDomain: "khusland-b7d13.firebaseapp.com",
+            projectId: "khusland-b7d13",
+            storageBucket: "khusland-b7d13.firebasestorage.app",
+            messagingSenderId: "69573193613",
+            appId: "1:69573193613:web:86c4d839281b1e343cd7c4",
+            measurementId: "G-JSCWR4207G"
+        };
+
+        // Firebase initialisieren
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        // Firestore Collections
+        const transactionsRef = db.collection('transactions');
+        const balanceRef = db.collection('balance').doc('current');
         
         let holdTransactions = [];
         let availableBalance = 0;
         let holdDistributionChart = null;
         
-        // Beispiel-Daten aus deiner Anfrage (werden nicht automatisch geladen)
-        const EXAMPLE_DATA = [
-            {
-                id: Date.now() + 1,
-                amount: 105390,
-                purchaseDate: '2026-01-17',
-                releaseDate: '2026-01-19',
-                status: 'pending',
-                createdAt: Date.now()
-            },
-            {
-                id: Date.now() + 2,
-                amount: 7440,
-                purchaseDate: '2026-01-18',
-                releaseDate: '2026-01-20',
-                status: 'pending',
-                createdAt: Date.now() + 1
-            }
-        ];
-        
         // Initialisierung
         document.addEventListener('DOMContentLoaded', function() {
-            loadData();
             initializeHoldChart();
             setupEventListeners();
-            updateDisplay();
-            checkPendingReleases();
             
             // Heutiges Datum setzen
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('holdDate').value = today;
             updateReleaseDate();
+            
+            // Daten von Firebase laden
+            loadDataFromFirebase();
         });
         
-        // Daten laden
-        function loadData() {
-            const savedData = localStorage.getItem(STORAGE_KEY);
-            
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                holdTransactions = data.holdTransactions || [];
-                availableBalance = data.availableBalance || 0;
+        // Daten von Firebase laden
+        async function loadDataFromFirebase() {
+            try {
+                showLoading(true);
+                
+                // Transaktionen laden
+                const transactionsSnapshot = await transactionsRef
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                
+                holdTransactions = [];
+                transactionsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    holdTransactions.push({
+                        id: doc.id,
+                        ...data
+                    });
+                });
+                
+                // Balance laden
+                const balanceDoc = await balanceRef.get();
+                if (balanceDoc.exists) {
+                    const balanceData = balanceDoc.data();
+                    availableBalance = balanceData.amount || 0;
+                } else {
+                    // Initiale Balance erstellen
+                    await balanceRef.set({
+                        amount: 0,
+                        lastUpdated: new Date().toISOString()
+                    });
+                    availableBalance = 0;
+                }
+                
+                showLoading(false);
+                updateDisplay();
+                checkPendingReleases();
+                
+            } catch (error) {
+                console.error('Fehler beim Laden der Daten:', error);
+                showNotification('Fehler beim Laden der Daten von Firebase!', 'error');
+                showLoading(false);
             }
-        }
-        
-        // Daten speichern
-        function saveData() {
-            const data = {
-                holdTransactions: holdTransactions,
-                availableBalance: availableBalance,
-                lastUpdated: new Date().toISOString()
-            };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         }
         
         // Event Listeners
@@ -680,7 +730,7 @@
         }
         
         // Hold Transaktion hinzufügen
-        function addHoldTransaction() {
+        async function addHoldTransaction() {
             const amount = parseInt(document.getElementById('holdAmount').value);
             const purchaseDate = document.getElementById('holdDate').value;
             const releaseDate = document.getElementById('releaseDate').value;
@@ -690,33 +740,45 @@
                 return;
             }
             
-            const transaction = {
-                id: Date.now(),
-                amount: amount,
-                purchaseDate: purchaseDate,
-                releaseDate: releaseDate,
-                status: 'pending',
-                createdAt: Date.now()
-            };
-            
-            holdTransactions.push(transaction);
-            saveData();
-            
-            // Modal schließen
-            document.getElementById('holdModal').classList.remove('active');
-            document.getElementById('holdForm').reset();
-            
-            // Datum zurücksetzen
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('holdDate').value = today;
-            updateReleaseDate();
-            
-            updateDisplay();
-            showNotification(`Betrag von ${amount} $ wurde zurückgehalten (Freigabe: ${releaseDate})`, 'success');
+            try {
+                const transaction = {
+                    amount: amount,
+                    purchaseDate: purchaseDate,
+                    releaseDate: releaseDate,
+                    status: 'pending',
+                    type: 'hold',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                // Zu Firebase hinzufügen
+                const docRef = await transactionsRef.add(transaction);
+                
+                // Lokal hinzufügen
+                holdTransactions.unshift({
+                    id: docRef.id,
+                    ...transaction
+                });
+                
+                // Modal schließen
+                document.getElementById('holdModal').classList.remove('active');
+                document.getElementById('holdForm').reset();
+                
+                // Datum zurücksetzen
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('holdDate').value = today;
+                updateReleaseDate();
+                
+                updateDisplay();
+                showNotification(`Betrag von ${amount} $ wurde zurückgehalten (Freigabe: ${releaseDate})`, 'success');
+                
+            } catch (error) {
+                console.error('Fehler beim Speichern der Transaktion:', error);
+                showNotification('Fehler beim Speichern der Transaktion!', 'error');
+            }
         }
         
         // Direkte Einzahlung (sofort verfügbar)
-        function addDirectDeposit() {
+        async function addDirectDeposit() {
             const amount = parseInt(document.getElementById('depositAmount').value);
             
             if (!amount || amount <= 0) {
@@ -724,37 +786,49 @@
                 return;
             }
             
-            availableBalance += amount;
-            
-            // Protokollieren
-            const transaction = {
-                id: Date.now(),
-                amount: amount,
-                type: 'direct_deposit',
-                date: new Date().toISOString().split('T')[0],
-                timestamp: Date.now()
-            };
-            
-            // In holdTransactions speichern mit sofortiger Freigabe
-            holdTransactions.push({
-                ...transaction,
-                purchaseDate: transaction.date,
-                releaseDate: transaction.date,
-                status: 'released'
-            });
-            
-            saveData();
-            
-            // Modal schließen
-            document.getElementById('depositModal').classList.remove('active');
-            document.getElementById('depositForm').reset();
-            
-            updateDisplay();
-            showNotification(`Einzahlung von ${amount} $ war erfolgreich`, 'success');
+            try {
+                // Balance in Firebase aktualisieren
+                await balanceRef.update({
+                    amount: firebase.firestore.FieldValue.increment(amount),
+                    lastUpdated: new Date().toISOString()
+                });
+                
+                availableBalance += amount;
+                
+                // Transaktion in Firebase speichern
+                const transaction = {
+                    amount: amount,
+                    type: 'deposit',
+                    date: new Date().toISOString().split('T')[0],
+                    purchaseDate: new Date().toISOString().split('T')[0],
+                    releaseDate: new Date().toISOString().split('T')[0],
+                    status: 'released',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                const docRef = await transactionsRef.add(transaction);
+                
+                // Lokal hinzufügen
+                holdTransactions.unshift({
+                    id: docRef.id,
+                    ...transaction
+                });
+                
+                // Modal schließen
+                document.getElementById('depositModal').classList.remove('active');
+                document.getElementById('depositForm').reset();
+                
+                updateDisplay();
+                showNotification(`Einzahlung von ${amount} $ war erfolgreich`, 'success');
+                
+            } catch (error) {
+                console.error('Fehler bei der Einzahlung:', error);
+                showNotification('Fehler bei der Einzahlung!', 'error');
+            }
         }
         
         // Auszahlung
-        function processWithdrawal() {
+        async function processWithdrawal() {
             const amount = parseInt(document.getElementById('withdrawAmount').value);
             
             if (!amount || amount <= 0) {
@@ -767,52 +841,85 @@
                 return;
             }
             
-            availableBalance -= amount;
-            
-            // Protokollieren
-            const transaction = {
-                id: Date.now(),
-                amount: amount,
-                type: 'withdrawal',
-                date: new Date().toISOString().split('T')[0],
-                timestamp: Date.now()
-            };
-            
-            // In holdTransactions speichern
-            holdTransactions.push({
-                ...transaction,
-                purchaseDate: transaction.date,
-                releaseDate: transaction.date,
-                status: 'released'
-            });
-            
-            saveData();
-            
-            // Modal schließen
-            document.getElementById('withdrawModal').classList.remove('active');
-            document.getElementById('withdrawForm').reset();
-            
-            updateDisplay();
-            showNotification(`Auszahlung von ${amount} $ war erfolgreich`, 'success');
+            try {
+                // Balance in Firebase aktualisieren
+                await balanceRef.update({
+                    amount: firebase.firestore.FieldValue.increment(-amount),
+                    lastUpdated: new Date().toISOString()
+                });
+                
+                availableBalance -= amount;
+                
+                // Transaktion in Firebase speichern
+                const transaction = {
+                    amount: amount,
+                    type: 'withdrawal',
+                    date: new Date().toISOString().split('T')[0],
+                    purchaseDate: new Date().toISOString().split('T')[0],
+                    releaseDate: new Date().toISOString().split('T')[0],
+                    status: 'released',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                const docRef = await transactionsRef.add(transaction);
+                
+                // Lokal hinzufügen
+                holdTransactions.unshift({
+                    id: docRef.id,
+                    ...transaction
+                });
+                
+                // Modal schließen
+                document.getElementById('withdrawModal').classList.remove('active');
+                document.getElementById('withdrawForm').reset();
+                
+                updateDisplay();
+                showNotification(`Auszahlung von ${amount} $ war erfolgreich`, 'success');
+                
+            } catch (error) {
+                console.error('Fehler bei der Auszahlung:', error);
+                showNotification('Fehler bei der Auszahlung!', 'error');
+            }
         }
         
         // Anstehende Freigaben prüfen
-        function checkPendingReleases() {
+        async function checkPendingReleases() {
             const today = new Date().toISOString().split('T')[0];
             let anyReleased = false;
+            let updatePromises = [];
             
             holdTransactions.forEach(transaction => {
                 if (transaction.status === 'pending' && transaction.releaseDate <= today) {
                     transaction.status = 'released';
                     availableBalance += transaction.amount;
                     anyReleased = true;
+                    
+                    // Firebase Updates vorbereiten
+                    updatePromises.push(
+                        transactionsRef.doc(transaction.id).update({
+                            status: 'released'
+                        })
+                    );
+                    
+                    // Balance in Firebase aktualisieren
+                    updatePromises.push(
+                        balanceRef.update({
+                            amount: firebase.firestore.FieldValue.increment(transaction.amount),
+                            lastUpdated: new Date().toISOString()
+                        })
+                    );
                 }
             });
             
             if (anyReleased) {
-                saveData();
-                updateDisplay();
-                showNotification('Neue Beträge wurden freigegeben und sind jetzt verfügbar!', 'success');
+                try {
+                    await Promise.all(updatePromises);
+                    updateDisplay();
+                    showNotification('Neue Beträge wurden freigegeben und sind jetzt verfügbar!', 'success');
+                } catch (error) {
+                    console.error('Fehler beim Aktualisieren der Freigaben:', error);
+                    showNotification('Fehler beim Freigeben der Beträge!', 'error');
+                }
             }
         }
         
@@ -851,6 +958,12 @@
             
             // Chart aktualisieren
             updateHoldChart();
+            
+            // Content anzeigen
+            document.getElementById('transactionButtons').style.display = 'grid';
+            document.getElementById('summaryCards').style.display = 'grid';
+            document.getElementById('pendingReleasesContainer').style.display = 'block';
+            document.getElementById('holdDistribution').style.display = 'block';
         }
         
         // Pending Releases Liste aktualisieren
@@ -945,7 +1058,6 @@
                             grid: { display: false },
                             ticks: { color: '#a0aec0' }
                         }
-                    }
                 }
             });
         }
@@ -981,9 +1093,16 @@
             }
             
             // Chart aktualisieren
-            holdDistributionChart.data.labels = labels;
-            holdDistributionChart.data.datasets[0].data = data;
-            holdDistributionChart.update();
+            if (holdDistributionChart) {
+                holdDistributionChart.data.labels = labels;
+                holdDistributionChart.data.datasets[0].data = data;
+                holdDistributionChart.update();
+            }
+        }
+        
+        // Loading State anzeigen/verbergen
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
         }
         
         // Notification System
