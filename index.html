@@ -3,36 +3,371 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>KhusLand Panel - Verbesserte Statistiken</title>
+    <title>Finanz Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
-        /* Basis-Styles bleiben gleich wie dein Code */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); min-height: 100vh; color: #e2e8f0; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
+            min-height: 100vh; 
+            color: #e2e8f0;
+            padding: 20px;
+        }
         
-        /* Neue Statistik-Styles */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: rgba(26, 32, 44, 0.9);
+            padding: 1.5rem 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(101, 119, 149, 0.3);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .balance-card {
+            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .balance-amount {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        
+        .transaction-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+        
+        .transaction-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .deposit-btn {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+        }
+        
+        .withdraw-btn {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+        
+        .transaction-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: rgba(26, 32, 44, 0.95);
+            padding: 2.5rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 1px solid rgba(101, 119, 149, 0.3);
+        }
+        
+        .modal-content h3 {
+            color: #90cdf4;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #90cdf4;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.9rem;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(101, 119, 149, 0.3);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #e2e8f0;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            border: none;
+            padding: 0.9rem 1.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-secondary {
+            background: rgba(66, 153, 225, 0.15);
+            color: #90cdf4;
+            border: 1px solid #4299e1;
+            padding: 0.9rem 1.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
+        }
+        
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
         
-        .stat-period-selector {
+        .stat-card {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 12px;
+            padding: 1.8rem;
+            border: 1px solid rgba(101, 119, 149, 0.3);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-title {
+            color: #90cdf4;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #48bb78;
+            margin: 0.5rem 0;
+        }
+        
+        .chart-container {
+            height: 250px;
+            margin-top: 1.5rem;
+            position: relative;
+        }
+        
+        .transactions-table {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 12px;
+            padding: 1.8rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(101, 119, 149, 0.3);
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .table th {
+            background: rgba(30, 41, 59, 0.6);
+            padding: 1rem;
+            text-align: left;
+            color: #90cdf4;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(101, 119, 149, 0.3);
+        }
+        
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(101, 119, 149, 0.2);
+            color: #cbd5e0;
+        }
+        
+        .deposit-row {
+            border-left: 4px solid #48bb78;
+        }
+        
+        .withdraw-row {
+            border-left: 4px solid #f56565;
+        }
+        
+        .positive-amount {
+            color: #48bb78;
+            font-weight: bold;
+        }
+        
+        .negative-amount {
+            color: #f56565;
+            font-weight: bold;
+        }
+        
+        .delete-btn {
+            background: rgba(245, 101, 101, 0.2);
+            color: #fc8181;
+            border: 1px solid rgba(245, 101, 101, 0.3);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        
+        .delete-btn:hover {
+            background: rgba(245, 101, 101, 0.3);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 1001;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+        
+        .notification.error {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+        }
+        
+        .notification.info {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+        }
+        
+        .time-distribution {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 12px;
+            padding: 1.8rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(101, 119, 149, 0.3);
+        }
+        
+        .distribution-chart {
+            height: 300px;
+            margin-top: 1rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #a0aec0;
+        }
+        
+        .category-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .category-income {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
+        }
+        
+        .category-expense {
+            background: rgba(245, 101, 101, 0.2);
+            color: #f56565;
+        }
+        
+        .period-selector {
             display: flex;
             gap: 0.5rem;
             margin-bottom: 1.5rem;
             background: rgba(26, 32, 44, 0.8);
-            padding: 0.5rem;
+            padding: 0.8rem;
             border-radius: 10px;
             flex-wrap: wrap;
         }
         
         .period-btn {
-            padding: 0.6rem 1.2rem;
+            padding: 0.7rem 1.4rem;
             background: rgba(30, 41, 59, 0.6);
             border: 1px solid rgba(101, 119, 149, 0.3);
             border-radius: 8px;
@@ -49,91 +384,16 @@
             border-color: #4299e1;
         }
         
-        .stat-card {
-            background: rgba(26, 32, 44, 0.8);
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid rgba(101, 119, 149, 0.3);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-        }
-        
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        
-        .stat-title {
-            color: #90cdf4;
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #48bb78;
-            margin: 0.5rem 0;
-        }
-        
-        .stat-change {
-            font-size: 0.9rem;
-            color: #a0aec0;
-        }
-        
-        .stat-change.positive {
-            color: #48bb78;
-        }
-        
-        .stat-change.negative {
-            color: #f56565;
-        }
-        
-        .chart-container {
-            height: 250px;
-            margin-top: 1rem;
-            position: relative;
-        }
-        
-        .top-sellers-list, .top-buyers-list {
-            list-style: none;
-            margin-top: 1rem;
-        }
-        
-        .top-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.8rem;
-            background: rgba(30, 41, 59, 0.4);
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-            border: 1px solid rgba(101, 119, 149, 0.2);
-        }
-        
-        .top-rank {
-            width: 28px;
-            height: 28px;
-            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-        
-        .stats-summary {
+        .summary-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
-            margin-top: 1.5rem;
+            margin: 1.5rem 0;
         }
         
-        .summary-item {
+        .summary-card {
             background: rgba(30, 41, 59, 0.4);
-            padding: 1rem;
+            padding: 1.2rem;
             border-radius: 8px;
             text-align: center;
         }
@@ -149,434 +409,757 @@
             font-weight: bold;
             color: #90cdf4;
         }
-        
-        /* Rest deines CSS bleibt gleich */
     </style>
 </head>
 <body>
-    <!-- Deine bestehenden Login und Header Komponenten bleiben gleich -->
-    
-    <!-- Neue Statistik-Tab -->
-    <div id="statistics" class="tab-content">
-        <div class="page-header">
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
             <h1 style="color: #90cdf4; font-size: 2rem;">
-                <i class="fas fa-chart-line"></i> Statistik Dashboard
+                <i class="fas fa-chart-line"></i> Finanz Management System
             </h1>
+            <div style="color: #cbd5e0;">
+                <i class="fas fa-sync-alt"></i> Echtzeit-Daten
+            </div>
         </div>
         
-        <div class="stat-period-selector">
+        <!-- Balance Card -->
+        <div class="balance-card">
+            <h2 style="font-size: 1.3rem; opacity: 0.9; margin-bottom: 0.5rem;">Aktuelles Guthaben</h2>
+            <div class="balance-amount" id="currentBalance">0 $</div>
+            <div style="opacity: 0.8; font-size: 0.9rem;">
+                Letzte Aktualisierung: <span id="lastUpdate">--</span>
+            </div>
+        </div>
+        
+        <!-- Transaction Buttons -->
+        <div class="transaction-buttons">
+            <button class="transaction-btn deposit-btn" id="openDepositModal">
+                <i class="fas fa-plus-circle"></i> Einzahlen
+            </button>
+            <button class="transaction-btn withdraw-btn" id="openWithdrawModal">
+                <i class="fas fa-minus-circle"></i> Auszahlen
+            </button>
+        </div>
+        
+        <!-- Period Selector -->
+        <div class="period-selector">
             <button class="period-btn active" data-period="today">Heute</button>
             <button class="period-btn" data-period="week">Diese Woche</button>
             <button class="period-btn" data-period="month">Dieser Monat</button>
             <button class="period-btn" data-period="year">Dieses Jahr</button>
-            <button class="period-btn" data-period="alltime">Gesamt</button>
+            <button class="period-btn" data-period="all">Gesamt</button>
         </div>
         
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-label">Einzahlungen</div>
+                <div class="summary-value positive-amount" id="totalDeposits">0 $</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Auszahlungen</div>
+                <div class="summary-value negative-amount" id="totalWithdrawals">0 $</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Transaktionen</div>
+                <div class="summary-value" id="transactionCount">0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Durchschnitt</div>
+                <div class="summary-value" id="averageTransaction">0 $</div>
+            </div>
+        </div>
+        
+        <!-- Statistics Grid -->
         <div class="stats-grid">
-            <!-- Umsatz Statistik -->
+            <!-- Time Distribution Chart -->
+            <div class="time-distribution">
+                <div class="stat-header">
+                    <div class="stat-title">Zeitliche Verteilung (7 Tage)</div>
+                    <i class="fas fa-calendar-alt" style="color: #4299e1;"></i>
+                </div>
+                <div class="distribution-chart">
+                    <canvas id="timeDistributionChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Categories Distribution -->
             <div class="stat-card">
                 <div class="stat-header">
-                    <div class="stat-title">Umsatz</div>
-                    <i class="fas fa-euro-sign" style="color: #48bb78;"></i>
-                </div>
-                <div class="stat-value" id="revenueTotal">0 €</div>
-                <div class="stat-change positive" id="revenueChange">
-                    <i class="fas fa-arrow-up"></i> 0% gegenüber gestern
+                    <div class="stat-title">Kategorien Verteilung</div>
+                    <i class="fas fa-chart-pie" style="color: #ed8936;"></i>
                 </div>
                 <div class="chart-container">
-                    <canvas id="revenueChart"></canvas>
-                </div>
-            </div>
-            
-            <!-- Transaktionen Statistik -->
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-title">Transaktionen</div>
-                    <i class="fas fa-exchange-alt" style="color: #4299e1;"></i>
-                </div>
-                <div class="stat-value" id="transactionCount">0</div>
-                <div class="stat-change positive" id="transactionChange">
-                    <i class="fas fa-arrow-up"></i> 0% gegenüber gestern
-                </div>
-                <div class="chart-container">
-                    <canvas id="transactionChart"></canvas>
-                </div>
-            </div>
-            
-            <!-- Durchschnittlicher Wert -->
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-title">Durchschnitt/Wert</div>
-                    <i class="fas fa-calculator" style="color: #ed8936;"></i>
-                </div>
-                <div class="stat-value" id="avgValue">0 €</div>
-                <div class="stats-summary">
-                    <div class="summary-item">
-                        <div class="summary-label">Max. Einzahlung</div>
-                        <div class="summary-value" id="maxDeposit">0 €</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Min. Einzahlung</div>
-                        <div class="summary-value" id="minDeposit">0 €</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Top Verkäufer -->
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-title">Top Verkäufer</div>
-                    <i class="fas fa-trophy" style="color: #f6e05e;"></i>
-                </div>
-                <ul class="top-sellers-list" id="topSellers">
-                    <!-- Wird dynamisch gefüllt -->
-                </ul>
-            </div>
-            
-            <!-- Top Käufer -->
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-title">Top Käufer</div>
-                    <i class="fas fa-user-tie" style="color: #68d391;"></i>
-                </div>
-                <ul class="top-buyers-list" id="topBuyers">
-                    <!-- Wird dynamisch gefüllt -->
-                </ul>
-            </div>
-            
-            <!-- Rabatt Statistik -->
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-title">Rabatt-Nutzung</div>
-                    <i class="fas fa-percentage" style="color: #b794f4;"></i>
-                </div>
-                <div class="stat-value" id="discountTotal">0%</div>
-                <div class="stats-summary">
-                    <div class="summary-item">
-                        <div class="summary-label">Häufigster Rabatt</div>
-                        <div class="summary-value" id="mostUsedDiscount">0%</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Gespart</div>
-                        <div class="summary-value" id="totalSaved">0 €</div>
-                    </div>
+                    <canvas id="categoriesChart"></canvas>
                 </div>
             </div>
         </div>
         
-        <!-- Zeitliche Verteilung -->
-        <div class="stat-card" style="margin-top: 2rem;">
+        <!-- Recent Transactions -->
+        <div class="transactions-table">
             <div class="stat-header">
-                <div class="stat-title">Zeitliche Verteilung (7 Tage)</div>
-                <i class="fas fa-clock" style="color: #fc8181;"></i>
+                <div class="stat-title">Letzte Transaktionen</div>
+                <button class="btn-secondary" id="refreshTransactions">
+                    <i class="fas fa-sync"></i> Aktualisieren
+                </button>
             </div>
-            <div class="chart-container" style="height: 300px;">
-                <canvas id="timeDistributionChart"></canvas>
-            </div>
+            
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>Typ</th>
+                        <th>Kategorie</th>
+                        <th>Beschreibung</th>
+                        <th>Betrag ($)</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionsList">
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <p>Noch keine Transaktionen vorhanden</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
+    
+    <!-- Deposit Modal -->
+    <div id="depositModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3><i class="fas fa-plus-circle"></i> Einzahlung tätigen</h3>
+            <form id="depositForm">
+                <div class="form-group">
+                    <label for="depositAmount">Betrag ($)</label>
+                    <input type="number" id="depositAmount" min="0" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label for="depositCategory">Kategorie</label>
+                    <select id="depositCategory" required>
+                        <option value="">Bitte auswählen</option>
+                        <option value="gehalt">Gehalt</option>
+                        <option value="verkauf">Verkauf</option>
+                        <option value="investment">Investment</option>
+                        <option value="geschenk">Geschenk</option>
+                        <option value="rückerstattung">Rückerstattung</option>
+                        <option value="sonstiges">Sonstiges</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="depositDescription">Beschreibung</label>
+                    <textarea id="depositDescription" rows="3" placeholder="Beschreibung der Einzahlung..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="depositDate">Datum</label>
+                    <input type="date" id="depositDate" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" id="cancelDeposit">Abbrechen</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-check"></i> Einzahlen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Withdrawal Modal -->
+    <div id="withdrawModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3><i class="fas fa-minus-circle"></i> Auszahlung tätigen</h3>
+            <form id="withdrawForm">
+                <div class="form-group">
+                    <label for="withdrawAmount">Betrag ($)</label>
+                    <input type="number" id="withdrawAmount" min="0" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label for="withdrawCategory">Kategorie</label>
+                    <select id="withdrawCategory" required>
+                        <option value="">Bitte auswählen</option>
+                        <option value="miete">Miete</option>
+                        <option value="lebensmittel">Lebensmittel</option>
+                        <option value="transport">Transport</option>
+                        <option value="unterhaltung">Unterhaltung</option>
+                        <option value="gesundheit">Gesundheit</option>
+                        <option value="bildung">Bildung</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="rechnung">Rechnung</option>
+                        <option value="sonstiges">Sonstiges</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="withdrawDescription">Beschreibung</label>
+                    <textarea id="withdrawDescription" rows="3" placeholder="Beschreibung der Auszahlung..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="withdrawDate">Datum</label>
+                    <input type="date" id="withdrawDate" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" id="cancelWithdraw">Abbrechen</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-check"></i> Auszahlen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div id="notification" class="notification hidden"></div>
 
-    <script type="module">
-        // Firebase Importe (bleiben gleich)
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-        import { getDatabase, ref, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
-
-        // Firebase Konfiguration (deine bestehende)
-        const firebaseConfig = {
-            apiKey: "AIzaSyCw4nadHCIRcouTJJoQ3ElToiVVFr5Rufo",
-            authDomain: "khusland-b7d13.firebaseapp.com",
-            databaseURL: "https://khusland-b7d13-default-rtdb.firebaseio.com",
-            projectId: "khusland-b7d13",
-            storageBucket: "khusland-b7d13.firebasestorage.app",
-            messagingSenderId: "69573193613",
-            appId: "1:69573193613:web:86c4d839281b1e343cd7c4",
-            measurementId: "G-JSCWR4207G"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const statsRef = ref(db, 'statistics');
-        const entriesRef = ref(db, 'weed_entries');
-
-        // Statistik-Variablen
+    <script>
+        // Firebase Configuration (LokalStorage als Fallback)
+        const STORAGE_KEY = 'financial_data_v2';
+        let transactions = [];
         let currentPeriod = 'today';
-        let revenueChart, transactionChart, timeChart;
-        let allEntries = [];
-
-        // Statistik-Funktionen
-        function loadStatistics() {
-            const statsQuery = query(entriesRef, orderByChild('timestamp'), limitToLast(1000));
+        let charts = {};
+        
+        // Initialisierung
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            initializeCharts();
+            setupEventListeners();
+            updateDisplay();
             
-            onValue(statsQuery, (snapshot) => {
-                allEntries = [];
-                snapshot.forEach((childSnapshot) => {
-                    const entry = childSnapshot.val();
-                    entry.key = childSnapshot.key;
-                    entry.timestamp = entry.timestamp || Date.now();
-                    allEntries.push(entry);
-                });
+            // Setze heutiges Datum in den Formularen
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('depositDate').value = today;
+            document.getElementById('withdrawDate').value = today;
+        });
+        
+        // Daten laden
+        function loadData() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                transactions = data.transactions || [];
                 
-                updateStatistics();
-                updateCharts();
-                updateTopLists();
+                // Demo-Daten, wenn keine vorhanden
+                if (transactions.length === 0) {
+                    createDemoData();
+                }
+            } else {
+                createDemoData();
+            }
+        }
+        
+        // Demo-Daten erstellen
+        function createDemoData() {
+            const now = new Date();
+            const demoTransactions = [
+                {
+                    id: Date.now() - 7,
+                    type: 'deposit',
+                    amount: 1500,
+                    category: 'gehalt',
+                    description: 'Monatsgehalt',
+                    date: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    timestamp: Date.now() - 7
+                },
+                {
+                    id: Date.now() - 6,
+                    type: 'withdraw',
+                    amount: 800,
+                    category: 'miete',
+                    description: 'Monatsmiete',
+                    date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    timestamp: Date.now() - 6
+                },
+                {
+                    id: Date.now() - 5,
+                    type: 'withdraw',
+                    amount: 300,
+                    category: 'lebensmittel',
+                    description: 'Wocheneinkauf',
+                    date: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    timestamp: Date.now() - 5
+                },
+                {
+                    id: Date.now() - 4,
+                    type: 'deposit',
+                    amount: 500,
+                    category: 'verkauf',
+                    description: 'Verkauf von Altwaren',
+                    date: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    timestamp: Date.now() - 4
+                },
+                {
+                    id: Date.now() - 3,
+                    type: 'withdraw',
+                    amount: 120,
+                    category: 'transport',
+                    description: 'Tankfüllung',
+                    date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    timestamp: Date.now() - 3
+                }
+            ];
+            
+            transactions = demoTransactions;
+            saveData();
+        }
+        
+        // Daten speichern
+        function saveData() {
+            const data = {
+                transactions: transactions,
+                lastUpdated: new Date().toISOString()
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+        
+        // Event Listeners
+        function setupEventListeners() {
+            // Modals öffnen
+            document.getElementById('openDepositModal').addEventListener('click', () => {
+                document.getElementById('depositModal').classList.add('active');
+            });
+            
+            document.getElementById('openWithdrawModal').addEventListener('click', () => {
+                document.getElementById('withdrawModal').classList.add('active');
+            });
+            
+            // Modals schließen
+            document.getElementById('cancelDeposit').addEventListener('click', () => {
+                document.getElementById('depositModal').classList.remove('active');
+                document.getElementById('depositForm').reset();
+            });
+            
+            document.getElementById('cancelWithdraw').addEventListener('click', () => {
+                document.getElementById('withdrawModal').classList.remove('active');
+                document.getElementById('withdrawForm').reset();
+            });
+            
+            // Forms verarbeiten
+            document.getElementById('depositForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addTransaction('deposit');
+            });
+            
+            document.getElementById('withdrawForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addTransaction('withdraw');
+            });
+            
+            // Period Buttons
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentPeriod = this.getAttribute('data-period');
+                    updateDisplay();
+                });
+            });
+            
+            // Refresh Button
+            document.getElementById('refreshTransactions').addEventListener('click', () => {
+                updateDisplay();
+                showNotification('Daten aktualisiert', 'info');
             });
         }
-
-        function filterByPeriod(entries, period) {
-            const now = new Date();
-            let startDate;
+        
+        // Transaktion hinzufügen
+        function addTransaction(type) {
+            const form = type === 'deposit' ? 
+                document.getElementById('depositForm') : 
+                document.getElementById('withdrawForm');
             
-            switch(period) {
+            const amount = parseFloat(
+                type === 'deposit' ? 
+                document.getElementById('depositAmount').value : 
+                document.getElementById('withdrawAmount').value
+            );
+            
+            const category = type === 'deposit' ? 
+                document.getElementById('depositCategory').value : 
+                document.getElementById('withdrawCategory').value;
+            
+            const description = type === 'deposit' ? 
+                document.getElementById('depositDescription').value : 
+                document.getElementById('withdrawDescription').value;
+            
+            const date = type === 'deposit' ? 
+                document.getElementById('depositDate').value : 
+                document.getElementById('withdrawDate').value;
+            
+            if (!amount || amount <= 0) {
+                showNotification('Bitte geben Sie einen gültigen Betrag ein!', 'error');
+                return;
+            }
+            
+            if (!category) {
+                showNotification('Bitte wählen Sie eine Kategorie aus!', 'error');
+                return;
+            }
+            
+            const transaction = {
+                id: Date.now(),
+                type: type,
+                amount: amount,
+                category: category,
+                description: description || 'Keine Beschreibung',
+                date: date,
+                timestamp: Date.now()
+            };
+            
+            transactions.unshift(transaction);
+            saveData();
+            
+            // Modal schließen und Form zurücksetzen
+            document.getElementById(type === 'deposit' ? 'depositModal' : 'withdrawModal').classList.remove('active');
+            form.reset();
+            
+            // Heutiges Datum wieder setzen
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('depositDate').value = today;
+            document.getElementById('withdrawDate').value = today;
+            
+            updateDisplay();
+            showNotification(
+                `${type === 'deposit' ? 'Einzahlung' : 'Auszahlung'} über ${amount.toFixed(2)} $ erfolgreich!`, 
+                'success'
+            );
+        }
+        
+        // Transaktion löschen
+        function deleteTransaction(id) {
+            if (confirm('Möchten Sie diese Transaktion wirklich löschen?')) {
+                transactions = transactions.filter(t => t.id !== id);
+                saveData();
+                updateDisplay();
+                showNotification('Transaktion gelöscht', 'success');
+            }
+        }
+        
+        // Transaktionen filtern nach Periode
+        function filterTransactions() {
+            const now = new Date();
+            let filtered = [...transactions];
+            
+            switch(currentPeriod) {
                 case 'today':
-                    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    const today = now.toISOString().split('T')[0];
+                    filtered = filtered.filter(t => t.date === today);
                     break;
                 case 'week':
-                    const dayOfWeek = now.getDay();
-                    const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-                    startDate = new Date(now.getFullYear(), now.getMonth(), diff);
+                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    filtered = filtered.filter(t => new Date(t.date) >= weekAgo);
                     break;
                 case 'month':
-                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                    filtered = filtered.filter(t => new Date(t.date) >= monthStart);
                     break;
                 case 'year':
-                    startDate = new Date(now.getFullYear(), 0, 1);
+                    const yearStart = new Date(now.getFullYear(), 0, 1);
+                    filtered = filtered.filter(t => new Date(t.date) >= yearStart);
                     break;
-                default: // alltime
-                    startDate = new Date(0);
+                // 'all' - keine Filterung
             }
             
-            return entries.filter(entry => {
-                const entryDate = new Date(entry.timestamp);
-                return entryDate >= startDate;
-            });
+            return filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
         }
-
-        function updateStatistics() {
-            const filteredEntries = filterByPeriod(allEntries, currentPeriod);
-            const yesterdayEntries = filterByPeriod(allEntries, 'today');
-            const yesterdayDate = new Date();
-            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+        
+        // Anzeige aktualisieren
+        function updateDisplay() {
+            const filteredTransactions = filterTransactions();
             
-            // Umsatz berechnen
-            const totalRevenue = filteredEntries.reduce((sum, entry) => sum + (entry.totalPrice || 0), 0);
-            const yesterdayRevenue = yesterdayEntries.reduce((sum, entry) => sum + (entry.totalPrice || 0), 0);
-            const revenueChange = yesterdayRevenue > 0 ? 
-                ((totalRevenue - yesterdayRevenue) / yesterdayRevenue * 100).toFixed(1) : 0;
+            // Balance berechnen
+            const totalDeposits = transactions
+                .filter(t => t.type === 'deposit')
+                .reduce((sum, t) => sum + t.amount, 0);
             
-            document.getElementById('revenueTotal').textContent = `${totalRevenue.toLocaleString()} €`;
-            document.getElementById('revenueChange').innerHTML = `
-                <i class="fas fa-arrow-${revenueChange >= 0 ? 'up' : 'down'}"></i> 
-                ${Math.abs(revenueChange)}% ${revenueChange >= 0 ? 'gegenüber gestern' : 'weniger als gestern'}
-            `;
-            document.getElementById('revenueChange').className = `stat-change ${revenueChange >= 0 ? 'positive' : 'negative'}`;
+            const totalWithdrawals = transactions
+                .filter(t => t.type === 'withdraw')
+                .reduce((sum, t) => sum + t.amount, 0);
             
-            // Transaktionen zählen
-            const transactionCount = filteredEntries.length;
-            const yesterdayCount = yesterdayEntries.length;
-            const transactionChange = yesterdayCount > 0 ? 
-                ((transactionCount - yesterdayCount) / yesterdayCount * 100).toFixed(1) : 0;
+            const balance = totalDeposits - totalWithdrawals;
             
-            document.getElementById('transactionCount').textContent = transactionCount.toLocaleString();
-            document.getElementById('transactionChange').innerHTML = `
-                <i class="fas fa-arrow-${transactionChange >= 0 ? 'up' : 'down'}"></i> 
-                ${Math.abs(transactionChange)}% ${transactionChange >= 0 ? 'gegenüber gestern' : 'weniger als gestern'}
-            `;
-            document.getElementById('transactionChange').className = `stat-change ${transactionChange >= 0 ? 'positive' : 'negative'}`;
+            // Balance anzeigen
+            document.getElementById('currentBalance').textContent = `${balance.toFixed(2)} $`;
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('de-DE');
             
-            // Durchschnittswerte
-            const avgValue = transactionCount > 0 ? totalRevenue / transactionCount : 0;
-            const maxDeposit = filteredEntries.length > 0 ? 
-                Math.max(...filteredEntries.map(e => e.totalPrice || 0)) : 0;
-            const minDeposit = filteredEntries.length > 0 ? 
-                Math.min(...filteredEntries.map(e => e.totalPrice || 0)) : 0;
+            // Summary Cards
+            const periodDeposits = filteredTransactions
+                .filter(t => t.type === 'deposit')
+                .reduce((sum, t) => sum + t.amount, 0);
             
-            document.getElementById('avgValue').textContent = `${avgValue.toFixed(2)} €`;
-            document.getElementById('maxDeposit').textContent = `${maxDeposit.toLocaleString()} €`;
-            document.getElementById('minDeposit').textContent = `${minDeposit.toLocaleString()} €`;
+            const periodWithdrawals = filteredTransactions
+                .filter(t => t.type === 'withdraw')
+                .reduce((sum, t) => sum + t.amount, 0);
             
-            // Rabatt-Statistik
-            const discountEntries = filteredEntries.filter(e => e.discount > 0);
-            const avgDiscount = discountEntries.length > 0 ? 
-                discountEntries.reduce((sum, e) => sum + (e.discount || 0), 0) / discountEntries.length : 0;
-            const totalSaved = filteredEntries.reduce((sum, e) => sum + (e.discountAmount || 0), 0);
+            document.getElementById('totalDeposits').textContent = `${periodDeposits.toFixed(2)} $`;
+            document.getElementById('totalWithdrawals').textContent = `${periodWithdrawals.toFixed(2)} $`;
+            document.getElementById('transactionCount').textContent = filteredTransactions.length;
             
-            document.getElementById('discountTotal').textContent = `${avgDiscount.toFixed(1)}%`;
-            document.getElementById('totalSaved').textContent = `${totalSaved.toLocaleString()} €`;
+            const avgTransaction = filteredTransactions.length > 0 ? 
+                (periodDeposits + periodWithdrawals) / filteredTransactions.length : 0;
+            document.getElementById('averageTransaction').textContent = `${avgTransaction.toFixed(2)} $`;
             
-            // Häufigster Rabatt
-            const discountCounts = {};
-            filteredEntries.forEach(entry => {
-                const discount = entry.discount || 0;
-                discountCounts[discount] = (discountCounts[discount] || 0) + 1;
-            });
+            // Transaktionen anzeigen
+            updateTransactionsTable(filteredTransactions);
             
-            let mostUsedDiscount = 0;
-            let maxCount = 0;
-            Object.keys(discountCounts).forEach(discount => {
-                if (discountCounts[discount] > maxCount) {
-                    maxCount = discountCounts[discount];
-                    mostUsedDiscount = discount;
-                }
-            });
-            
-            document.getElementById('mostUsedDiscount').textContent = `${mostUsedDiscount}%`;
+            // Charts aktualisieren
+            updateChartsData();
         }
-
-        function updateTopLists() {
-            const filteredEntries = filterByPeriod(allEntries, currentPeriod);
+        
+        // Transaktionstabelle aktualisieren
+        function updateTransactionsTable(transactions) {
+            const tbody = document.getElementById('transactionsList');
+            tbody.innerHTML = '';
             
-            // Top Verkäufer
-            const sellerStats = {};
-            filteredEntries.forEach(entry => {
-                const seller = entry.seller;
-                if (!seller) return;
-                
-                if (!sellerStats[seller]) {
-                    sellerStats[seller] = {
-                        count: 0,
-                        total: 0
-                    };
-                }
-                
-                sellerStats[seller].count++;
-                sellerStats[seller].total += entry.sellerShare || 0;
-            });
-            
-            const topSellers = Object.keys(sellerStats)
-                .map(seller => ({
-                    name: seller,
-                    count: sellerStats[seller].count,
-                    total: sellerStats[seller].total
-                }))
-                .sort((a, b) => b.total - a.total)
-                .slice(0, 5);
-            
-            const sellersList = document.getElementById('topSellers');
-            sellersList.innerHTML = '';
-            topSellers.forEach((seller, index) => {
-                const li = document.createElement('li');
-                li.className = 'top-item';
-                li.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 0.8rem;">
-                        <div class="top-rank">${index + 1}</div>
-                        <div>
-                            <div style="font-weight: 500;">${seller.name}</div>
-                            <div style="font-size: 0.8rem; color: #a0aec0;">${seller.count} Transaktionen</div>
-                        </div>
-                    </div>
-                    <div style="font-weight: bold; color: #48bb78;">${seller.total.toLocaleString()} €</div>
+            if (transactions.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <p>Keine Transaktionen in dieser Periode</p>
+                        </td>
+                    </tr>
                 `;
-                sellersList.appendChild(li);
-            });
+                return;
+            }
             
-            // Top Käufer (ähnlich für buyers)
+            transactions.forEach(transaction => {
+                const row = document.createElement('tr');
+                row.className = transaction.type === 'deposit' ? 'deposit-row' : 'withdraw-row';
+                
+                // Kategorie Namen
+                const categoryNames = {
+                    'gehalt': 'Gehalt', 'verkauf': 'Verkauf', 'investment': 'Investment',
+                    'geschenk': 'Geschenk', 'rückerstattung': 'Rückerstattung', 'sonstiges': 'Sonstiges',
+                    'miete': 'Miete', 'lebensmittel': 'Lebensmittel', 'transport': 'Transport',
+                    'unterhaltung': 'Unterhaltung', 'gesundheit': 'Gesundheit', 'bildung': 'Bildung',
+                    'shopping': 'Shopping', 'rechnung': 'Rechnung'
+                };
+                
+                row.innerHTML = `
+                    <td>${new Date(transaction.date).toLocaleDateString('de-DE')}</td>
+                    <td>
+                        <span class="category-badge ${transaction.type === 'deposit' ? 'category-income' : 'category-expense'}">
+                            ${transaction.type === 'deposit' ? 'Einzahlung' : 'Auszahlung'}
+                        </span>
+                    </td>
+                    <td>${categoryNames[transaction.category] || transaction.category}</td>
+                    <td>${transaction.description}</td>
+                    <td class="${transaction.type === 'deposit' ? 'positive-amount' : 'negative-amount'}">
+                        ${transaction.type === 'deposit' ? '+' : '-'}${transaction.amount.toFixed(2)} $
+                    </td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteTransaction(${transaction.id})">
+                            <i class="fas fa-trash"></i> Löschen
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
         }
-
-        function updateCharts() {
-            const filteredEntries = filterByPeriod(allEntries, currentPeriod);
-            
-            // Umsatz-Chart (letzte 7 Tage)
-            const last7Days = Array.from({length: 7}, (_, i) => {
-                const date = new Date();
-                date.setDate(date.getDate() - (6 - i));
-                return date.toLocaleDateString('de-DE', { weekday: 'short' });
-            });
-            
-            const revenueData = last7Days.map(day => {
-                const dayRevenue = filteredEntries
-                    .filter(entry => {
-                        const entryDate = new Date(entry.timestamp);
-                        return entryDate.toLocaleDateString('de-DE', { weekday: 'short' }) === day;
-                    })
-                    .reduce((sum, entry) => sum + (entry.totalPrice || 0), 0);
-                return dayRevenue;
-            });
-            
-            // Chart.js Konfiguration
-            if (!revenueChart) {
-                const ctx = document.getElementById('revenueChart').getContext('2d');
-                revenueChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: last7Days,
-                        datasets: [{
-                            label: 'Umsatz (€)',
-                            data: revenueData,
+        
+        // Charts initialisieren
+        function initializeCharts() {
+            // Zeitliche Verteilung Chart
+            const timeCtx = document.getElementById('timeDistributionChart').getContext('2d');
+            charts.timeDistribution = new Chart(timeCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Einzahlungen ($)',
+                            data: [],
+                            backgroundColor: 'rgba(72, 187, 120, 0.7)',
                             borderColor: '#48bb78',
-                            backgroundColor: 'rgba(72, 187, 120, 0.1)',
-                            borderWidth: 2,
-                            fill: true,
-                            tension: 0.4
-                        }]
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Auszahlungen ($)',
+                            data: [],
+                            backgroundColor: 'rgba(245, 101, 101, 0.7)',
+                            borderColor: '#f56565',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#cbd5e0' }
+                        }
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' } },
-                            x: { grid: { display: false } }
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#a0aec0' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#a0aec0' }
                         }
                     }
-                });
-            } else {
-                revenueChart.data.datasets[0].data = revenueData;
-                revenueChart.update();
-            }
+                }
+            });
+            
+            // Kategorien Chart
+            const catCtx = document.getElementById('categoriesChart').getContext('2d');
+            charts.categories = new Chart(catCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#4299e1', '#48bb78', '#ed8936', '#f56565',
+                            '#9f7aea', '#ed64a6', '#667eea', '#f6ad55'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: '#cbd5e0' }
+                        }
+                    }
+                }
+            });
         }
-
-        // Event Listeners für Perioden-Buttons
-        document.querySelectorAll('.period-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentPeriod = this.getAttribute('data-period');
-                updateStatistics();
-                updateCharts();
-                updateTopLists();
-            });
-        });
-
-        // Initialisierung
-        document.addEventListener('DOMContentLoaded', () => {
-            loadStatistics();
+        
+        // Charts Daten aktualisieren
+        function updateChartsData() {
+            // Letzte 7 Tage
+            const last7Days = [];
+            const depositsData = [];
+            const withdrawalsData = [];
             
-            // Statistik-Tab hinzufügen
-            const navTabs = document.querySelector('.nav-tabs');
-            const statsTab = document.createElement('button');
-            statsTab.id = 'statsTab';
-            statsTab.className = 'nav-tab';
-            statsTab.innerHTML = '<i class="fas fa-chart-line"></i> Statistiken';
-            statsTab.addEventListener('click', () => switchTab('statistics'));
-            navTabs.appendChild(statsTab);
-            
-            // Statistik-Tab Content hinzufügen
-            const tabContents = document.querySelector('.tab-content').parentElement;
-            const statsContent = document.createElement('div');
-            statsContent.id = 'statistics';
-            statsContent.className = 'tab-content';
-            tabContents.appendChild(statsContent);
-        });
-
-        function switchTab(tabName) {
-            // Tab-Logik bleibt gleich wie in deinem Code
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            document.querySelectorAll('.nav-tab').forEach(button => {
-                button.classList.remove('active');
-            });
-            
-            document.getElementById(tabName).classList.add('active');
-            document.getElementById(tabName + 'Tab').classList.add('active');
-            
-            if (tabName === 'statistics') {
-                updateStatistics();
-                updateCharts();
-                updateTopLists();
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const dayName = date.toLocaleDateString('de-DE', { weekday: 'short' });
+                
+                last7Days.push(dayName);
+                
+                const dayDeposits = transactions
+                    .filter(t => t.date === dateStr && t.type === 'deposit')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                const dayWithdrawals = transactions
+                    .filter(t => t.date === dateStr && t.type === 'withdraw')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                depositsData.push(dayDeposits);
+                withdrawalsData.push(dayWithdrawals);
             }
+            
+            // Zeitliche Verteilung aktualisieren
+            charts.timeDistribution.data.labels = last7Days;
+            charts.timeDistribution.data.datasets[0].data = depositsData;
+            charts.timeDistribution.data.datasets[1].data = withdrawalsData;
+            charts.timeDistribution.update();
+            
+            // Kategorien Daten
+            const categoryTotals = {};
+            transactions.forEach(t => {
+                if (!categoryTotals[t.category]) {
+                    categoryTotals[t.category] = 0;
+                }
+                categoryTotals[t.category] += t.amount;
+            });
+            
+            const categoryLabels = Object.keys(categoryTotals);
+            const categoryData = Object.values(categoryTotals);
+            
+            charts.categories.data.labels = categoryLabels;
+            charts.categories.data.datasets[0].data = categoryData;
+            charts.categories.update();
         }
+        
+        // Notification System
+        function showNotification(message, type = 'info', duration = 4000) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.remove('hidden');
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.classList.add('hidden');
+                }, 300);
+            }, duration);
+        }
+        
+        // Globale Funktionen für Buttons
+        window.deleteTransaction = deleteTransaction;
+        
+        // Export-Funktion
+        function exportData() {
+            const dataStr = JSON.stringify({
+                transactions: transactions,
+                exportDate: new Date().toISOString()
+            }, null, 2);
+            
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+            const link = document.createElement('a');
+            link.setAttribute('href', dataUri);
+            link.setAttribute('download', `finanz-daten-${new Date().toISOString().split('T')[0]}.json`);
+            link.click();
+            
+            showNotification('Daten exportiert', 'success');
+        }
+        
+        // Import-Funktion
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (importedData.transactions) {
+                        transactions = importedData.transactions;
+                        saveData();
+                        updateDisplay();
+                        showNotification('Daten erfolgreich importiert!', 'success');
+                    }
+                } catch (error) {
+                    showNotification('Fehler beim Importieren der Daten!', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        // Debug-Export Button hinzufügen
+        const header = document.querySelector('.header');
+        const exportBtn = document.createElement('button');
+        exportBtn.className = 'btn-secondary';
+        exportBtn.innerHTML = '<i class="fas fa-download"></i> Export';
+        exportBtn.onclick = exportData;
+        header.appendChild(exportBtn);
+        
+        // Import Input
+        const importInput = document.createElement('input');
+        importInput.type = 'file';
+        importInput.accept = '.json';
+        importInput.style.display = 'none';
+        importInput.onchange = importData;
+        document.body.appendChild(importInput);
+        
+        const importBtn = document.createElement('button');
+        importBtn.className = 'btn-secondary';
+        importBtn.innerHTML = '<i class="fas fa-upload"></i> Import';
+        importBtn.onclick = () => importInput.click();
+        header.appendChild(importBtn);
     </script>
 </body>
 </html>
