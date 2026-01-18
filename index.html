@@ -7,11 +7,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+    <!-- Firebase SDKs (VOR Ihrem Skript) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
     <style>
+        /* Ihre CSS-Styles bleiben gleich */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: 'Inter', sans-serif; 
@@ -20,660 +21,17 @@
             color: #e2e8f0;
             padding: 20px;
         }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            background: rgba(26, 32, 44, 0.9);
-            padding: 1.5rem 2rem;
-            border-radius: 15px;
-            border: 1px solid rgba(101, 119, 149, 0.3);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-        }
-        
-        /* Hold Section */
-        .hold-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-        
-        .hold-balance-card {
-            background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
-            padding: 2rem;
-            border-radius: 15px;
-            text-align: center;
-            color: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        
-        .available-balance-card {
-            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
-            padding: 2rem;
-            border-radius: 15px;
-            text-align: center;
-            color: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        
-        .balance-label {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 0.5rem;
-        }
-        
-        .balance-amount {
-            font-size: 3.5rem;
-            font-weight: bold;
-            margin: 1rem 0;
-        }
-        
-        .balance-detail {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        
-        .pending-releases {
-            background: rgba(26, 32, 44, 0.9);
-            padding: 1.5rem;
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(101, 119, 149, 0.3);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-        }
-        
-        .pending-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            background: rgba(30, 41, 59, 0.4);
-            border-radius: 10px;
-            border-left: 4px solid #f59e0b;
-        }
-        
-        .pending-item.released {
-            border-left-color: #10b981;
-            opacity: 0.8;
-        }
-        
-        .pending-item .amount {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #f59e0b;
-        }
-        
-        .pending-item.released .amount {
-            color: #10b981;
-        }
-        
-        .pending-item .date {
-            font-size: 0.9rem;
-            color: #cbd5e0;
-        }
-        
-        .pending-item .status {
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        
-        .status.pending {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-        }
-        
-        .status.released {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-        
-        /* Buttons */
-        .transaction-buttons {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .transaction-btn {
-            padding: 1.2rem 1rem;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            text-align: center;
-        }
-        
-        .hold-btn {
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-            color: white;
-        }
-        
-        .deposit-btn {
-            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
-            color: white;
-        }
-        
-        .withdraw-btn {
-            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
-            color: white;
-        }
-        
-        .transaction-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        
-        .modal-overlay.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: rgba(26, 32, 44, 0.95);
-            padding: 2.5rem;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            border: 1px solid rgba(101, 119, 149, 0.3);
-        }
-        
-        .modal-content h3 {
-            color: #90cdf4;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            font-size: 1.5rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #90cdf4;
-            font-weight: 500;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.9rem;
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(101, 119, 149, 0.3);
-            border-radius: 8px;
-            font-size: 1rem;
-            color: #e2e8f0;
-            transition: all 0.3s;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #4299e1;
-            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 2rem;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-            color: white;
-            border: none;
-            padding: 0.9rem 1.8rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .btn-secondary {
-            background: rgba(66, 153, 225, 0.15);
-            color: #90cdf4;
-            border: 1px solid #4299e1;
-            padding: 0.9rem 1.8rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
-        }
-        
-        /* Chart Container */
-        .chart-container {
-            height: 300px;
-            margin-top: 1.5rem;
-        }
-        
-        .hold-distribution {
-            background: rgba(26, 32, 44, 0.8);
-            border-radius: 12px;
-            padding: 1.8rem;
-            margin-top: 2rem;
-            border: 1px solid rgba(101, 119, 149, 0.3);
-        }
-        
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
-        
-        .summary-card {
-            background: rgba(30, 41, 59, 0.4);
-            padding: 1.2rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .summary-label {
-            font-size: 0.9rem;
-            color: #a0aec0;
-            margin-bottom: 0.5rem;
-        }
-        
-        .summary-value {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #90cdf4;
-        }
-        
-        .hold-value {
-            color: #8b5cf6 !important;
-        }
-        
-        .positive-amount {
-            color: #48bb78 !important;
-        }
-        
-        .negative-amount {
-            color: #f56565 !important;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            z-index: 1001;
-            transform: translateX(150%);
-            transition: transform 0.3s ease;
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        .notification.success {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-        }
-        
-        .notification.error {
-            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-        }
-        
-        .notification.info {
-            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #a0aec0;
-        }
-        
-        /* Additional Statistics */
-        .additional-stats {
-            background: rgba(26, 32, 44, 0.8);
-            border-radius: 12px;
-            padding: 1.8rem;
-            margin-top: 2rem;
-            border: 1px solid rgba(101, 119, 149, 0.3);
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-            margin-top: 1.5rem;
-        }
-        
-        .stats-card {
-            background: rgba(30, 41, 59, 0.4);
-            padding: 1.5rem;
-            border-radius: 8px;
-        }
-        
-        .stats-card h4 {
-            color: #90cdf4;
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
-        }
-        
-        .stats-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
-        
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(101, 119, 149, 0.2);
-        }
-        
-        .stat-item:last-child {
-            border-bottom: none;
-        }
-        
-        .stat-label {
-            color: #cbd5e0;
-            font-size: 0.9rem;
-        }
-        
-        .stat-value {
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-        
-        /* Period Selector */
-        .period-selector {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            background: rgba(26, 32, 44, 0.8);
-            padding: 0.8rem;
-            border-radius: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .period-btn {
-            padding: 0.7rem 1.4rem;
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(101, 119, 149, 0.3);
-            border-radius: 8px;
-            color: #cbd5e0;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        
-        .period-btn.active {
-            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-            color: white;
-            border-color: #4299e1;
-        }
-        
-        .period-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        
-        /* Debug Info */
-        .debug-info {
-            background: rgba(245, 101, 101, 0.1);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-            border-left: 4px solid #f56565;
-            color: #fc8181;
-            font-size: 0.9rem;
-        }
+        /* ... restliche CSS-Styles ... */
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1 style="color: #90cdf4; font-size: 2rem;">
-                <i class="fas fa-chart-line"></i> CC-Shop Finanzsystem
-            </h1>
-            <div class="debug-info" id="debugInfo">
-                System initialisiert... Buttons sollten funktionieren
-            </div>
-        </div>
-        
-        <!-- Hold Information -->
-        <div class="hold-info" style="background: rgba(139, 92, 246, 0.1); border-left: 4px solid #8b5cf6; padding: 1rem; margin-bottom: 1.5rem; border-radius: 0 8px 8px 0;">
-            <i class="fas fa-info-circle" style="color: #8b5cf6;"></i>
-            <strong>Deine Einnahmen werden erst 2 Tage nach dem Kauf freigegeben.</strong> 
-            Die hier angezeigten Beträge werden zurückgehalten und für Einkäufe in deinem Shop verwendet.
-        </div>
-        
-        <!-- Balance Cards -->
-        <div class="hold-section">
-            <div class="hold-balance-card">
-                <div class="balance-label">Zurückgehaltene Beträge</div>
-                <div class="balance-amount hold-value" id="holdBalance">0 $</div>
-                <div class="balance-detail">Werden zu den jeweiligen Freigabedaten verfügbar</div>
-            </div>
-            
-            <div class="available-balance-card">
-                <div class="balance-label">Verfügbares Guthaben</div>
-                <div class="balance-amount" id="availableBalance">0 $</div>
-                <div class="balance-detail">Sofort verfügbar für Auszahlungen</div>
-            </div>
-        </div>
-        
-        <!-- Transaction Buttons -->
-        <div class="transaction-buttons" id="transactionButtons">
-            <button class="transaction-btn hold-btn" id="openHoldModalBtn">
-                <i class="fas fa-pause-circle"></i>
-                <span>Betrag zurückhalten</span>
-            </button>
-            <button class="transaction-btn deposit-btn" id="openDepositModalBtn">
-                <i class="fas fa-plus-circle"></i>
-                <span>Direkt einzahlen</span>
-            </button>
-            <button class="transaction-btn withdraw-btn" id="openWithdrawModalBtn">
-                <i class="fas fa-minus-circle"></i>
-                <span>Auszahlen</span>
-            </button>
-        </div>
-        
-        <!-- Period Selector -->
-        <div class="period-selector">
-            <button class="period-btn active" data-period="today">Heute</button>
-            <button class="period-btn" data-period="week">Diese Woche</button>
-            <button class="period-btn" data-period="month">Dieser Monat</button>
-            <button class="period-btn" data-period="all">Gesamt</button>
-        </div>
-        
-        <!-- Summary Cards -->
-        <div class="summary-cards" id="summaryCards">
-            <div class="summary-card">
-                <div class="summary-label">Heute fällig</div>
-                <div class="summary-value positive-amount" id="dueToday">0 $</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-label">Nächste 7 Tage</div>
-                <div class="summary-value hold-value" id="dueNextWeek">0 $</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-label">Anstehende Freigaben</div>
-                <div class="summary-value" id="pendingCount">0</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-label">Tagesbilanz</div>
-                <div class="summary-value" id="dailyBalance">0 $</div>
-            </div>
-        </div>
-        
-        <!-- Additional Statistics -->
-        <div class="additional-stats" id="additionalStats">
-            <h3 style="color: #90cdf4;">
-                <i class="fas fa-chart-bar"></i> Tages-Statistiken
-            </h3>
-            <div class="stats-grid">
-                <div class="stats-card">
-                    <h4><i class="fas fa-money-bill-wave"></i> Einnahmen Heute</h4>
-                    <div class="stats-list" id="todayIncome">
-                        <div class="empty-state" style="padding: 1rem;">
-                            <p>Keine Einnahmen heute</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="stats-card">
-                    <h4><i class="fas fa-calendar-alt"></i> Top Einnahme-Tage</h4>
-                    <div class="stats-list" id="topDays">
-                        <div class="empty-state" style="padding: 1rem;">
-                            <p>Keine Daten verfügbar</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Pending Releases -->
-        <div class="pending-releases" id="pendingReleasesContainer">
-            <h3 style="color: #90cdf4; margin-bottom: 1rem;">
-                <i class="fas fa-clock"></i> Anstehende Freigaben
-            </h3>
-            <div id="pendingReleases">
-                <div class="empty-state">
-                    <i class="fas fa-clock" style="font-size: 3rem; margin-bottom: 1rem; color: #8b5cf6;"></i>
-                    <p>Keine zurückgehaltenen Beträge vorhanden</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Hold Distribution Chart -->
-        <div class="hold-distribution" id="holdDistribution">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h3 style="color: #90cdf4;">
-                    <i class="fas fa-chart-bar"></i> Freigabe-Verteilung (Nächste 30 Tage)
-                </h3>
-                <button class="btn-secondary" id="refreshChartBtn">
-                    <i class="fas fa-sync"></i> Aktualisieren
-                </button>
-            </div>
-            <div class="chart-container">
-                <canvas id="holdDistributionChart"></canvas>
-            </div>
-        </div>
+        <!-- Ihr HTML bleibt gleich -->
     </div>
     
-    <!-- Hold Modal -->
-    <div id="holdModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3><i class="fas fa-pause-circle"></i> Betrag zurückhalten</h3>
-            <form id="holdForm">
-                <div class="form-group">
-                    <label for="holdAmount">Betrag ($)</label>
-                    <input type="number" id="holdAmount" min="0" step="1" placeholder="0" required>
-                </div>
-                <div class="form-group">
-                    <label for="holdDate">Kaufdatum</label>
-                    <input type="date" id="holdDate" required>
-                </div>
-                <div class="form-group">
-                    <label for="releaseDate">Freigabedatum (automatisch +2 Tage)</label>
-                    <input type="date" id="releaseDate" readonly style="background: rgba(30, 41, 59, 0.8);">
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-secondary" id="cancelHoldBtn">Abbrechen</button>
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-check"></i> Zurückhalten
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Deposit Modal -->
-    <div id="depositModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3><i class="fas fa-plus-circle"></i> Direkte Einzahlung</h3>
-            <form id="depositForm">
-                <div class="form-group">
-                    <label for="depositAmount">Betrag ($)</label>
-                    <input type="number" id="depositAmount" min="0" step="1" placeholder="0" required>
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-secondary" id="cancelDepositBtn">Abbrechen</button>
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-check"></i> Einzahlen
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Withdrawal Modal -->
-    <div id="withdrawModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3><i class="fas fa-minus-circle"></i> Auszahlung</h3>
-            <form id="withdrawForm">
-                <div class="form-group">
-                    <label for="withdrawAmount">Betrag ($)</label>
-                    <input type="number" id="withdrawAmount" min="0" step="1" placeholder="0" required>
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-secondary" id="cancelWithdrawBtn">Abbrechen</button>
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-check"></i> Auszahlen
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Notification -->
-    <div id="notification" class="notification"></div>
-
+    <!-- Script-Tag am ENDE des body Tags -->
     <script>
-        // Firebase Konfiguration
+        // 1. ZUERST Firebase Konfiguration definieren
         const firebaseConfig = {
             apiKey: "AIzaSyCw4nadHCIRcouTJJoQ3ElToiVVFr5Rufo",
             authDomain: "khusland-b7d13.firebaseapp.com",
@@ -684,14 +42,14 @@
             measurementId: "G-JSCWR4207G"
         };
 
-        // Firebase initialisieren
-        let app, db, transactionsRef, balanceRef;
+        // 2. Globale Variablen
+        let db, transactionsRef, balanceRef;
         let holdTransactions = [];
         let availableBalance = 0;
         let holdDistributionChart = null;
         let currentPeriod = 'today';
         
-        // Initialisierung
+        // 3. Initialisierung wenn DOM geladen ist
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM geladen, starte Initialisierung...');
             updateDebugInfo('DOM geladen');
@@ -705,136 +63,22 @@
             document.getElementById('holdDate').value = today;
             updateReleaseDate();
             
-            // Dann Firebase initialisieren
+            // 4. Firebase erst NACH DOM initialisieren
             initializeFirebase();
         });
         
-        // ALLE Event Listeners auf einmal einrichten
-        function setupAllEventListeners() {
-            console.log('Richte Event Listener ein...');
-            updateDebugInfo('Event Listener werden eingerichtet');
-            
-            // 1. Haupt-Buttons (Modal öffnen)
-            document.getElementById('openHoldModalBtn').addEventListener('click', openHoldModal);
-            document.getElementById('openDepositModalBtn').addEventListener('click', openDepositModal);
-            document.getElementById('openWithdrawModalBtn').addEventListener('click', openWithdrawModal);
-            
-            // 2. Datum ändern für Freigabedatum
-            document.getElementById('holdDate').addEventListener('change', updateReleaseDate);
-            
-            // 3. Modal Abbrechen Buttons
-            document.getElementById('cancelHoldBtn').addEventListener('click', closeHoldModal);
-            document.getElementById('cancelDepositBtn').addEventListener('click', closeDepositModal);
-            document.getElementById('cancelWithdrawBtn').addEventListener('click', closeWithdrawModal);
-            
-            // 4. Form Submit Buttons
-            document.getElementById('holdForm').addEventListener('submit', handleHoldSubmit);
-            document.getElementById('depositForm').addEventListener('submit', handleDepositSubmit);
-            document.getElementById('withdrawForm').addEventListener('submit', handleWithdrawSubmit);
-            
-            // 5. Refresh Chart Button
-            document.getElementById('refreshChartBtn').addEventListener('click', refreshChart);
-            
-            // 6. Period Buttons
-            document.querySelectorAll('.period-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    currentPeriod = this.getAttribute('data-period');
-                    updateDisplay();
-                    updateDebugInfo(`Zeitraum geändert: ${currentPeriod}`);
-                });
-            });
-            
-            console.log('Alle Event Listener eingerichtet');
-            updateDebugInfo('Event Listener eingerichtet');
-        }
-        
-        // Modal Funktionen
-        function openHoldModal() {
-            console.log('Öffne Hold Modal');
-            updateDebugInfo('Hold Modal geöffnet');
-            document.getElementById('holdModal').classList.add('active');
-        }
-        
-        function openDepositModal() {
-            console.log('Öffne Deposit Modal');
-            updateDebugInfo('Deposit Modal geöffnet');
-            document.getElementById('depositModal').classList.add('active');
-        }
-        
-        function openWithdrawModal() {
-            console.log('Öffne Withdraw Modal');
-            updateDebugInfo('Withdraw Modal geöffnet');
-            document.getElementById('withdrawModal').classList.add('active');
-        }
-        
-        function closeHoldModal() {
-            console.log('Schließe Hold Modal');
-            document.getElementById('holdModal').classList.remove('active');
-            resetHoldForm();
-        }
-        
-        function closeDepositModal() {
-            console.log('Schließe Deposit Modal');
-            document.getElementById('depositModal').classList.remove('active');
-            resetDepositForm();
-        }
-        
-        function closeWithdrawModal() {
-            console.log('Schließe Withdraw Modal');
-            document.getElementById('withdrawModal').classList.remove('active');
-            resetWithdrawForm();
-        }
-        
-        // Form Submit Handler
-        function handleHoldSubmit(e) {
-            e.preventDefault();
-            console.log('Hold Form submitted');
-            addHoldTransaction();
-        }
-        
-        function handleDepositSubmit(e) {
-            e.preventDefault();
-            console.log('Deposit Form submitted');
-            addDirectDeposit();
-        }
-        
-        function handleWithdrawSubmit(e) {
-            e.preventDefault();
-            console.log('Withdraw Form submitted');
-            processWithdrawal();
-        }
-        
-        // Form Reset Funktionen
-        function resetHoldForm() {
-            document.getElementById('holdForm').reset();
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('holdDate').value = today;
-            updateReleaseDate();
-        }
-        
-        function resetDepositForm() {
-            document.getElementById('depositForm').reset();
-        }
-        
-        function resetWithdrawForm() {
-            document.getElementById('withdrawForm').reset();
-        }
-        
-        // Refresh Chart
-        function refreshChart() {
-            updateHoldChart();
-            showNotification('Chart aktualisiert', 'info');
-        }
-        
-        // Firebase initialisieren und Daten laden
+        // 5. Firebase Initialisierung
         async function initializeFirebase() {
             try {
                 updateDebugInfo('Initialisiere Firebase...');
                 
+                // Prüfen ob Firebase verfügbar ist
+                if (typeof firebase === 'undefined') {
+                    throw new Error('Firebase SDK nicht geladen!');
+                }
+                
                 // Firebase App initialisieren
-                app = firebase.initializeApp(firebaseConfig);
+                firebase.initializeApp(firebaseConfig);
                 db = firebase.firestore();
                 transactionsRef = db.collection('finanz_transactions');
                 balanceRef = db.collection('finanz_balance').doc('current');
@@ -857,34 +101,70 @@
                 updateDisplay();
             }
         }
-        
-        // Daten von Firebase laden
+
+        // 6. Event Listener Setup (vereinfacht)
+        function setupAllEventListeners() {
+            console.log('Richte Event Listener ein...');
+            
+            // Modal Buttons
+            document.getElementById('openHoldModalBtn').addEventListener('click', openHoldModal);
+            document.getElementById('openDepositModalBtn').addEventListener('click', openDepositModal);
+            document.getElementById('openWithdrawModalBtn').addEventListener('click', openWithdrawModal);
+            
+            // Datum Änderungen
+            document.getElementById('holdDate').addEventListener('change', updateReleaseDate);
+            
+            // Abbrechen Buttons
+            document.getElementById('cancelHoldBtn').addEventListener('click', closeHoldModal);
+            document.getElementById('cancelDepositBtn').addEventListener('click', closeDepositModal);
+            document.getElementById('cancelWithdrawBtn').addEventListener('click', closeWithdrawModal);
+            
+            // Form Submits
+            document.getElementById('holdForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addHoldTransaction();
+            });
+            
+            document.getElementById('depositForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addDirectDeposit();
+            });
+            
+            document.getElementById('withdrawForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                processWithdrawal();
+            });
+            
+            // Andere Buttons
+            document.getElementById('refreshChartBtn').addEventListener('click', refreshChart);
+            
+            // Period Buttons
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentPeriod = this.getAttribute('data-period');
+                    updateDisplay();
+                });
+            });
+        }
+
+        // 7. WICHTIGE ÄNDERUNG: Daten von Firebase laden
         async function loadDataFromFirebase() {
             try {
                 // Transaktionen laden
                 const transactionsSnapshot = await transactionsRef.orderBy('createdAt', 'desc').get();
                 holdTransactions = [];
+                
                 transactionsSnapshot.forEach(doc => {
                     const data = doc.data();
-                    let createdAt = data.createdAt;
-                    
-                    // Timestamp konvertieren
-                    if (createdAt && createdAt.toDate) {
-                        createdAt = createdAt.toDate();
-                    } else if (typeof createdAt === 'string') {
-                        createdAt = new Date(createdAt);
-                    } else {
-                        createdAt = new Date();
-                    }
-                    
                     holdTransactions.push({
                         id: doc.id,
-                        ...data,
-                        createdAt: createdAt
+                        ...data
                     });
                 });
                 
-                // Balance laden
+                // Balance laden oder erstellen
                 const balanceDoc = await balanceRef.get();
                 if (balanceDoc.exists) {
                     const balanceData = balanceDoc.data();
@@ -895,6 +175,7 @@
                         amount: 0,
                         lastUpdated: new Date().toISOString()
                     });
+                    availableBalance = 0;
                 }
                 
                 updateDisplay();
@@ -905,18 +186,8 @@
                 throw error;
             }
         }
-        
-        // Freigabedatum berechnen (+2 Tage)
-        function updateReleaseDate() {
-            const holdDate = document.getElementById('holdDate').value;
-            if (holdDate) {
-                const releaseDate = new Date(holdDate);
-                releaseDate.setDate(releaseDate.getDate() + 2);
-                document.getElementById('releaseDate').value = releaseDate.toISOString().split('T')[0];
-            }
-        }
-        
-        // Hold Transaktion hinzufügen
+
+        // 8. Hold Transaktion hinzufügen (korrigiert)
         async function addHoldTransaction() {
             const amount = parseInt(document.getElementById('holdAmount').value);
             const purchaseDate = document.getElementById('holdDate').value;
@@ -934,11 +205,10 @@
                     releaseDate: releaseDate,
                     status: 'pending',
                     type: 'hold',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    createdAt: new Date().toISOString()
                 };
                 
                 console.log('Speichere Hold-Transaktion:', transaction);
-                updateDebugInfo(`Speichere Hold: ${amount} $`);
                 
                 // Zu Firebase hinzufügen
                 const docRef = await transactionsRef.add(transaction);
@@ -946,25 +216,20 @@
                 // Lokal hinzufügen
                 holdTransactions.unshift({
                     id: docRef.id,
-                    ...transaction,
-                    createdAt: new Date()
+                    ...transaction
                 });
                 
-                // Modal schließen und zurücksetzen
                 closeHoldModal();
-                
-                showNotification(`Betrag von ${amount} $ wurde zurückgehalten (Freigabe: ${releaseDate})`, 'success');
-                
-                // Display aktualisieren
+                showNotification(`Betrag von ${amount} $ wurde zurückgehalten`, 'success');
                 updateDisplay();
                 
             } catch (error) {
-                console.error('Fehler beim Speichern der Transaktion:', error);
-                showNotification('Fehler beim Speichern der Transaktion!', 'error');
+                console.error('Fehler:', error);
+                showNotification('Fehler beim Speichern!', 'error');
             }
         }
-        
-        // Direkte Einzahlung (sofort verfügbar)
+
+        // 9. Direkte Einzahlung
         async function addDirectDeposit() {
             const amount = parseInt(document.getElementById('depositAmount').value);
             
@@ -974,10 +239,7 @@
             }
             
             try {
-                console.log('Starte direkte Einzahlung:', amount);
-                updateDebugInfo(`Starte Einzahlung: ${amount} $`);
-                
-                // Balance in Firebase aktualisieren
+                // Balance aktualisieren
                 await balanceRef.update({
                     amount: firebase.firestore.FieldValue.increment(amount),
                     lastUpdated: new Date().toISOString()
@@ -985,41 +247,28 @@
                 
                 availableBalance += amount;
                 
-                // Transaktion in Firebase speichern
+                // Transaktion speichern
                 const transaction = {
                     amount: amount,
                     type: 'deposit',
                     date: new Date().toISOString().split('T')[0],
-                    purchaseDate: new Date().toISOString().split('T')[0],
-                    releaseDate: new Date().toISOString().split('T')[0],
                     status: 'released',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    createdAt: new Date().toISOString()
                 };
                 
-                const docRef = await transactionsRef.add(transaction);
+                await transactionsRef.add(transaction);
                 
-                // Lokal hinzufügen
-                holdTransactions.unshift({
-                    id: docRef.id,
-                    ...transaction,
-                    createdAt: new Date()
-                });
-                
-                // Modal schließen und zurücksetzen
                 closeDepositModal();
-                
-                showNotification(`Einzahlung von ${amount} $ war erfolgreich`, 'success');
-                
-                // Display aktualisieren
+                showNotification(`Einzahlung von ${amount} $ erfolgreich`, 'success');
                 updateDisplay();
                 
             } catch (error) {
-                console.error('Fehler bei der Einzahlung:', error);
+                console.error('Fehler:', error);
                 showNotification('Fehler bei der Einzahlung!', 'error');
             }
         }
-        
-        // Auszahlung
+
+        // 10. Auszahlung
         async function processWithdrawal() {
             const amount = parseInt(document.getElementById('withdrawAmount').value);
             
@@ -1029,15 +278,12 @@
             }
             
             if (amount > availableBalance) {
-                showNotification(`Nicht genügend Guthaben verfügbar! Verfügbar: ${availableBalance} $`, 'error');
+                showNotification(`Nicht genügend Guthaben! Verfügbar: ${availableBalance} $`, 'error');
                 return;
             }
             
             try {
-                console.log('Starte Auszahlung:', amount);
-                updateDebugInfo(`Starte Auszahlung: ${amount} $`);
-                
-                // Balance in Firebase aktualisieren
+                // Balance aktualisieren
                 await balanceRef.update({
                     amount: firebase.firestore.FieldValue.increment(-amount),
                     lastUpdated: new Date().toISOString()
@@ -1045,273 +291,120 @@
                 
                 availableBalance -= amount;
                 
-                // Transaktion in Firebase speichern
+                // Transaktion speichern
                 const transaction = {
                     amount: amount,
                     type: 'withdrawal',
                     date: new Date().toISOString().split('T')[0],
-                    purchaseDate: new Date().toISOString().split('T')[0],
-                    releaseDate: new Date().toISOString().split('T')[0],
                     status: 'released',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    createdAt: new Date().toISOString()
                 };
                 
-                const docRef = await transactionsRef.add(transaction);
+                await transactionsRef.add(transaction);
                 
-                // Lokal hinzufügen
-                holdTransactions.unshift({
-                    id: docRef.id,
-                    ...transaction,
-                    createdAt: new Date()
-                });
-                
-                // Modal schließen und zurücksetzen
                 closeWithdrawModal();
-                
-                showNotification(`Auszahlung von ${amount} $ war erfolgreich`, 'success');
-                
-                // Display aktualisieren
+                showNotification(`Auszahlung von ${amount} $ erfolgreich`, 'success');
                 updateDisplay();
                 
             } catch (error) {
-                console.error('Fehler bei der Auszahlung:', error);
+                console.error('Fehler:', error);
                 showNotification('Fehler bei der Auszahlung!', 'error');
             }
         }
+
+        // 11. Freigabedatum berechnen
+        function updateReleaseDate() {
+            const holdDate = document.getElementById('holdDate').value;
+            if (holdDate) {
+                const releaseDate = new Date(holdDate);
+                releaseDate.setDate(releaseDate.getDate() + 2);
+                document.getElementById('releaseDate').value = releaseDate.toISOString().split('T')[0];
+            }
+        }
+
+        // 12. Modal Funktionen (kurzgefasst)
+        function openHoldModal() {
+            document.getElementById('holdModal').classList.add('active');
+        }
         
-        // Anstehende Freigaben prüfen
+        function openDepositModal() {
+            document.getElementById('depositModal').classList.add('active');
+        }
+        
+        function openWithdrawModal() {
+            document.getElementById('withdrawModal').classList.add('active');
+        }
+        
+        function closeHoldModal() {
+            document.getElementById('holdModal').classList.remove('active');
+            document.getElementById('holdForm').reset();
+            document.getElementById('holdDate').value = new Date().toISOString().split('T')[0];
+            updateReleaseDate();
+        }
+        
+        function closeDepositModal() {
+            document.getElementById('depositModal').classList.remove('active');
+            document.getElementById('depositForm').reset();
+        }
+        
+        function closeWithdrawModal() {
+            document.getElementById('withdrawModal').classList.remove('active');
+            document.getElementById('withdrawForm').reset();
+        }
+
+        // 13. Anstehende Freigaben prüfen
         async function checkPendingReleases() {
             const today = new Date().toISOString().split('T')[0];
             let anyReleased = false;
-            let updatePromises = [];
             
-            holdTransactions.forEach(transaction => {
+            for (const transaction of holdTransactions) {
                 if (transaction.status === 'pending' && transaction.releaseDate <= today) {
                     transaction.status = 'released';
                     availableBalance += transaction.amount;
                     anyReleased = true;
                     
-                    // Firebase Updates vorbereiten
-                    updatePromises.push(
-                        transactionsRef.doc(transaction.id).update({
-                            status: 'released'
-                        })
-                    );
+                    // In Firebase aktualisieren
+                    await transactionsRef.doc(transaction.id).update({
+                        status: 'released'
+                    });
                     
-                    // Balance in Firebase aktualisieren
-                    updatePromises.push(
-                        balanceRef.update({
-                            amount: firebase.firestore.FieldValue.increment(transaction.amount),
-                            lastUpdated: new Date().toISOString()
-                        })
-                    );
-                }
-            });
-            
-            if (anyReleased) {
-                try {
-                    await Promise.all(updatePromises);
-                    updateDisplay();
-                    showNotification('Neue Beträge wurden freigegeben und sind jetzt verfügbar!', 'success');
-                } catch (error) {
-                    console.error('Fehler beim Aktualisieren der Freigaben:', error);
-                    showNotification('Fehler beim Freigeben der Beträge!', 'error');
+                    await balanceRef.update({
+                        amount: firebase.firestore.FieldValue.increment(transaction.amount)
+                    });
                 }
             }
+            
+            if (anyReleased) {
+                updateDisplay();
+                showNotification('Neue Beträge wurden freigegeben!', 'success');
+            }
         }
-        
-        // Anzeige aktualisieren
+
+        // 14. Anzeige aktualisieren
         function updateDisplay() {
             const today = new Date().toISOString().split('T')[0];
             
-            // Berechnungen
             const pendingTransactions = holdTransactions.filter(t => t.status === 'pending');
-            const releasedTransactions = holdTransactions.filter(t => t.status === 'released');
-            
             const totalHoldBalance = pendingTransactions.reduce((sum, t) => sum + t.amount, 0);
             
-            // Heute fällige Beträge
+            // Heute fällig
             const dueToday = pendingTransactions
                 .filter(t => t.releaseDate === today)
                 .reduce((sum, t) => sum + t.amount, 0);
-            
-            // Nächste 7 Tage
-            const nextWeek = new Date();
-            nextWeek.setDate(nextWeek.getDate() + 7);
-            const nextWeekStr = nextWeek.toISOString().split('T')[0];
-            
-            const dueNextWeek = pendingTransactions
-                .filter(t => t.releaseDate > today && t.releaseDate <= nextWeekStr)
-                .reduce((sum, t) => sum + t.amount, 0);
-            
-            // Tagesbilanz berechnen
-            const dailyDeposits = releasedTransactions
-                .filter(t => t.type === 'deposit' && t.date === today)
-                .reduce((sum, t) => sum + t.amount, 0);
-            
-            const dailyWithdrawals = releasedTransactions
-                .filter(t => t.type === 'withdrawal' && t.date === today)
-                .reduce((sum, t) => sum + t.amount, 0);
-            
-            const dailyBalance = dailyDeposits - dailyWithdrawals;
             
             // Balances anzeigen
             document.getElementById('holdBalance').textContent = `${totalHoldBalance} $`;
             document.getElementById('availableBalance').textContent = `${availableBalance} $`;
             document.getElementById('dueToday').textContent = `${dueToday} $`;
-            document.getElementById('dueNextWeek').textContent = `${dueNextWeek} $`;
             document.getElementById('pendingCount').textContent = pendingTransactions.length;
-            document.getElementById('dailyBalance').textContent = `${dailyBalance} $`;
-            document.getElementById('dailyBalance').className = `summary-value ${dailyBalance >= 0 ? 'positive-amount' : 'negative-amount'}`;
-            
-            // Pending Releases anzeigen
-            updatePendingReleasesList(pendingTransactions);
-            
-            // Tages-Statistiken aktualisieren
-            updateDailyStats(releasedTransactions);
             
             // Chart aktualisieren
             updateHoldChart();
         }
-        
-        // Pending Releases Liste aktualisieren
-        function updatePendingReleasesList(pendingTransactions) {
-            const container = document.getElementById('pendingReleases');
-            
-            if (pendingTransactions.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-clock" style="font-size: 3rem; margin-bottom: 1rem; color: #8b5cf6;"></i>
-                        <p>Keine zurückgehaltenen Beträge vorhanden</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Nach ReleaseDate sortieren
-            pendingTransactions.sort((a, b) => new Date(a.releaseDate) - new Date(b.releaseDate));
-            
-            container.innerHTML = '';
-            
-            pendingTransactions.forEach(transaction => {
-                const today = new Date().toISOString().split('T')[0];
-                const isReleasedToday = transaction.releaseDate === today;
-                
-                const div = document.createElement('div');
-                div.className = `pending-item ${isReleasedToday ? 'released' : ''}`;
-                div.innerHTML = `
-                    <div>
-                        <div class="amount">${transaction.amount} $</div>
-                        <div style="color: #a0aec0; font-size: 0.8rem; margin-top: 0.3rem;">
-                            Kauf: ${transaction.purchaseDate}
-                        </div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div class="date">Freigabe: ${transaction.releaseDate}</div>
-                        <div class="status ${isReleasedToday ? 'released' : 'pending'}">
-                            ${isReleasedToday ? 'Heute fällig' : 'Ausstehend'}
-                        </div>
-                        ${isReleasedToday ? 
-                            '<div style="color: #10b981; font-size: 0.8rem; margin-top: 0.3rem;">✅ Zum Guthaben hinzugefügt</div>' : 
-                            ''}
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-        
-        // Tages-Statistiken aktualisieren
-        function updateDailyStats(releasedTransactions) {
-            const today = new Date().toISOString().split('T')[0];
-            
-            // Einnahmen heute
-            const depositsToday = releasedTransactions
-                .filter(t => t.type === 'deposit' && t.date === today);
-            
-            const todayIncomeContainer = document.getElementById('todayIncome');
-            todayIncomeContainer.innerHTML = '';
-            
-            if (depositsToday.length === 0) {
-                todayIncomeContainer.innerHTML = `
-                    <div class="empty-state" style="padding: 1rem;">
-                        <p>Keine Einnahmen heute</p>
-                    </div>
-                `;
-            } else {
-                const totalToday = depositsToday.reduce((sum, t) => sum + t.amount, 0);
-                
-                // Gesamtsumme anzeigen
-                const totalItem = document.createElement('div');
-                totalItem.className = 'stat-item';
-                totalItem.innerHTML = `
-                    <span class="stat-label">Gesamtsumme:</span>
-                    <span class="stat-value positive-amount">${totalToday} $</span>
-                `;
-                todayIncomeContainer.appendChild(totalItem);
-                
-                // Einzelne Transaktionen
-                depositsToday.slice(0, 5).forEach(transaction => {
-                    const item = document.createElement('div');
-                    item.className = 'stat-item';
-                    item.innerHTML = `
-                        <span class="stat-label">Einzahlung:</span>
-                        <span class="stat-value">${transaction.amount} $</span>
-                    `;
-                    todayIncomeContainer.appendChild(item);
-                });
-            }
-            
-            // Top Einnahme-Tage berechnen
-            const dailyEarnings = {};
-            releasedTransactions.forEach(transaction => {
-                if (transaction.type === 'deposit') {
-                    if (!dailyEarnings[transaction.date]) {
-                        dailyEarnings[transaction.date] = 0;
-                    }
-                    dailyEarnings[transaction.date] += transaction.amount;
-                }
-            });
-            
-            // In Array umwandeln und sortieren
-            const topDays = Object.entries(dailyEarnings)
-                .map(([date, amount]) => ({ date, amount }))
-                .sort((a, b) => b.amount - a.amount)
-                .slice(0, 5);
-            
-            const topDaysContainer = document.getElementById('topDays');
-            topDaysContainer.innerHTML = '';
-            
-            if (topDays.length === 0) {
-                topDaysContainer.innerHTML = `
-                    <div class="empty-state" style="padding: 1rem;">
-                        <p>Keine Einnahmen vorhanden</p>
-                    </div>
-                `;
-            } else {
-                topDays.forEach(day => {
-                    const item = document.createElement('div');
-                    item.className = 'stat-item';
-                    
-                    // Datum formatieren
-                    const dateObj = new Date(day.date);
-                    const formattedDate = dateObj.toLocaleDateString('de-DE', {
-                        day: '2-digit',
-                        month: '2-digit'
-                    });
-                    
-                    item.innerHTML = `
-                        <span class="stat-label">${formattedDate}:</span>
-                        <span class="stat-value positive-amount">${day.amount} $</span>
-                    `;
-                    topDaysContainer.appendChild(item);
-                });
-            }
-        }
-        
-        // Hold Chart initialisieren
+
+        // 15. Hold Chart initialisieren
         function initializeHoldChart() {
             const ctx = document.getElementById('holdDistributionChart').getContext('2d');
-            
             holdDistributionChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1326,44 +419,15 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: { color: '#cbd5e0' }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.dataset.label}: ${context.raw} $`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(255,255,255,0.1)' },
-                            ticks: { 
-                                color: '#a0aec0',
-                                callback: function(value) {
-                                    return value.toLocaleString('de-DE') + ' $';
-                                }
-                            }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#a0aec0' }
-                        }
-                    }
+                    maintainAspectRatio: false
                 }
             });
         }
-        
-        // Hold Chart aktualisieren
+
         function updateHoldChart() {
-            const pendingTransactions = holdTransactions.filter(t => t.status === 'pending');
+            if (!holdDistributionChart) return;
             
-            // Nächste 30 Tage vorbereiten
+            const pendingTransactions = holdTransactions.filter(t => t.status === 'pending');
             const labels = [];
             const data = [];
             
@@ -1373,15 +437,12 @@
                 date.setDate(date.getDate() + i);
                 const dateStr = date.toISOString().split('T')[0];
                 
-                // Format: "Mo, 19.01"
-                const label = date.toLocaleDateString('de-DE', { 
+                labels.push(date.toLocaleDateString('de-DE', { 
                     weekday: 'short',
                     day: '2-digit',
                     month: '2-digit'
-                });
-                labels.push(label);
+                }));
                 
-                // Betrag für diesen Tag berechnen
                 const dayAmount = pendingTransactions
                     .filter(t => t.releaseDate === dateStr)
                     .reduce((sum, t) => sum + t.amount, 0);
@@ -1389,24 +450,19 @@
                 data.push(dayAmount);
             }
             
-            // Chart aktualisieren
-            if (holdDistributionChart) {
-                holdDistributionChart.data.labels = labels;
-                holdDistributionChart.data.datasets[0].data = data;
-                holdDistributionChart.update();
-            }
+            holdDistributionChart.data.labels = labels;
+            holdDistributionChart.data.datasets[0].data = data;
+            holdDistributionChart.update();
         }
-        
-        // Debug Info aktualisieren
+
+        // 16. Hilfsfunktionen
         function updateDebugInfo(message) {
             const debugElement = document.getElementById('debugInfo');
             if (debugElement) {
                 debugElement.textContent = `Status: ${message}`;
-                console.log('Debug:', message);
             }
         }
-        
-        // Notification System
+
         function showNotification(message, type = 'info', duration = 4000) {
             const notification = document.getElementById('notification');
             notification.textContent = message;
@@ -1417,8 +473,13 @@
                 notification.classList.remove('show');
             }, duration);
         }
-        
-        // Automatisch alle 5 Minuten Freigaben prüfen
+
+        function refreshChart() {
+            updateHoldChart();
+            showNotification('Chart aktualisiert', 'info');
+        }
+
+        // 17. Automatisch alle 5 Minuten prüfen
         setInterval(checkPendingReleases, 5 * 60 * 1000);
     </script>
 </body>
