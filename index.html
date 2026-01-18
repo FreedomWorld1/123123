@@ -370,28 +370,6 @@
             color: #a0aec0;
         }
         
-        /* Loading */
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-        }
-        
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top: 4px solid #4299e1;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
         /* Additional Statistics */
         .additional-stats {
             background: rgba(26, 32, 44, 0.8);
@@ -481,6 +459,17 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
+        
+        /* Debug Info */
+        .debug-info {
+            background: rgba(245, 101, 101, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border-left: 4px solid #f56565;
+            color: #fc8181;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -490,6 +479,9 @@
             <h1 style="color: #90cdf4; font-size: 2rem;">
                 <i class="fas fa-chart-line"></i> CC-Shop Finanzsystem
             </h1>
+            <div class="debug-info" id="debugInfo">
+                System initialisiert... Buttons sollten funktionieren
+            </div>
         </div>
         
         <!-- Hold Information -->
@@ -514,23 +506,17 @@
             </div>
         </div>
         
-        <!-- Loading State -->
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <p>Verbinde mit Firebase...</p>
-        </div>
-        
         <!-- Transaction Buttons -->
         <div class="transaction-buttons" id="transactionButtons">
-            <button class="transaction-btn hold-btn" id="openHoldModal">
+            <button class="transaction-btn hold-btn" id="openHoldModalBtn">
                 <i class="fas fa-pause-circle"></i>
                 <span>Betrag zurückhalten</span>
             </button>
-            <button class="transaction-btn deposit-btn" id="openDepositModal">
+            <button class="transaction-btn deposit-btn" id="openDepositModalBtn">
                 <i class="fas fa-plus-circle"></i>
                 <span>Direkt einzahlen</span>
             </button>
-            <button class="transaction-btn withdraw-btn" id="openWithdrawModal">
+            <button class="transaction-btn withdraw-btn" id="openWithdrawModalBtn">
                 <i class="fas fa-minus-circle"></i>
                 <span>Auszahlen</span>
             </button>
@@ -608,7 +594,7 @@
                 <h3 style="color: #90cdf4;">
                     <i class="fas fa-chart-bar"></i> Freigabe-Verteilung (Nächste 30 Tage)
                 </h3>
-                <button class="btn-secondary" id="refreshChart">
+                <button class="btn-secondary" id="refreshChartBtn">
                     <i class="fas fa-sync"></i> Aktualisieren
                 </button>
             </div>
@@ -636,7 +622,7 @@
                     <input type="date" id="releaseDate" readonly style="background: rgba(30, 41, 59, 0.8);">
                 </div>
                 <div class="modal-buttons">
-                    <button type="button" class="btn-secondary" id="cancelHold">Abbrechen</button>
+                    <button type="button" class="btn-secondary" id="cancelHoldBtn">Abbrechen</button>
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-check"></i> Zurückhalten
                     </button>
@@ -655,7 +641,7 @@
                     <input type="number" id="depositAmount" min="0" step="1" placeholder="0" required>
                 </div>
                 <div class="modal-buttons">
-                    <button type="button" class="btn-secondary" id="cancelDeposit">Abbrechen</button>
+                    <button type="button" class="btn-secondary" id="cancelDepositBtn">Abbrechen</button>
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-check"></i> Einzahlen
                     </button>
@@ -674,7 +660,7 @@
                     <input type="number" id="withdrawAmount" min="0" step="1" placeholder="0" required>
                 </div>
                 <div class="modal-buttons">
-                    <button type="button" class="btn-secondary" id="cancelWithdraw">Abbrechen</button>
+                    <button type="button" class="btn-secondary" id="cancelWithdrawBtn">Abbrechen</button>
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-check"></i> Auszahlen
                     </button>
@@ -699,214 +685,225 @@
         };
 
         // Firebase initialisieren
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        
-        // Firestore Collections
-        const transactionsRef = db.collection('finanz_transactions');
-        const balanceRef = db.collection('finanz_balance').doc('current');
-        
+        let app, db, transactionsRef, balanceRef;
         let holdTransactions = [];
         let availableBalance = 0;
         let holdDistributionChart = null;
         let currentPeriod = 'today';
         
-        // Beispiel-Daten
-        const EXAMPLE_DATA = [
-            {
-                id: 'example1',
-                amount: 105390,
-                purchaseDate: '2026-01-17',
-                releaseDate: '2026-01-19',
-                status: 'pending',
-                type: 'hold',
-                createdAt: new Date('2026-01-17')
-            },
-            {
-                id: 'example2',
-                amount: 7440,
-                purchaseDate: '2026-01-18',
-                releaseDate: '2026-01-20',
-                status: 'pending',
-                type: 'hold',
-                createdAt: new Date('2026-01-18')
-            }
-        ];
-        
         // Initialisierung
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM geladen, starte Initialisierung...');
+            updateDebugInfo('DOM geladen');
+            
+            // Setup vor Firebase
             initializeHoldChart();
-            setupEventListeners();
+            setupAllEventListeners();
             
             // Heutiges Datum setzen
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('holdDate').value = today;
             updateReleaseDate();
             
-            // Daten von Firebase laden
+            // Dann Firebase initialisieren
             initializeFirebase();
         });
         
-        // Firebase initialisieren und Daten laden
-        async function initializeFirebase() {
-            try {
-                showLoading(true);
-                
-                // Auf Firestore Connection warten
-                await db.collection('test').doc('test').get().catch(() => {});
-                
-                // Transaktionen laden
-                loadTransactionsFromFirebase();
-                
-                // Balance laden
-                loadBalanceFromFirebase();
-                
-                showLoading(false);
-                
-            } catch (error) {
-                console.error('Fehler bei Firebase Initialisierung:', error);
-                showNotification('Fehler bei der Verbindung zu Firebase!', 'error');
-                showLoading(false);
-                
-                // Fallback: Beispiel-Daten
-                holdTransactions = [...EXAMPLE_DATA];
-                availableBalance = 0;
-                updateDisplay();
-            }
-        }
-        
-        // Transaktionen von Firebase laden
-        function loadTransactionsFromFirebase() {
-            transactionsRef
-                .orderBy('createdAt', 'desc')
-                .onSnapshot((snapshot) => {
-                    holdTransactions = [];
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        let createdAt = data.createdAt;
-                        
-                        // Timestamp in Date umwandeln
-                        if (createdAt && createdAt.toDate) {
-                            createdAt = createdAt.toDate();
-                        } else if (typeof createdAt === 'string') {
-                            createdAt = new Date(createdAt);
-                        } else {
-                            createdAt = new Date();
-                        }
-                        
-                        holdTransactions.push({
-                            id: doc.id,
-                            ...data,
-                            createdAt: createdAt
-                        });
-                    });
-                    
-                    updateDisplay();
-                    checkPendingReleases();
-                }, (error) => {
-                    console.error('Fehler beim Laden der Transaktionen:', error);
-                });
-        }
-        
-        // Balance von Firebase laden
-        function loadBalanceFromFirebase() {
-            balanceRef.onSnapshot((doc) => {
-                if (doc.exists) {
-                    const balanceData = doc.data();
-                    availableBalance = balanceData.amount || 0;
-                    updateDisplay();
-                } else {
-                    // Initiale Balance erstellen
-                    balanceRef.set({
-                        amount: 0,
-                        lastUpdated: new Date().toISOString()
-                    });
-                }
-            }, (error) => {
-                console.error('Fehler beim Laden der Balance:', error);
-            });
-        }
-        
-        // Event Listeners
-        function setupEventListeners() {
-            console.log('Event Listeners werden eingerichtet...');
+        // ALLE Event Listeners auf einmal einrichten
+        function setupAllEventListeners() {
+            console.log('Richte Event Listener ein...');
+            updateDebugInfo('Event Listener werden eingerichtet');
             
-            // Hold Modal
-            const openHoldModalBtn = document.getElementById('openHoldModal');
-            if (openHoldModalBtn) {
-                openHoldModalBtn.addEventListener('click', () => {
-                    console.log('Hold Modal wird geöffnet');
-                    document.getElementById('holdModal').classList.add('active');
-                });
-            }
+            // 1. Haupt-Buttons (Modal öffnen)
+            document.getElementById('openHoldModalBtn').addEventListener('click', openHoldModal);
+            document.getElementById('openDepositModalBtn').addEventListener('click', openDepositModal);
+            document.getElementById('openWithdrawModalBtn').addEventListener('click', openWithdrawModal);
             
+            // 2. Datum ändern für Freigabedatum
             document.getElementById('holdDate').addEventListener('change', updateReleaseDate);
             
-            document.getElementById('cancelHold').addEventListener('click', () => {
-                document.getElementById('holdModal').classList.remove('active');
-                document.getElementById('holdForm').reset();
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('holdDate').value = today;
-                updateReleaseDate();
-            });
+            // 3. Modal Abbrechen Buttons
+            document.getElementById('cancelHoldBtn').addEventListener('click', closeHoldModal);
+            document.getElementById('cancelDepositBtn').addEventListener('click', closeDepositModal);
+            document.getElementById('cancelWithdrawBtn').addEventListener('click', closeWithdrawModal);
             
-            document.getElementById('holdForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                console.log('Hold Form submitted');
-                addHoldTransaction();
-            });
+            // 4. Form Submit Buttons
+            document.getElementById('holdForm').addEventListener('submit', handleHoldSubmit);
+            document.getElementById('depositForm').addEventListener('submit', handleDepositSubmit);
+            document.getElementById('withdrawForm').addEventListener('submit', handleWithdrawSubmit);
             
-            // Deposit Modal
-            document.getElementById('openDepositModal').addEventListener('click', () => {
-                console.log('Deposit Modal wird geöffnet');
-                document.getElementById('depositModal').classList.add('active');
-            });
+            // 5. Refresh Chart Button
+            document.getElementById('refreshChartBtn').addEventListener('click', refreshChart);
             
-            document.getElementById('cancelDeposit').addEventListener('click', () => {
-                document.getElementById('depositModal').classList.remove('active');
-                document.getElementById('depositForm').reset();
-            });
-            
-            document.getElementById('depositForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                console.log('Deposit Form submitted');
-                addDirectDeposit();
-            });
-            
-            // Withdraw Modal
-            document.getElementById('openWithdrawModal').addEventListener('click', () => {
-                console.log('Withdraw Modal wird geöffnet');
-                document.getElementById('withdrawModal').classList.add('active');
-            });
-            
-            document.getElementById('cancelWithdraw').addEventListener('click', () => {
-                document.getElementById('withdrawModal').classList.remove('active');
-                document.getElementById('withdrawForm').reset();
-            });
-            
-            document.getElementById('withdrawForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                console.log('Withdraw Form submitted');
-                processWithdrawal();
-            });
-            
-            // Refresh Chart Button
-            document.getElementById('refreshChart').addEventListener('click', () => {
-                updateHoldChart();
-                showNotification('Chart aktualisiert', 'info');
-            });
-            
-            // Period Buttons
+            // 6. Period Buttons
             document.querySelectorAll('.period-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     currentPeriod = this.getAttribute('data-period');
                     updateDisplay();
+                    updateDebugInfo(`Zeitraum geändert: ${currentPeriod}`);
                 });
             });
             
-            console.log('Event Listeners eingerichtet');
+            console.log('Alle Event Listener eingerichtet');
+            updateDebugInfo('Event Listener eingerichtet');
+        }
+        
+        // Modal Funktionen
+        function openHoldModal() {
+            console.log('Öffne Hold Modal');
+            updateDebugInfo('Hold Modal geöffnet');
+            document.getElementById('holdModal').classList.add('active');
+        }
+        
+        function openDepositModal() {
+            console.log('Öffne Deposit Modal');
+            updateDebugInfo('Deposit Modal geöffnet');
+            document.getElementById('depositModal').classList.add('active');
+        }
+        
+        function openWithdrawModal() {
+            console.log('Öffne Withdraw Modal');
+            updateDebugInfo('Withdraw Modal geöffnet');
+            document.getElementById('withdrawModal').classList.add('active');
+        }
+        
+        function closeHoldModal() {
+            console.log('Schließe Hold Modal');
+            document.getElementById('holdModal').classList.remove('active');
+            resetHoldForm();
+        }
+        
+        function closeDepositModal() {
+            console.log('Schließe Deposit Modal');
+            document.getElementById('depositModal').classList.remove('active');
+            resetDepositForm();
+        }
+        
+        function closeWithdrawModal() {
+            console.log('Schließe Withdraw Modal');
+            document.getElementById('withdrawModal').classList.remove('active');
+            resetWithdrawForm();
+        }
+        
+        // Form Submit Handler
+        function handleHoldSubmit(e) {
+            e.preventDefault();
+            console.log('Hold Form submitted');
+            addHoldTransaction();
+        }
+        
+        function handleDepositSubmit(e) {
+            e.preventDefault();
+            console.log('Deposit Form submitted');
+            addDirectDeposit();
+        }
+        
+        function handleWithdrawSubmit(e) {
+            e.preventDefault();
+            console.log('Withdraw Form submitted');
+            processWithdrawal();
+        }
+        
+        // Form Reset Funktionen
+        function resetHoldForm() {
+            document.getElementById('holdForm').reset();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('holdDate').value = today;
+            updateReleaseDate();
+        }
+        
+        function resetDepositForm() {
+            document.getElementById('depositForm').reset();
+        }
+        
+        function resetWithdrawForm() {
+            document.getElementById('withdrawForm').reset();
+        }
+        
+        // Refresh Chart
+        function refreshChart() {
+            updateHoldChart();
+            showNotification('Chart aktualisiert', 'info');
+        }
+        
+        // Firebase initialisieren und Daten laden
+        async function initializeFirebase() {
+            try {
+                updateDebugInfo('Initialisiere Firebase...');
+                
+                // Firebase App initialisieren
+                app = firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                transactionsRef = db.collection('finanz_transactions');
+                balanceRef = db.collection('finanz_balance').doc('current');
+                
+                updateDebugInfo('Firebase initialisiert, lade Daten...');
+                
+                // Daten laden
+                await loadDataFromFirebase();
+                
+                updateDebugInfo('Daten geladen, System bereit');
+                
+            } catch (error) {
+                console.error('Fehler bei Firebase Initialisierung:', error);
+                updateDebugInfo(`Fehler: ${error.message}`);
+                showNotification('Fehler bei der Verbindung zu Firebase!', 'error');
+                
+                // Fallback: Beispiel-Daten
+                holdTransactions = [];
+                availableBalance = 0;
+                updateDisplay();
+            }
+        }
+        
+        // Daten von Firebase laden
+        async function loadDataFromFirebase() {
+            try {
+                // Transaktionen laden
+                const transactionsSnapshot = await transactionsRef.orderBy('createdAt', 'desc').get();
+                holdTransactions = [];
+                transactionsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    let createdAt = data.createdAt;
+                    
+                    // Timestamp konvertieren
+                    if (createdAt && createdAt.toDate) {
+                        createdAt = createdAt.toDate();
+                    } else if (typeof createdAt === 'string') {
+                        createdAt = new Date(createdAt);
+                    } else {
+                        createdAt = new Date();
+                    }
+                    
+                    holdTransactions.push({
+                        id: doc.id,
+                        ...data,
+                        createdAt: createdAt
+                    });
+                });
+                
+                // Balance laden
+                const balanceDoc = await balanceRef.get();
+                if (balanceDoc.exists) {
+                    const balanceData = balanceDoc.data();
+                    availableBalance = balanceData.amount || 0;
+                } else {
+                    // Initiale Balance erstellen
+                    await balanceRef.set({
+                        amount: 0,
+                        lastUpdated: new Date().toISOString()
+                    });
+                }
+                
+                updateDisplay();
+                checkPendingReleases();
+                
+            } catch (error) {
+                console.error('Fehler beim Laden der Daten:', error);
+                throw error;
+            }
         }
         
         // Freigabedatum berechnen (+2 Tage)
@@ -941,20 +938,25 @@
                 };
                 
                 console.log('Speichere Hold-Transaktion:', transaction);
+                updateDebugInfo(`Speichere Hold: ${amount} $`);
                 
                 // Zu Firebase hinzufügen
-                await transactionsRef.add(transaction);
+                const docRef = await transactionsRef.add(transaction);
                 
-                // Modal schließen
-                document.getElementById('holdModal').classList.remove('active');
-                document.getElementById('holdForm').reset();
+                // Lokal hinzufügen
+                holdTransactions.unshift({
+                    id: docRef.id,
+                    ...transaction,
+                    createdAt: new Date()
+                });
                 
-                // Datum zurücksetzen
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('holdDate').value = today;
-                updateReleaseDate();
+                // Modal schließen und zurücksetzen
+                closeHoldModal();
                 
                 showNotification(`Betrag von ${amount} $ wurde zurückgehalten (Freigabe: ${releaseDate})`, 'success');
+                
+                // Display aktualisieren
+                updateDisplay();
                 
             } catch (error) {
                 console.error('Fehler beim Speichern der Transaktion:', error);
@@ -973,12 +975,15 @@
             
             try {
                 console.log('Starte direkte Einzahlung:', amount);
+                updateDebugInfo(`Starte Einzahlung: ${amount} $`);
                 
                 // Balance in Firebase aktualisieren
                 await balanceRef.update({
                     amount: firebase.firestore.FieldValue.increment(amount),
                     lastUpdated: new Date().toISOString()
                 });
+                
+                availableBalance += amount;
                 
                 // Transaktion in Firebase speichern
                 const transaction = {
@@ -991,13 +996,22 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
                 
-                await transactionsRef.add(transaction);
+                const docRef = await transactionsRef.add(transaction);
                 
-                // Modal schließen
-                document.getElementById('depositModal').classList.remove('active');
-                document.getElementById('depositForm').reset();
+                // Lokal hinzufügen
+                holdTransactions.unshift({
+                    id: docRef.id,
+                    ...transaction,
+                    createdAt: new Date()
+                });
+                
+                // Modal schließen und zurücksetzen
+                closeDepositModal();
                 
                 showNotification(`Einzahlung von ${amount} $ war erfolgreich`, 'success');
+                
+                // Display aktualisieren
+                updateDisplay();
                 
             } catch (error) {
                 console.error('Fehler bei der Einzahlung:', error);
@@ -1021,12 +1035,15 @@
             
             try {
                 console.log('Starte Auszahlung:', amount);
+                updateDebugInfo(`Starte Auszahlung: ${amount} $`);
                 
                 // Balance in Firebase aktualisieren
                 await balanceRef.update({
                     amount: firebase.firestore.FieldValue.increment(-amount),
                     lastUpdated: new Date().toISOString()
                 });
+                
+                availableBalance -= amount;
                 
                 // Transaktion in Firebase speichern
                 const transaction = {
@@ -1039,13 +1056,22 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
                 
-                await transactionsRef.add(transaction);
+                const docRef = await transactionsRef.add(transaction);
                 
-                // Modal schließen
-                document.getElementById('withdrawModal').classList.remove('active');
-                document.getElementById('withdrawForm').reset();
+                // Lokal hinzufügen
+                holdTransactions.unshift({
+                    id: docRef.id,
+                    ...transaction,
+                    createdAt: new Date()
+                });
+                
+                // Modal schließen und zurücksetzen
+                closeWithdrawModal();
                 
                 showNotification(`Auszahlung von ${amount} $ war erfolgreich`, 'success');
+                
+                // Display aktualisieren
+                updateDisplay();
                 
             } catch (error) {
                 console.error('Fehler bei der Auszahlung:', error);
@@ -1085,6 +1111,7 @@
             if (anyReleased) {
                 try {
                     await Promise.all(updatePromises);
+                    updateDisplay();
                     showNotification('Neue Beträge wurden freigegeben und sind jetzt verfügbar!', 'success');
                 } catch (error) {
                     console.error('Fehler beim Aktualisieren der Freigaben:', error);
@@ -1370,9 +1397,13 @@
             }
         }
         
-        // Loading State anzeigen/verbergen
-        function showLoading(show) {
-            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        // Debug Info aktualisieren
+        function updateDebugInfo(message) {
+            const debugElement = document.getElementById('debugInfo');
+            if (debugElement) {
+                debugElement.textContent = `Status: ${message}`;
+                console.log('Debug:', message);
+            }
         }
         
         // Notification System
