@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Finanz Management System mit Hold-Funktion</title>
+    <title>CC-Shop Finanzsystem</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -161,7 +161,7 @@
         /* Buttons */
         .transaction-buttons {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
             margin-bottom: 2rem;
         }
@@ -193,11 +193,6 @@
         
         .withdraw-btn {
             background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
-            color: white;
-        }
-        
-        .release-btn {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: white;
         }
         
@@ -323,7 +318,7 @@
         
         .summary-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
             margin: 1.5rem 0;
         }
@@ -349,6 +344,10 @@
         
         .hold-value {
             color: #8b5cf6 !important;
+        }
+        
+        .positive-amount {
+            color: #48bb78 !important;
         }
         
         .notification {
@@ -386,13 +385,6 @@
             padding: 3rem;
             color: #a0aec0;
         }
-        
-        /* Import/Export Buttons */
-        .import-export-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-left: auto;
-        }
     </style>
 </head>
 <body>
@@ -400,17 +392,8 @@
         <!-- Header -->
         <div class="header">
             <h1 style="color: #90cdf4; font-size: 2rem;">
-                <i class="fas fa-chart-line"></i> Finanz Management mit Hold-Funktion
+                <i class="fas fa-chart-line"></i> CC-Shop Finanzsystem
             </h1>
-            <div class="import-export-buttons">
-                <button class="btn-secondary" id="exportData">
-                    <i class="fas fa-download"></i> Export
-                </button>
-                <button class="btn-secondary" id="importData">
-                    <i class="fas fa-upload"></i> Import
-                </button>
-                <input type="file" id="importFile" accept=".json" style="display: none;">
-            </div>
         </div>
         
         <!-- Hold Information -->
@@ -449,10 +432,6 @@
                 <i class="fas fa-minus-circle"></i>
                 <span>Auszahlen</span>
             </button>
-            <button class="transaction-btn release-btn" id="manualRelease">
-                <i class="fas fa-unlock"></i>
-                <span>Frühzeitig freigeben</span>
-            </button>
         </div>
         
         <!-- Summary Cards -->
@@ -468,10 +447,6 @@
             <div class="summary-card">
                 <div class="summary-label">Anstehende Freigaben</div>
                 <div class="summary-value" id="pendingCount">0</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-label">Bereits freigegeben</div>
-                <div class="summary-value positive-amount" id="releasedCount">0</div>
             </div>
         </div>
         
@@ -511,23 +486,7 @@
             <form id="holdForm">
                 <div class="form-group">
                     <label for="holdAmount">Betrag ($)</label>
-                    <input type="number" id="holdAmount" min="0" step="0.01" placeholder="0.00" required>
-                </div>
-                <div class="form-group">
-                    <label for="holdSource">Quelle</label>
-                    <select id="holdSource" required>
-                        <option value="">Bitte auswählen</option>
-                        <option value="verkauf">Verkauf</option>
-                        <option value="einnahme">Einnahme</option>
-                        <option value="auftrag">Auftrag</option>
-                        <option value="provision">Provision</option>
-                        <option value="bonus">Bonus</option>
-                        <option value="sonstiges">Sonstiges</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="holdDescription">Beschreibung</label>
-                    <textarea id="holdDescription" rows="3" placeholder="Beschreibung des zurückgehaltenen Betrags..."></textarea>
+                    <input type="number" id="holdAmount" min="0" step="1" placeholder="0" required>
                 </div>
                 <div class="form-group">
                     <label for="holdDate">Kaufdatum</label>
@@ -554,11 +513,7 @@
             <form id="depositForm">
                 <div class="form-group">
                     <label for="depositAmount">Betrag ($)</label>
-                    <input type="number" id="depositAmount" min="0" step="0.01" placeholder="0.00" required>
-                </div>
-                <div class="form-group">
-                    <label for="depositDescription">Beschreibung</label>
-                    <textarea id="depositDescription" rows="3" placeholder="Beschreibung der Einzahlung..."></textarea>
+                    <input type="number" id="depositAmount" min="0" step="1" placeholder="0" required>
                 </div>
                 <div class="modal-buttons">
                     <button type="button" class="btn-secondary" id="cancelDeposit">Abbrechen</button>
@@ -577,22 +532,7 @@
             <form id="withdrawForm">
                 <div class="form-group">
                     <label for="withdrawAmount">Betrag ($)</label>
-                    <input type="number" id="withdrawAmount" min="0" step="0.01" placeholder="0.00" required>
-                </div>
-                <div class="form-group">
-                    <label for="withdrawDescription">Beschreibung</label>
-                    <textarea id="withdrawDescription" rows="3" placeholder="Beschreibung der Auszahlung..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="withdrawCategory">Kategorie</label>
-                    <select id="withdrawCategory">
-                        <option value="">Bitte auswählen</option>
-                        <option value="shop">Shop-Einkauf</option>
-                        <option value="material">Material</option>
-                        <option value="marketing">Marketing</option>
-                        <option value="service">Service</option>
-                        <option value="sonstiges">Sonstiges</option>
-                    </select>
+                    <input type="number" id="withdrawAmount" min="0" step="1" placeholder="0" required>
                 </div>
                 <div class="modal-buttons">
                     <button type="button" class="btn-secondary" id="cancelWithdraw">Abbrechen</button>
@@ -604,39 +544,22 @@
         </div>
     </div>
     
-    <!-- Release Modal -->
-    <div id="releaseModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3><i class="fas fa-unlock"></i> Betrag frühzeitig freigeben</h3>
-            <div id="releaseList">
-                <p style="color: #cbd5e0; text-align: center; padding: 2rem;">
-                    Lade zurückgehaltene Beträge...
-                </p>
-            </div>
-            <div class="modal-buttons">
-                <button type="button" class="btn-secondary" id="cancelRelease">Abbrechen</button>
-            </div>
-        </div>
-    </div>
-    
     <!-- Notification -->
     <div id="notification" class="notification"></div>
 
     <script>
         // Storage Keys
-        const STORAGE_KEY = 'financial_hold_data_v2';
+        const STORAGE_KEY = 'cc_shop_finanz_data';
         
         let holdTransactions = [];
         let availableBalance = 0;
         let holdDistributionChart = null;
         
-        // Beispiel-Daten aus deiner Anfrage
+        // Beispiel-Daten aus deiner Anfrage (werden nicht automatisch geladen)
         const EXAMPLE_DATA = [
             {
                 id: Date.now() + 1,
                 amount: 105390,
-                source: 'verkauf',
-                description: 'Großauftrag - Shopify Store',
                 purchaseDate: '2026-01-17',
                 releaseDate: '2026-01-19',
                 status: 'pending',
@@ -645,8 +568,6 @@
             {
                 id: Date.now() + 2,
                 amount: 7440,
-                source: 'einnahme',
-                description: 'Tagesumsatz',
                 purchaseDate: '2026-01-18',
                 releaseDate: '2026-01-20',
                 status: 'pending',
@@ -666,23 +587,7 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('holdDate').value = today;
             updateReleaseDate();
-            
-            // Beispiel-Daten nur hinzufügen, wenn keine Daten vorhanden sind
-            if (holdTransactions.length === 0) {
-                addExampleData();
-            }
         });
-        
-        // Beispiel-Daten hinzufügen
-        function addExampleData() {
-            EXAMPLE_DATA.forEach(example => {
-                holdTransactions.push(example);
-            });
-            
-            saveData();
-            updateDisplay();
-            showNotification('Beispiel-Daten wurden geladen', 'info');
-        }
         
         // Daten laden
         function loadData() {
@@ -757,33 +662,10 @@
                 processWithdrawal();
             });
             
-            // Release Modal
-            document.getElementById('manualRelease').addEventListener('click', () => {
-                openReleaseModal();
-            });
-            
-            document.getElementById('cancelRelease').addEventListener('click', () => {
-                document.getElementById('releaseModal').classList.remove('active');
-            });
-            
             // Refresh Chart Button
             document.getElementById('refreshChart').addEventListener('click', () => {
                 updateHoldChart();
                 showNotification('Chart aktualisiert', 'info');
-            });
-            
-            // Export Button
-            document.getElementById('exportData').addEventListener('click', () => {
-                exportData();
-            });
-            
-            // Import Button
-            document.getElementById('importData').addEventListener('click', () => {
-                document.getElementById('importFile').click();
-            });
-            
-            document.getElementById('importFile').addEventListener('change', function(e) {
-                importData(e);
             });
         }
         
@@ -799,9 +681,7 @@
         
         // Hold Transaktion hinzufügen
         function addHoldTransaction() {
-            const amount = parseFloat(document.getElementById('holdAmount').value);
-            const source = document.getElementById('holdSource').value;
-            const description = document.getElementById('holdDescription').value;
+            const amount = parseInt(document.getElementById('holdAmount').value);
             const purchaseDate = document.getElementById('holdDate').value;
             const releaseDate = document.getElementById('releaseDate').value;
             
@@ -810,16 +690,9 @@
                 return;
             }
             
-            if (!source) {
-                showNotification('Bitte wählen Sie eine Quelle aus!', 'error');
-                return;
-            }
-            
             const transaction = {
                 id: Date.now(),
                 amount: amount,
-                source: source,
-                description: description || 'Keine Beschreibung',
                 purchaseDate: purchaseDate,
                 releaseDate: releaseDate,
                 status: 'pending',
@@ -839,13 +712,12 @@
             updateReleaseDate();
             
             updateDisplay();
-            showNotification(`Betrag von ${amount.toFixed(2)} $ wurde zurückgehalten (Freigabe: ${releaseDate})`, 'success');
+            showNotification(`Betrag von ${amount} $ wurde zurückgehalten (Freigabe: ${releaseDate})`, 'success');
         }
         
         // Direkte Einzahlung (sofort verfügbar)
         function addDirectDeposit() {
-            const amount = parseFloat(document.getElementById('depositAmount').value);
-            const description = document.getElementById('depositDescription').value;
+            const amount = parseInt(document.getElementById('depositAmount').value);
             
             if (!amount || amount <= 0) {
                 showNotification('Bitte geben Sie einen gültigen Betrag ein!', 'error');
@@ -859,7 +731,6 @@
                 id: Date.now(),
                 amount: amount,
                 type: 'direct_deposit',
-                description: description || 'Direkte Einzahlung',
                 date: new Date().toISOString().split('T')[0],
                 timestamp: Date.now()
             };
@@ -867,7 +738,6 @@
             // In holdTransactions speichern mit sofortiger Freigabe
             holdTransactions.push({
                 ...transaction,
-                source: 'direkte_einzahlung',
                 purchaseDate: transaction.date,
                 releaseDate: transaction.date,
                 status: 'released'
@@ -880,14 +750,12 @@
             document.getElementById('depositForm').reset();
             
             updateDisplay();
-            showNotification(`Einzahlung von ${amount.toFixed(2)} $ war erfolgreich`, 'success');
+            showNotification(`Einzahlung von ${amount} $ war erfolgreich`, 'success');
         }
         
         // Auszahlung
         function processWithdrawal() {
-            const amount = parseFloat(document.getElementById('withdrawAmount').value);
-            const description = document.getElementById('withdrawDescription').value;
-            const category = document.getElementById('withdrawCategory').value;
+            const amount = parseInt(document.getElementById('withdrawAmount').value);
             
             if (!amount || amount <= 0) {
                 showNotification('Bitte geben Sie einen gültigen Betrag ein!', 'error');
@@ -895,7 +763,7 @@
             }
             
             if (amount > availableBalance) {
-                showNotification(`Nicht genügend Guthaben verfügbar! Verfügbar: ${availableBalance.toFixed(2)} $`, 'error');
+                showNotification(`Nicht genügend Guthaben verfügbar! Verfügbar: ${availableBalance} $`, 'error');
                 return;
             }
             
@@ -906,8 +774,6 @@
                 id: Date.now(),
                 amount: amount,
                 type: 'withdrawal',
-                description: description || 'Auszahlung',
-                category: category,
                 date: new Date().toISOString().split('T')[0],
                 timestamp: Date.now()
             };
@@ -915,7 +781,6 @@
             // In holdTransactions speichern
             holdTransactions.push({
                 ...transaction,
-                source: 'auszahlung',
                 purchaseDate: transaction.date,
                 releaseDate: transaction.date,
                 status: 'released'
@@ -928,7 +793,7 @@
             document.getElementById('withdrawForm').reset();
             
             updateDisplay();
-            showNotification(`Auszahlung von ${amount.toFixed(2)} $ war erfolgreich`, 'success');
+            showNotification(`Auszahlung von ${amount} $ war erfolgreich`, 'success');
         }
         
         // Anstehende Freigaben prüfen
@@ -951,61 +816,12 @@
             }
         }
         
-        // Manuelle Freigabe Modal öffnen
-        function openReleaseModal() {
-            const pendingTransactions = holdTransactions.filter(t => t.status === 'pending');
-            
-            if (pendingTransactions.length === 0) {
-                showNotification('Keine zurückgehaltenen Beträge verfügbar', 'info');
-                return;
-            }
-            
-            const releaseList = document.getElementById('releaseList');
-            releaseList.innerHTML = '';
-            
-            pendingTransactions.forEach(transaction => {
-                const div = document.createElement('div');
-                div.className = 'pending-item';
-                div.innerHTML = `
-                    <div>
-                        <div style="font-weight: bold; color: #f59e0b;">${transaction.amount.toFixed(2)} $</div>
-                        <div style="font-size: 0.9rem; color: #cbd5e0;">${transaction.description}</div>
-                    </div>
-                    <div>
-                        <div style="color: #cbd5e0; font-size: 0.9rem;">Freigabe: ${transaction.releaseDate}</div>
-                        <button onclick="manualRelease(${transaction.id})" 
-                                style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; margin-top: 0.5rem; cursor: pointer;">
-                            <i class="fas fa-unlock"></i> Jetzt freigeben
-                        </button>
-                    </div>
-                `;
-                releaseList.appendChild(div);
-            });
-            
-            document.getElementById('releaseModal').classList.add('active');
-        }
-        
-        // Manuelle Freigabe
-        function manualRelease(transactionId) {
-            const transaction = holdTransactions.find(t => t.id === transactionId);
-            if (transaction) {
-                transaction.status = 'released';
-                availableBalance += transaction.amount;
-                saveData();
-                updateDisplay();
-                
-                document.getElementById('releaseModal').classList.remove('active');
-                showNotification(`Betrag von ${transaction.amount.toFixed(2)} $ wurde freigegeben`, 'success');
-            }
-        }
-        
         // Anzeige aktualisieren
         function updateDisplay() {
             const today = new Date().toISOString().split('T')[0];
             
             // Berechnungen
             const pendingTransactions = holdTransactions.filter(t => t.status === 'pending');
-            const releasedTransactions = holdTransactions.filter(t => t.status === 'released');
             
             const totalHoldBalance = pendingTransactions.reduce((sum, t) => sum + t.amount, 0);
             
@@ -1023,13 +839,12 @@
                 .filter(t => t.releaseDate > today && t.releaseDate <= nextWeekStr)
                 .reduce((sum, t) => sum + t.amount, 0);
             
-            // Balances anzeigen
-            document.getElementById('holdBalance').textContent = `${totalHoldBalance.toFixed(2)} $`;
-            document.getElementById('availableBalance').textContent = `${availableBalance.toFixed(2)} $`;
-            document.getElementById('dueToday').textContent = `${dueToday.toFixed(2)} $`;
-            document.getElementById('dueNextWeek').textContent = `${dueNextWeek.toFixed(2)} $`;
+            // Balances anzeigen (ohne .00)
+            document.getElementById('holdBalance').textContent = `${totalHoldBalance} $`;
+            document.getElementById('availableBalance').textContent = `${availableBalance} $`;
+            document.getElementById('dueToday').textContent = `${dueToday} $`;
+            document.getElementById('dueNextWeek').textContent = `${dueNextWeek} $`;
             document.getElementById('pendingCount').textContent = pendingTransactions.length;
-            document.getElementById('releasedCount').textContent = releasedTransactions.length;
             
             // Pending Releases anzeigen
             updatePendingReleasesList(pendingTransactions);
@@ -1065,8 +880,7 @@
                 div.className = `pending-item ${isReleasedToday ? 'released' : ''}`;
                 div.innerHTML = `
                     <div>
-                        <div class="amount">${transaction.amount.toFixed(2)} $</div>
-                        <div style="color: #cbd5e0; font-size: 0.9rem;">${transaction.description}</div>
+                        <div class="amount">${transaction.amount} $</div>
                         <div style="color: #a0aec0; font-size: 0.8rem; margin-top: 0.3rem;">
                             Kauf: ${transaction.purchaseDate}
                         </div>
@@ -1111,7 +925,7 @@
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    return `${context.dataset.label}: ${context.raw.toFixed(2)} $`;
+                                    return `${context.dataset.label}: ${context.raw} $`;
                                 }
                             }
                         }
@@ -1183,59 +997,6 @@
                 notification.classList.remove('show');
             }, duration);
         }
-        
-        // Export Funktion
-        function exportData() {
-            const dataStr = JSON.stringify({
-                holdTransactions: holdTransactions,
-                availableBalance: availableBalance,
-                exportDate: new Date().toISOString(),
-                note: "Finanzdaten mit Hold-Funktion"
-            }, null, 2);
-            
-            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-            const link = document.createElement('a');
-            link.setAttribute('href', dataUri);
-            link.setAttribute('download', `finanz-daten-hold-${new Date().toISOString().split('T')[0]}.json`);
-            link.click();
-            
-            showNotification('Daten exportiert', 'success');
-        }
-        
-        // Import Funktion
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    
-                    if (confirm('Möchten Sie die vorhandenen Daten durch die importierten Daten ersetzen?')) {
-                        if (importedData.holdTransactions && importedData.availableBalance !== undefined) {
-                            holdTransactions = importedData.holdTransactions;
-                            availableBalance = importedData.availableBalance;
-                            saveData();
-                            updateDisplay();
-                            showNotification('Daten erfolgreich importiert!', 'success');
-                        } else {
-                            showNotification('Ungültiges Datenformat!', 'error');
-                        }
-                    }
-                } catch (error) {
-                    console.error('Fehler beim Importieren der Daten:', error);
-                    showNotification('Fehler beim Importieren der Daten!', 'error');
-                }
-                
-                // File input zurücksetzen
-                event.target.value = '';
-            };
-            reader.readAsText(file);
-        }
-        
-        // Globale Funktionen
-        window.manualRelease = manualRelease;
         
         // Automatisch alle 5 Minuten Freigaben prüfen
         setInterval(checkPendingReleases, 5 * 60 * 1000);
