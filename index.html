@@ -409,6 +409,27 @@
             font-weight: bold;
             color: #90cdf4;
         }
+        
+        .balance-zero {
+            color: #e2e8f0 !important;
+        }
+        
+        .reset-btn {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin-left: 1rem;
+        }
+        
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(237, 137, 54, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -418,15 +439,18 @@
             <h1 style="color: #90cdf4; font-size: 2rem;">
                 <i class="fas fa-chart-line"></i> Finanz Management System
             </h1>
-            <div style="color: #cbd5e0;">
+            <div style="color: #cbd5e0; display: flex; align-items: center;">
                 <i class="fas fa-sync-alt"></i> Echtzeit-Daten
+                <button class="reset-btn" id="resetBalance">
+                    <i class="fas fa-redo"></i> Guthaben auf 0 setzen
+                </button>
             </div>
         </div>
         
         <!-- Balance Card -->
         <div class="balance-card">
             <h2 style="font-size: 1.3rem; opacity: 0.9; margin-bottom: 0.5rem;">Aktuelles Guthaben</h2>
-            <div class="balance-amount" id="currentBalance">0 $</div>
+            <div class="balance-amount balance-zero" id="currentBalance">0 $</div>
             <div style="opacity: 0.8; font-size: 0.9rem;">
                 Letzte Aktualisierung: <span id="lastUpdate">--</span>
             </div>
@@ -630,6 +654,9 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('depositDate').value = today;
             document.getElementById('withdrawDate').value = today;
+            
+            // Balance auf 0 setzen
+            document.getElementById('currentBalance').textContent = "0 $";
         });
         
         // Daten laden
@@ -638,69 +665,9 @@
             if (savedData) {
                 const data = JSON.parse(savedData);
                 transactions = data.transactions || [];
-                
-                // Demo-Daten, wenn keine vorhanden
-                if (transactions.length === 0) {
-                    createDemoData();
-                }
-            } else {
-                createDemoData();
             }
-        }
-        
-        // Demo-Daten erstellen
-        function createDemoData() {
-            const now = new Date();
-            const demoTransactions = [
-                {
-                    id: Date.now() - 7,
-                    type: 'deposit',
-                    amount: 0,
-                    category: 'gehalt',
-                    description: 'Monatsgehalt',
-                    date: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                    timestamp: Date.now() - 7
-                },
-                {
-                    id: Date.now() - 6,
-                    type: 'withdraw',
-                    amount: 0,
-                    category: 'miete',
-                    description: 'Monatsmiete',
-                    date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                    timestamp: Date.now() - 6
-                },
-                {
-                    id: Date.now() - 5,
-                    type: 'withdraw',
-                    amount: 0,
-                    category: 'lebensmittel',
-                    description: 'Wocheneinkauf',
-                    date: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                    timestamp: Date.now() - 5
-                },
-                {
-                    id: Date.now() - 4,
-                    type: 'deposit',
-                    amount: 0,
-                    category: 'verkauf',
-                    description: 'Verkauf von Altwaren',
-                    date: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                    timestamp: Date.now() - 4
-                },
-                {
-                    id: Date.now() - 3,
-                    type: 'withdraw',
-                    amount: 0,
-                    category: 'transport',
-                    description: 'Tankfüllung',
-                    date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                    timestamp: Date.now() - 3
-                }
-            ];
             
-            transactions = demoTransactions;
-            saveData();
+            // Keine Demo-Daten - alles startet bei 0
         }
         
         // Daten speichern
@@ -759,6 +726,16 @@
             document.getElementById('refreshTransactions').addEventListener('click', () => {
                 updateDisplay();
                 showNotification('Daten aktualisiert', 'info');
+            });
+            
+            // Reset Balance Button
+            document.getElementById('resetBalance').addEventListener('click', () => {
+                if (confirm('Möchten Sie alle Transaktionen löschen und das Guthaben auf 0 setzen?')) {
+                    transactions = [];
+                    saveData();
+                    updateDisplay();
+                    showNotification('Alle Transaktionen gelöscht. Guthaben auf 0 gesetzt.', 'success');
+                }
             });
         }
         
@@ -867,22 +844,11 @@
         function updateDisplay() {
             const filteredTransactions = filterTransactions();
             
-            // Balance berechnen
-            const totalDeposits = transactions
-                .filter(t => t.type === 'deposit')
-                .reduce((sum, t) => sum + t.amount, 0);
-            
-            const totalWithdrawals = transactions
-                .filter(t => t.type === 'withdraw')
-                .reduce((sum, t) => sum + t.amount, 0);
-            
-            const balance = totalDeposits - totalWithdrawals;
-            
-            // Balance anzeigen
-            document.getElementById('currentBalance').textContent = `${balance.toFixed(2)} $`;
+            // Balance ist IMMER 0
+            document.getElementById('currentBalance').textContent = "0 $";
             document.getElementById('lastUpdate').textContent = new Date().toLocaleString('de-DE');
             
-            // Summary Cards
+            // Summary Cards - zeigen nur Transaktionen der Periode an
             const periodDeposits = filteredTransactions
                 .filter(t => t.type === 'deposit')
                 .reduce((sum, t) => sum + t.amount, 0);
@@ -1105,7 +1071,8 @@
         function exportData() {
             const dataStr = JSON.stringify({
                 transactions: transactions,
-                exportDate: new Date().toISOString()
+                exportDate: new Date().toISOString(),
+                note: "Guthaben ist immer 0 - zeigt nur Transaktionshistorie"
             }, null, 2);
             
             const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
@@ -1130,7 +1097,7 @@
                         transactions = importedData.transactions;
                         saveData();
                         updateDisplay();
-                        showNotification('Daten erfolgreich importiert!', 'success');
+                        showNotification('Daten erfolgreich importiert! Guthaben bleibt 0.', 'success');
                     }
                 } catch (error) {
                     showNotification('Fehler beim Importieren der Daten!', 'error');
