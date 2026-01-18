@@ -138,29 +138,6 @@
             color: #10b981;
         }
         
-        /* Hold Transaction Card */
-        .hold-transaction-card {
-            background: rgba(26, 32, 44, 0.9);
-            border-radius: 12px;
-            padding: 1.8rem;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(101, 119, 149, 0.3);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-        }
-        
-        .hold-info {
-            background: rgba(139, 92, 246, 0.1);
-            border-left: 4px solid #8b5cf6;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border-radius: 0 8px 8px 0;
-        }
-        
-        .hold-info i {
-            color: #8b5cf6;
-            margin-right: 0.5rem;
-        }
-        
         /* Buttons */
         .transaction-buttons {
             display: grid;
@@ -321,7 +298,7 @@
         
         .summary-cards {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 1rem;
             margin: 1.5rem 0;
         }
@@ -351,6 +328,10 @@
         
         .positive-amount {
             color: #48bb78 !important;
+        }
+        
+        .negative-amount {
+            color: #f56565 !important;
         }
         
         .notification {
@@ -410,6 +391,96 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* Additional Statistics */
+        .additional-stats {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 12px;
+            padding: 1.8rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(101, 119, 149, 0.3);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .stats-card {
+            background: rgba(30, 41, 59, 0.4);
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+        
+        .stats-card h4 {
+            color: #90cdf4;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .stats-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(101, 119, 149, 0.2);
+        }
+        
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            color: #cbd5e0;
+            font-size: 0.9rem;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        /* Period Selector */
+        .period-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            background: rgba(26, 32, 44, 0.8);
+            padding: 0.8rem;
+            border-radius: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .period-btn {
+            padding: 0.7rem 1.4rem;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(101, 119, 149, 0.3);
+            border-radius: 8px;
+            color: #cbd5e0;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .period-btn.active {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            border-color: #4299e1;
+        }
+        
+        .period-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
@@ -422,8 +493,8 @@
         </div>
         
         <!-- Hold Information -->
-        <div class="hold-info">
-            <i class="fas fa-info-circle"></i>
+        <div class="hold-info" style="background: rgba(139, 92, 246, 0.1); border-left: 4px solid #8b5cf6; padding: 1rem; margin-bottom: 1.5rem; border-radius: 0 8px 8px 0;">
+            <i class="fas fa-info-circle" style="color: #8b5cf6;"></i>
             <strong>Deine Einnahmen werden erst 2 Tage nach dem Kauf freigegeben.</strong> 
             Die hier angezeigten Beträge werden zurückgehalten und für Einkäufe in deinem Shop verwendet.
         </div>
@@ -465,6 +536,14 @@
             </button>
         </div>
         
+        <!-- Period Selector -->
+        <div class="period-selector">
+            <button class="period-btn active" data-period="today">Heute</button>
+            <button class="period-btn" data-period="week">Diese Woche</button>
+            <button class="period-btn" data-period="month">Dieser Monat</button>
+            <button class="period-btn" data-period="all">Gesamt</button>
+        </div>
+        
         <!-- Summary Cards -->
         <div class="summary-cards" id="summaryCards">
             <div class="summary-card">
@@ -478,6 +557,35 @@
             <div class="summary-card">
                 <div class="summary-label">Anstehende Freigaben</div>
                 <div class="summary-value" id="pendingCount">0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Tagesbilanz</div>
+                <div class="summary-value" id="dailyBalance">0 $</div>
+            </div>
+        </div>
+        
+        <!-- Additional Statistics -->
+        <div class="additional-stats" id="additionalStats">
+            <h3 style="color: #90cdf4;">
+                <i class="fas fa-chart-bar"></i> Tages-Statistiken
+            </h3>
+            <div class="stats-grid">
+                <div class="stats-card">
+                    <h4><i class="fas fa-money-bill-wave"></i> Einnahmen Heute</h4>
+                    <div class="stats-list" id="todayIncome">
+                        <div class="empty-state" style="padding: 1rem;">
+                            <p>Keine Einnahmen heute</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <h4><i class="fas fa-calendar-alt"></i> Top Einnahme-Tage</h4>
+                    <div class="stats-list" id="topDays">
+                        <div class="empty-state" style="padding: 1rem;">
+                            <p>Keine Daten verfügbar</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -601,6 +709,7 @@
         let holdTransactions = [];
         let availableBalance = 0;
         let holdDistributionChart = null;
+        let currentPeriod = 'today';
         
         // Beispiel-Daten
         const EXAMPLE_DATA = [
@@ -611,7 +720,7 @@
                 releaseDate: '2026-01-19',
                 status: 'pending',
                 type: 'hold',
-                createdAt: new Date().toISOString()
+                createdAt: new Date('2026-01-17')
             },
             {
                 id: 'example2',
@@ -620,7 +729,7 @@
                 releaseDate: '2026-01-20',
                 status: 'pending',
                 type: 'hold',
-                createdAt: new Date().toISOString()
+                createdAt: new Date('2026-01-18')
             }
         ];
         
@@ -659,7 +768,7 @@
                 showNotification('Fehler bei der Verbindung zu Firebase!', 'error');
                 showLoading(false);
                 
-                // Beispiel-Daten laden als Fallback
+                // Fallback: Beispiel-Daten
                 holdTransactions = [...EXAMPLE_DATA];
                 availableBalance = 0;
                 updateDisplay();
@@ -674,18 +783,23 @@
                     holdTransactions = [];
                     snapshot.forEach(doc => {
                         const data = doc.data();
+                        let createdAt = data.createdAt;
+                        
+                        // Timestamp in Date umwandeln
+                        if (createdAt && createdAt.toDate) {
+                            createdAt = createdAt.toDate();
+                        } else if (typeof createdAt === 'string') {
+                            createdAt = new Date(createdAt);
+                        } else {
+                            createdAt = new Date();
+                        }
+                        
                         holdTransactions.push({
                             id: doc.id,
                             ...data,
-                            // Timestamp in Date umwandeln
-                            createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt)
+                            createdAt: createdAt
                         });
                     });
-                    
-                    // Beispiel-Daten nur hinzufügen, wenn keine Daten vorhanden sind
-                    if (holdTransactions.length === 0) {
-                        // Beispiel-Daten nicht automatisch laden - startet leer
-                    }
                     
                     updateDisplay();
                     checkPendingReleases();
@@ -715,10 +829,16 @@
         
         // Event Listeners
         function setupEventListeners() {
+            console.log('Event Listeners werden eingerichtet...');
+            
             // Hold Modal
-            document.getElementById('openHoldModal').addEventListener('click', () => {
-                document.getElementById('holdModal').classList.add('active');
-            });
+            const openHoldModalBtn = document.getElementById('openHoldModal');
+            if (openHoldModalBtn) {
+                openHoldModalBtn.addEventListener('click', () => {
+                    console.log('Hold Modal wird geöffnet');
+                    document.getElementById('holdModal').classList.add('active');
+                });
+            }
             
             document.getElementById('holdDate').addEventListener('change', updateReleaseDate);
             
@@ -732,11 +852,13 @@
             
             document.getElementById('holdForm').addEventListener('submit', function(e) {
                 e.preventDefault();
+                console.log('Hold Form submitted');
                 addHoldTransaction();
             });
             
             // Deposit Modal
             document.getElementById('openDepositModal').addEventListener('click', () => {
+                console.log('Deposit Modal wird geöffnet');
                 document.getElementById('depositModal').classList.add('active');
             });
             
@@ -747,11 +869,13 @@
             
             document.getElementById('depositForm').addEventListener('submit', function(e) {
                 e.preventDefault();
+                console.log('Deposit Form submitted');
                 addDirectDeposit();
             });
             
             // Withdraw Modal
             document.getElementById('openWithdrawModal').addEventListener('click', () => {
+                console.log('Withdraw Modal wird geöffnet');
                 document.getElementById('withdrawModal').classList.add('active');
             });
             
@@ -762,6 +886,7 @@
             
             document.getElementById('withdrawForm').addEventListener('submit', function(e) {
                 e.preventDefault();
+                console.log('Withdraw Form submitted');
                 processWithdrawal();
             });
             
@@ -770,6 +895,18 @@
                 updateHoldChart();
                 showNotification('Chart aktualisiert', 'info');
             });
+            
+            // Period Buttons
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentPeriod = this.getAttribute('data-period');
+                    updateDisplay();
+                });
+            });
+            
+            console.log('Event Listeners eingerichtet');
         }
         
         // Freigabedatum berechnen (+2 Tage)
@@ -803,6 +940,8 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
                 
+                console.log('Speichere Hold-Transaktion:', transaction);
+                
                 // Zu Firebase hinzufügen
                 await transactionsRef.add(transaction);
                 
@@ -833,6 +972,8 @@
             }
             
             try {
+                console.log('Starte direkte Einzahlung:', amount);
+                
                 // Balance in Firebase aktualisieren
                 await balanceRef.update({
                     amount: firebase.firestore.FieldValue.increment(amount),
@@ -879,6 +1020,8 @@
             }
             
             try {
+                console.log('Starte Auszahlung:', amount);
+                
                 // Balance in Firebase aktualisieren
                 await balanceRef.update({
                     amount: firebase.firestore.FieldValue.increment(-amount),
@@ -956,6 +1099,7 @@
             
             // Berechnungen
             const pendingTransactions = holdTransactions.filter(t => t.status === 'pending');
+            const releasedTransactions = holdTransactions.filter(t => t.status === 'released');
             
             const totalHoldBalance = pendingTransactions.reduce((sum, t) => sum + t.amount, 0);
             
@@ -973,15 +1117,31 @@
                 .filter(t => t.releaseDate > today && t.releaseDate <= nextWeekStr)
                 .reduce((sum, t) => sum + t.amount, 0);
             
-            // Balances anzeigen (ohne .00)
+            // Tagesbilanz berechnen
+            const dailyDeposits = releasedTransactions
+                .filter(t => t.type === 'deposit' && t.date === today)
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const dailyWithdrawals = releasedTransactions
+                .filter(t => t.type === 'withdrawal' && t.date === today)
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const dailyBalance = dailyDeposits - dailyWithdrawals;
+            
+            // Balances anzeigen
             document.getElementById('holdBalance').textContent = `${totalHoldBalance} $`;
             document.getElementById('availableBalance').textContent = `${availableBalance} $`;
             document.getElementById('dueToday').textContent = `${dueToday} $`;
             document.getElementById('dueNextWeek').textContent = `${dueNextWeek} $`;
             document.getElementById('pendingCount').textContent = pendingTransactions.length;
+            document.getElementById('dailyBalance').textContent = `${dailyBalance} $`;
+            document.getElementById('dailyBalance').className = `summary-value ${dailyBalance >= 0 ? 'positive-amount' : 'negative-amount'}`;
             
             // Pending Releases anzeigen
             updatePendingReleasesList(pendingTransactions);
+            
+            // Tages-Statistiken aktualisieren
+            updateDailyStats(releasedTransactions);
             
             // Chart aktualisieren
             updateHoldChart();
@@ -1031,6 +1191,94 @@
                 `;
                 container.appendChild(div);
             });
+        }
+        
+        // Tages-Statistiken aktualisieren
+        function updateDailyStats(releasedTransactions) {
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Einnahmen heute
+            const depositsToday = releasedTransactions
+                .filter(t => t.type === 'deposit' && t.date === today);
+            
+            const todayIncomeContainer = document.getElementById('todayIncome');
+            todayIncomeContainer.innerHTML = '';
+            
+            if (depositsToday.length === 0) {
+                todayIncomeContainer.innerHTML = `
+                    <div class="empty-state" style="padding: 1rem;">
+                        <p>Keine Einnahmen heute</p>
+                    </div>
+                `;
+            } else {
+                const totalToday = depositsToday.reduce((sum, t) => sum + t.amount, 0);
+                
+                // Gesamtsumme anzeigen
+                const totalItem = document.createElement('div');
+                totalItem.className = 'stat-item';
+                totalItem.innerHTML = `
+                    <span class="stat-label">Gesamtsumme:</span>
+                    <span class="stat-value positive-amount">${totalToday} $</span>
+                `;
+                todayIncomeContainer.appendChild(totalItem);
+                
+                // Einzelne Transaktionen
+                depositsToday.slice(0, 5).forEach(transaction => {
+                    const item = document.createElement('div');
+                    item.className = 'stat-item';
+                    item.innerHTML = `
+                        <span class="stat-label">Einzahlung:</span>
+                        <span class="stat-value">${transaction.amount} $</span>
+                    `;
+                    todayIncomeContainer.appendChild(item);
+                });
+            }
+            
+            // Top Einnahme-Tage berechnen
+            const dailyEarnings = {};
+            releasedTransactions.forEach(transaction => {
+                if (transaction.type === 'deposit') {
+                    if (!dailyEarnings[transaction.date]) {
+                        dailyEarnings[transaction.date] = 0;
+                    }
+                    dailyEarnings[transaction.date] += transaction.amount;
+                }
+            });
+            
+            // In Array umwandeln und sortieren
+            const topDays = Object.entries(dailyEarnings)
+                .map(([date, amount]) => ({ date, amount }))
+                .sort((a, b) => b.amount - a.amount)
+                .slice(0, 5);
+            
+            const topDaysContainer = document.getElementById('topDays');
+            topDaysContainer.innerHTML = '';
+            
+            if (topDays.length === 0) {
+                topDaysContainer.innerHTML = `
+                    <div class="empty-state" style="padding: 1rem;">
+                        <p>Keine Einnahmen vorhanden</p>
+                    </div>
+                `;
+            } else {
+                topDays.forEach(day => {
+                    const item = document.createElement('div');
+                    item.className = 'stat-item';
+                    
+                    // Datum formatieren
+                    const dateObj = new Date(day.date);
+                    const formattedDate = dateObj.toLocaleDateString('de-DE', {
+                        day: '2-digit',
+                        month: '2-digit'
+                    });
+                    
+                    item.innerHTML = `
+                        <span class="stat-label">${formattedDate}:</span>
+                        <span class="stat-value positive-amount">${day.amount} $</span>
+                    `;
+                    topDaysContainer.appendChild(item);
+                });
+            }
         }
         
         // Hold Chart initialisieren
