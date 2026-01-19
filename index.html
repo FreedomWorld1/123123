@@ -96,7 +96,7 @@
         
         .action-buttons {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 1rem;
             margin-bottom: 2rem;
         }
@@ -131,6 +131,10 @@
         
         .expense-btn {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .withdraw-btn {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
         }
         
         .action-btn:hover {
@@ -284,6 +288,10 @@
         
         .status-expense {
             background: rgba(245, 158, 11, 0.8);
+        }
+        
+        .status-withdrawal {
+            background: rgba(255, 65, 108, 0.8);
         }
         
         .empty-state {
@@ -491,6 +499,10 @@
                 <i class="fas fa-plus-circle"></i>
                 <span>Direkt einzahlen</span>
             </button>
+            <button class="action-btn withdraw-btn" onclick="openWithdrawModal()">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Auszahlen</span>
+            </button>
             <button class="action-btn debt-btn" onclick="openDebtModal()">
                 <i class="fas fa-credit-card"></i>
                 <span>Schulden zahlen</span>
@@ -527,6 +539,7 @@
                     <button class="filter-btn active" onclick="filterTransactions('all')">Alle</button>
                     <button class="filter-btn" onclick="filterTransactions('hold')">Zurückgehalten</button>
                     <button class="filter-btn" onclick="filterTransactions('deposit')">Einzahlungen</button>
+                    <button class="filter-btn" onclick="filterTransactions('withdrawal')">Auszahlungen</button>
                     <button class="filter-btn" onclick="filterTransactions('debt')">Schulden</button>
                     <button class="filter-btn" onclick="filterTransactions('expense')">Kosten</button>
                 </div>
@@ -578,6 +591,25 @@
             <div class="modal-buttons">
                 <button type="button" class="btn-secondary" onclick="closeDepositModal()">Abbrechen</button>
                 <button type="button" class="btn-primary" onclick="addDirectDeposit()">Einzahlen</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="withdrawModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3><i class="fas fa-money-bill-wave"></i> Auszahlen</h3>
+            <div class="form-group">
+                <label for="withdrawAmount">Betrag ($)</label>
+                <input type="number" id="withdrawAmount" min="0" step="1" placeholder="0">
+                <div class="date-display">Verfügbar: <span id="availableForWithdrawalDisplay">0 $</span></div>
+            </div>
+            <div class="form-group">
+                <label for="withdrawDescription">Beschreibung</label>
+                <input type="text" id="withdrawDescription" placeholder="z.B. Bankauszahlung">
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn-secondary" onclick="closeWithdrawModal()">Abbrechen</button>
+                <button type="button" class="btn-primary" onclick="processWithdrawal()">Auszahlen</button>
             </div>
         </div>
     </div>
@@ -748,6 +780,11 @@
             document.getElementById('depositModal').classList.add('active');
         }
         
+        function openWithdrawModal() {
+            document.getElementById('availableForWithdrawalDisplay').textContent = availableBalance.toLocaleString() + ' $';
+            document.getElementById('withdrawModal').classList.add('active');
+        }
+        
         function openDebtModal() {
             document.getElementById('currentDebtDisplay').textContent = totalDebt.toLocaleString() + ' $';
             document.getElementById('debtModal').classList.add('active');
@@ -769,6 +806,12 @@
             document.getElementById('depositDescription').value = '';
         }
         
+        function closeWithdrawModal() {
+            document.getElementById('withdrawModal').classList.remove('active');
+            document.getElementById('withdrawAmount').value = '';
+            document.getElementById('withdrawDescription').value = '';
+        }
+        
         function closeDebtModal() {
             document.getElementById('debtModal').classList.remove('active');
             document.getElementById('debtAmount').value = '';
@@ -781,7 +824,7 @@
             document.getElementById('expenseDescription').value = '';
         }
         
-        // TRANSAKTIONEN - WICHTIG: Schuldenzahlung zieht NICHT von availableBalance ab!
+        // TRANSAKTIONEN
         async function addHoldTransaction() {
             const amount = parseInt(document.getElementById('holdAmount').value);
             const description = document.getElementById('holdDescription').value || 'Einnahme';
@@ -841,6 +884,40 @@
             updateDisplay();
             await saveData();
             showNotification(`${amount.toLocaleString()} $ direkt eingezahlt`, 'success');
+        }
+        
+        async function processWithdrawal() {
+            const amount = parseInt(document.getElementById('withdrawAmount').value);
+            const description = document.getElementById('withdrawDescription').value || 'Auszahlung';
+            
+            if (!amount || amount <= 0) {
+                showNotification('Bitte einen gültigen Betrag eingeben!', 'error');
+                return;
+            }
+            
+            if (amount > availableBalance) {
+                showNotification(`Nicht genug Guthaben! Verfügbar: ${availableBalance.toLocaleString()} $`, 'error');
+                return;
+            }
+            
+            // Guthaben wird reduziert, All-Time bleibt gleich
+            availableBalance -= amount;
+            
+            const transaction = {
+                id: Date.now().toString(),
+                amount: amount,
+                description: description,
+                type: 'withdrawal',
+                date: new Date().toISOString().split('T')[0],
+                status: 'released',
+                createdAt: new Date().toISOString()
+            };
+            
+            transactions.unshift(transaction);
+            closeWithdrawModal();
+            updateDisplay();
+            await saveData();
+            showNotification(`${amount.toLocaleString()} $ ausgezahlt`, 'success');
         }
         
         async function payDebt() {
@@ -988,6 +1065,7 @@
             switch(currentFilter) {
                 case 'hold': filteredTransactions = transactions.filter(t => t.type === 'hold'); break;
                 case 'deposit': filteredTransactions = transactions.filter(t => t.type === 'deposit'); break;
+                case 'withdrawal': filteredTransactions = transactions.filter(t => t.type === 'withdrawal'); break;
                 case 'debt': filteredTransactions = transactions.filter(t => t.type === 'debt-payment'); break;
                 case 'expense': filteredTransactions = transactions.filter(t => t.type === 'expense'); break;
             }
@@ -1032,6 +1110,11 @@
                     statusText = 'Einzahlung';
                     statusClass = 'status-released';
                     datesText = `Eingezahlt am ${new Date(transaction.createdAt).getDate()}.${new Date(transaction.createdAt).getMonth() + 1}.${new Date(transaction.createdAt).getFullYear()}`;
+                } else if (transaction.type === 'withdrawal') {
+                    amountClass = 'amount-negative';
+                    statusText = 'Auszahlung';
+                    statusClass = 'status-withdrawal';
+                    datesText = `Ausgezahlt am ${new Date(transaction.createdAt).getDate()}.${new Date(transaction.createdAt).getMonth() + 1}.${new Date(transaction.createdAt).getFullYear()}`;
                 } else if (transaction.type === 'debt-payment') {
                     amountClass = 'amount-negative';
                     statusText = 'Schuldenzahlung';
@@ -1049,7 +1132,7 @@
                         <div class="transaction-desc">${transaction.description}</div>
                         <div class="transaction-dates">${datesText}</div>
                     </div>
-                    <div class="transaction-amount ${amountClass}">${transaction.type === 'expense' || transaction.type === 'debt-payment' ? '-' : '+'}${transaction.amount.toLocaleString()} $</div>
+                    <div class="transaction-amount ${amountClass}">${transaction.type === 'expense' || transaction.type === 'debt-payment' || transaction.type === 'withdrawal' ? '-' : '+'}${transaction.amount.toLocaleString()} $</div>
                     <div class="transaction-status ${statusClass}">${statusText}</div>
                 `;
                 container.appendChild(div);
