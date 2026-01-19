@@ -9,35 +9,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
-        
-        // Deine Firebase-Konfiguration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBTnsLNw68UuOd5Xa2ymMffWk4SYGDQjso",
-            authDomain: "cc-shop-finanzsystem.firebaseapp.com",
-            projectId: "cc-shop-finanzsystem",
-            storageBucket: "cc-shop-finanzsystem.firebasestorage.app",
-            messagingSenderId: "575918945925",
-            appId: "1:575918945925:web:bf9d973d5cd9fc547e5bec",
-            measurementId: "G-9SZREFTJS6"
-        };
-
-        // Firebase initialisieren
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        
-        // Für deinen Code verfügbar machen
-        window.firebaseApp = app;
-        window.firebaseDb = db;
-        
-        console.log("✅ Firebase verbunden mit:", firebaseConfig.projectId);
-        console.log("📊 Firestore DB:", db);
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
-        /* BEHALTE ALL DEIN CSS WIE VORHER */
         * { 
             margin: 0; 
             padding: 0; 
@@ -69,8 +44,323 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
         
-        /* ... RESTLICHES CSS BEIBEHALTEN ... */
+        .hold-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .hold-balance-card {
+            background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .available-balance-card {
+            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .balance-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+        
+        .balance-amount {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        
+        .balance-detail {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .pending-releases {
+            background: rgba(26, 32, 44, 0.9);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(101, 119, 149, 0.3);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .pending-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 10px;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .pending-item.released {
+            border-left-color: #10b981;
+        }
+        
+        .pending-item .amount {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #f59e0b;
+        }
+        
+        .pending-item.released .amount {
+            color: #10b981;
+        }
+        
+        .transaction-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .transaction-btn {
+            padding: 1.2rem 1rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+        }
+        
+        .hold-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+        
+        .deposit-btn {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+        }
+        
+        .withdraw-btn {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+        
+        .transaction-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: rgba(26, 32, 44, 0.95);
+            padding: 2.5rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 1px solid rgba(101, 119, 149, 0.3);
+        }
+        
+        .modal-content h3 {
+            color: #90cdf4;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #90cdf4;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.9rem;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(101, 119, 149, 0.3);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #e2e8f0;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            border: none;
+            padding: 0.9rem 1.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .btn-secondary {
+            background: rgba(66, 153, 225, 0.15);
+            color: #90cdf4;
+            border: 1px solid #4299e1;
+            padding: 0.9rem 1.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 1.5rem;
+        }
+        
+        .hold-distribution {
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 12px;
+            padding: 1.8rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(101, 119, 149, 0.3);
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .summary-card {
+            background: rgba(30, 41, 59, 0.4);
+            padding: 1.2rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .summary-label {
+            font-size: 0.9rem;
+            color: #a0aec0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #90cdf4;
+        }
+        
+        .hold-value {
+            color: #8b5cf6 !important;
+        }
+        
+        .positive-amount {
+            color: #48bb78 !important;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 1001;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+        
+        .notification.error {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #a0aec0;
+        }
+        
+        .debug-info {
+            background: rgba(245, 101, 101, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border-left: 4px solid #f56565;
+            color: #fc8181;
+            font-size: 0.9rem;
+        }
+        
+        .hold-info {
+            background: rgba(139, 92, 246, 0.1);
+            border-left: 4px solid #8b5cf6;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 8px 8px 0;
+        }
     </style>
+    
+    <!-- Firebase Initialisierung -->
+    <script>
+        // Deine Firebase Konfiguration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBTnsLNw68UuOd5Xa2ymMffWk4SYGDQjso",
+            authDomain: "cc-shop-finanzsystem.firebaseapp.com",
+            projectId: "cc-shop-finanzsystem",
+            storageBucket: "cc-shop-finanzsystem.firebasestorage.app",
+            messagingSenderId: "575918945925",
+            appId: "1:575918945925:web:bf9d973d5cd9fc547e5bec",
+            measurementId: "G-9SZREFTJS6"
+        };
+        
+        // Firebase initialisieren
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        console.log("✅ Firebase initialisiert!");
+    </script>
 </head>
 <body>
     <div class="container">
@@ -80,7 +370,7 @@
                 <i class="fas fa-chart-line"></i> CC-Shop Finanzsystem
             </h1>
             <div class="debug-info" id="debugInfo">
-                Verbinde mit Firebase...
+                Firebase verbunden...
             </div>
         </div>
         
@@ -232,62 +522,18 @@
     <!-- Notification -->
     <div id="notification" class="notification"></div>
 
+    <!-- Haupt JavaScript -->
     <script>
-        // FIREBASE VARIABLEN
+        // VARIABLEN
         let holdTransactions = [];
         let availableBalance = 0;
         let holdDistributionChart = null;
-        const userId = "user_001";
-        
-        // Firebase Funktionen
-        async function saveToFirebase() {
-            try {
-                const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js");
-                const { getFirestore } = await import("https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js");
-                
-                const db = getFirestore(window.firebaseApp);
-                const userRef = doc(db, 'users', userId);
-                
-                await setDoc(userRef, {
-                    holdTransactions: holdTransactions,
-                    availableBalance: availableBalance,
-                    lastUpdated: new Date().toISOString()
-                });
-                
-                console.log("💾 In Firebase gespeichert");
-                updateDebugInfo("Daten gespeichert");
-            } catch (error) {
-                console.error("❌ Firebase Fehler:", error);
-                updateDebugInfo("Speichern fehlgeschlagen");
-            }
-        }
-        
-        async function loadFromFirebase() {
-            try {
-                const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js");
-                const { getFirestore } = await import("https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js");
-                
-                const db = getFirestore(window.firebaseApp);
-                const userRef = doc(db, 'users', userId);
-                const userDoc = await getDoc(userRef);
-                
-                if (userDoc.exists()) {
-                    const data = userDoc.data();
-                    holdTransactions = data.holdTransactions || [];
-                    availableBalance = data.availableBalance || 0;
-                    console.log("✅ Von Firebase geladen:", data);
-                    updateDebugInfo("Daten geladen");
-                }
-            } catch (error) {
-                console.error("❌ Firebase Fehler:", error);
-                updateDebugInfo("Laden fehlgeschlagen");
-            }
-        }
+        const userId = "user_001"; // Feste User-ID
         
         // DOM initialisieren
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 System startet...');
-            updateDebugInfo('Verbinde mit Firebase...');
+            updateDebugInfo('Lade Daten...');
             
             // Heutiges Datum setzen
             const today = new Date().toISOString().split('T')[0];
@@ -300,19 +546,104 @@
             // Event Listener für Datumsänderung
             document.getElementById('holdDate').addEventListener('change', updateReleaseDate);
             
-            // Daten von Firebase laden
-            await loadFromFirebase();
-            updateDisplay();
+            // Daten laden
+            loadData();
             
             showNotification('System bereit!', 'success');
         });
-
-        // Hilfsfunktionen
+        
+        // DATEN FUNKTIONEN
+        async function loadData() {
+            try {
+                updateDebugInfo('Lade von Firebase...');
+                
+                // Prüfe ob Firebase verfügbar ist
+                if (!db) {
+                    throw new Error('Firebase nicht initialisiert');
+                }
+                
+                const userDoc = await db.collection('users').doc(userId).get();
+                
+                if (userDoc.exists) {
+                    const data = userDoc.data();
+                    holdTransactions = data.holdTransactions || [];
+                    availableBalance = data.availableBalance || 0;
+                    console.log('✅ Daten geladen:', data);
+                    updateDebugInfo('Daten geladen');
+                } else {
+                    // Erstelle neuen Benutzer
+                    await db.collection('users').doc(userId).set({
+                        holdTransactions: [],
+                        availableBalance: 0,
+                        createdAt: new Date().toISOString()
+                    });
+                    console.log('🆕 Neuer Benutzer erstellt');
+                    updateDebugInfo('Neuer Benutzer');
+                }
+                
+                updateDisplay();
+                
+            } catch (error) {
+                console.error('❌ Fehler beim Laden:', error);
+                updateDebugInfo('Lokale Daten');
+                
+                // Fallback auf lokale Daten
+                const saved = localStorage.getItem('ccShopData');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    holdTransactions = data.holdTransactions || [];
+                    availableBalance = data.availableBalance || 0;
+                }
+                
+                updateDisplay();
+                showNotification('Lokale Daten geladen', 'info');
+            }
+        }
+        
+        async function saveData() {
+            try {
+                updateDebugInfo('Speichere...');
+                
+                // Zuerst in Firebase speichern
+                if (db) {
+                    await db.collection('users').doc(userId).set({
+                        holdTransactions: holdTransactions,
+                        availableBalance: availableBalance,
+                        lastUpdated: new Date().toISOString()
+                    }, { merge: true });
+                    console.log('💾 In Firebase gespeichert');
+                }
+                
+                // Backup in localStorage
+                localStorage.setItem('ccShopData', JSON.stringify({
+                    holdTransactions: holdTransactions,
+                    availableBalance: availableBalance,
+                    savedAt: new Date().toISOString()
+                }));
+                
+                updateDebugInfo('Gespeichert');
+                
+            } catch (error) {
+                console.error('❌ Speichern fehlgeschlagen:', error);
+                updateDebugInfo('Speichern fehlgeschlagen');
+                
+                // Nur lokal speichern
+                localStorage.setItem('ccShopData', JSON.stringify({
+                    holdTransactions: holdTransactions,
+                    availableBalance: availableBalance
+                }));
+            }
+        }
+        
+        // HILFSFUNKTIONEN
         function updateDebugInfo(message) {
-            document.getElementById('debugInfo').textContent = message;
+            const element = document.getElementById('debugInfo');
+            if (element) {
+                element.textContent = message;
+            }
             console.log('🔧', message);
         }
-
+        
         function showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
             notification.textContent = message;
@@ -325,8 +656,8 @@
             
             console.log('📢', message);
         }
-
-        // Modal Funktionen
+        
+        // MODAL FUNKTIONEN
         function openHoldModal() {
             document.getElementById('holdModal').classList.add('active');
         }
@@ -353,8 +684,8 @@
             document.getElementById('withdrawModal').classList.remove('active');
             document.getElementById('withdrawAmount').value = '';
         }
-
-        // Freigabedatum berechnen
+        
+        // FREIGABEDATUM BERECHNEN
         function updateReleaseDate() {
             const holdDate = document.getElementById('holdDate').value;
             if (holdDate) {
@@ -363,15 +694,15 @@
                 document.getElementById('releaseDate').value = releaseDate.toISOString().split('T')[0];
             }
         }
-
-        // Transaktionen
+        
+        // TRANSAKTIONEN
         async function addHoldTransaction() {
             const amount = parseInt(document.getElementById('holdAmount').value);
             const purchaseDate = document.getElementById('holdDate').value;
             const releaseDate = document.getElementById('releaseDate').value;
             
             if (!amount || amount <= 0) {
-                showNotification('Bitte geben Sie einen gültigen Betrag ein!', 'error');
+                showNotification('Bitte einen gültigen Betrag eingeben!', 'error');
                 return;
             }
             
@@ -389,15 +720,15 @@
             closeHoldModal();
             
             updateDisplay();
-            await saveToFirebase();
-            showNotification(`✅ ${amount} $ zurückgehalten (Freigabe: ${releaseDate})`, 'success');
+            await saveData();
+            showNotification(`${amount} $ zurückgehalten`, 'success');
         }
-
+        
         async function addDirectDeposit() {
             const amount = parseInt(document.getElementById('depositAmount').value);
             
             if (!amount || amount <= 0) {
-                showNotification('Bitte geben Sie einen gültigen Betrag ein!', 'error');
+                showNotification('Bitte einen gültigen Betrag eingeben!', 'error');
                 return;
             }
             
@@ -416,15 +747,15 @@
             closeDepositModal();
             
             updateDisplay();
-            await saveToFirebase();
-            showNotification(`✅ ${amount} $ eingezahlt`, 'success');
+            await saveData();
+            showNotification(`${amount} $ eingezahlt`, 'success');
         }
-
+        
         async function processWithdrawal() {
             const amount = parseInt(document.getElementById('withdrawAmount').value);
             
             if (!amount || amount <= 0) {
-                showNotification('Bitte geben Sie einen gültigen Betrag ein!', 'error');
+                showNotification('Bitte einen gültigen Betrag eingeben!', 'error');
                 return;
             }
             
@@ -448,11 +779,11 @@
             closeWithdrawModal();
             
             updateDisplay();
-            await saveToFirebase();
-            showNotification(`✅ ${amount} $ ausgezahlt`, 'success');
+            await saveData();
+            showNotification(`${amount} $ ausgezahlt`, 'success');
         }
-
-        // Anzeige aktualisieren
+        
+        // ANZEIGE AKTUALISIEREN
         function updateDisplay() {
             const pendingTransactions = holdTransactions.filter(t => t.status === 'pending');
             const releasedTransactions = holdTransactions.filter(t => t.status === 'released');
@@ -494,7 +825,7 @@
             updatePendingReleasesList(pendingTransactions);
             updateHoldChart();
         }
-
+        
         function updatePendingReleasesList(pendingTransactions) {
             const container = document.getElementById('pendingReleases');
             
@@ -536,8 +867,8 @@
                 container.appendChild(div);
             });
         }
-
-        // Chart Funktionen
+        
+        // CHART FUNKTIONEN
         function initializeHoldChart() {
             const canvas = document.getElementById('holdDistributionChart');
             if (!canvas) return;
@@ -561,7 +892,7 @@
                 }
             });
         }
-
+        
         function updateHoldChart() {
             if (!holdDistributionChart) return;
             
@@ -591,13 +922,13 @@
             holdDistributionChart.data.datasets[0].data = data;
             holdDistributionChart.update();
         }
-
+        
         function refreshChart() {
             updateHoldChart();
             showNotification('Chart aktualisiert', 'info');
         }
-
-        // Automatische Freigabe prüfen
+        
+        // AUTOMATISCHE FREIGABE
         function checkPendingReleases() {
             const today = new Date().toISOString().split('T')[0];
             let anyReleased = false;
@@ -612,11 +943,12 @@
             
             if (anyReleased) {
                 updateDisplay();
-                saveToFirebase();
+                saveData();
                 showNotification('Neue Beträge freigegeben!', 'success');
             }
         }
-
+        
+        // AUTOMATISCH PRÜFEN (JEDE MINUTE)
         setInterval(checkPendingReleases, 60000);
     </script>
 </body>
