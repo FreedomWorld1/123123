@@ -43,6 +43,25 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
         
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .business-id {
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.5);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #a78bfa;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: fit-content;
+        }
+        
         .balance-section {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -426,6 +445,15 @@
             color: #90cdf4;
             margin-top: 0.3rem;
         }
+        
+        .debug-info {
+            background: rgba(245, 101, 101, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #f56565;
+            color: #fc8181;
+            font-size: 0.8rem;
+        }
     </style>
     
     <!-- Firebase Initialisierung -->
@@ -448,10 +476,16 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1 style="color: #ffffff; font-size: 1.8rem;">
-                <i class="fas fa-chart-line"></i> CC-Shop Finanzsystem
-            </h1>
-            <div style="font-size: 0.9rem; color: #90cdf4;" id="debugInfo">
+            <div class="header-left">
+                <div class="business-id">
+                    <i class="fas fa-id-card"></i>
+                    Business ID: CC-SHOP-13
+                </div>
+                <h1 style="color: #ffffff; font-size: 1.8rem;">
+                    <i class="fas fa-chart-line"></i> CC-Shop Finanzsystem
+                </h1>
+            </div>
+            <div class="debug-info" id="debugInfo">
                 System bereit
             </div>
         </div>
@@ -663,6 +697,7 @@
         let totalDebt = 12000000; // 12 Millionen Schulden
         let totalExpenses = 0;
         const userId = "user_001";
+        const businessId = "CC-SHOP-13"; // Business ID
         let currentFilter = 'all';
         
         // DOM initialisieren
@@ -696,6 +731,7 @@
                         alltimeBalance: 0,
                         totalDebt: 12000000,
                         totalExpenses: 0,
+                        businessId: businessId,
                         createdAt: new Date().toISOString()
                     });
                 }
@@ -725,6 +761,7 @@
                         alltimeBalance: alltimeBalance,
                         totalDebt: totalDebt,
                         totalExpenses: totalExpenses,
+                        businessId: businessId,
                         lastUpdated: new Date().toISOString()
                     }, { merge: true });
                 }
@@ -735,6 +772,7 @@
                     alltimeBalance: alltimeBalance,
                     totalDebt: totalDebt,
                     totalExpenses: totalExpenses,
+                    businessId: businessId,
                     savedAt: new Date().toISOString()
                 }));
                 
@@ -744,7 +782,8 @@
                     availableBalance: availableBalance,
                     alltimeBalance: alltimeBalance,
                     totalDebt: totalDebt,
-                    totalExpenses: totalExpenses
+                    totalExpenses: totalExpenses,
+                    businessId: businessId
                 }));
             }
         }
@@ -846,6 +885,7 @@
                 releaseDate: releaseDate.toISOString().split('T')[0],
                 status: 'pending',
                 type: 'hold',
+                businessId: businessId,
                 createdAt: new Date().toISOString()
             };
             
@@ -874,6 +914,7 @@
                 amount: amount,
                 description: description,
                 type: 'deposit',
+                businessId: businessId,
                 date: new Date().toISOString().split('T')[0],
                 status: 'released',
                 createdAt: new Date().toISOString()
@@ -908,6 +949,7 @@
                 amount: amount,
                 description: description,
                 type: 'withdrawal',
+                businessId: businessId,
                 date: new Date().toISOString().split('T')[0],
                 status: 'released',
                 createdAt: new Date().toISOString()
@@ -943,6 +985,7 @@
                 amount: amount,
                 description: description,
                 type: 'debt-payment',
+                businessId: businessId,
                 date: new Date().toISOString().split('T')[0],
                 status: 'released',
                 createdAt: new Date().toISOString()
@@ -977,6 +1020,7 @@
                 amount: amount,
                 description: description,
                 type: 'expense',
+                businessId: businessId,
                 date: new Date().toISOString().split('T')[0],
                 status: 'released',
                 createdAt: new Date().toISOString()
