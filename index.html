@@ -451,7 +451,7 @@
         <!-- Info Box -->
         <div class="info-box">
             <i class="fas fa-info-circle" style="color: #8b5cf6;"></i>
-            <strong style="margin-left: 8px;">Einnahmen werden 2 Tage nach Kauf freigegeben. Aktuelle Schulden: 12.000.000 $</strong> 
+            <strong style="margin-left: 8px;">Einnahmen werden 2 Tage nach Kauf freigegeben. Schulden: 12.000.000 $ (Zahlungen ändern nur Schulden, nicht das Guthaben)</strong> 
         </div>
         
         <!-- Balance Cards -->
@@ -628,7 +628,7 @@
         let transactions = [];
         let availableBalance = 0;
         let alltimeBalance = 0;
-        let totalDebt = 12000000;
+        let totalDebt = 12000000; // 12 Millionen Schulden
         let totalExpenses = 0;
         const userId = "user_001";
         let currentFilter = 'all';
@@ -781,7 +781,7 @@
             document.getElementById('expenseDescription').value = '';
         }
         
-        // TRANSAKTIONEN
+        // TRANSAKTIONEN - WICHTIG: Schuldenzahlung zieht NICHT von availableBalance ab!
         async function addHoldTransaction() {
             const amount = parseInt(document.getElementById('holdAmount').value);
             const description = document.getElementById('holdDescription').value || 'Einnahme';
@@ -852,17 +852,13 @@
                 return;
             }
             
-            if (amount > availableBalance) {
-                showNotification(`Nicht genug Guthaben! Verfügbar: ${availableBalance.toLocaleString()} $`, 'error');
-                return;
-            }
-            
             if (amount > totalDebt) {
                 showNotification(`Betrag übersteigt Schulden! Schulden: ${totalDebt.toLocaleString()} $`, 'error');
                 return;
             }
             
-            availableBalance -= amount;
+            // WICHTIG: availableBalance wird NICHT reduziert!
+            // Nur die Schulden werden reduziert
             totalDebt -= amount;
             
             const transaction = {
@@ -879,7 +875,7 @@
             closeDebtModal();
             updateDisplay();
             await saveData();
-            showNotification(`${amount.toLocaleString()} $ für Schulden zurückgezahlt`, 'success');
+            showNotification(`${amount.toLocaleString()} $ für Schulden zurückgezahlt (Guthaben unverändert)`, 'success');
         }
         
         async function addExpense() {
