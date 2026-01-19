@@ -30,6 +30,17 @@
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        
+        .main-content {
+            grid-column: 1;
+        }
+        
+        .stats-sidebar {
+            grid-column: 2;
         }
         
         .header {
@@ -42,6 +53,7 @@
             border-radius: 15px;
             border: 1px solid rgba(101, 119, 149, 0.3);
             box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            grid-column: 1 / span 2;
         }
         
         .balance-section {
@@ -75,8 +87,56 @@
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         }
         
-        .expenses-card {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        .stats-card {
+            background: rgba(26, 32, 44, 0.9);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(101, 119, 149, 0.3);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .stats-title {
+            color: #90cdf4;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(101, 119, 149, 0.3);
+            padding-bottom: 0.5rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(101, 119, 149, 0.1);
+        }
+        
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            color: #cbd5e0;
+            font-size: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+        
+        .stat-positive {
+            color: #10b981;
+        }
+        
+        .stat-negative {
+            color: #f59e0b;
+        }
+        
+        .stat-hold {
+            color: #8b5cf6;
         }
         
         .balance-label {
@@ -112,7 +172,7 @@
         
         .transaction-item {
             display: grid;
-            grid-template-columns: 180px 1fr 160px 180px 120px;
+            grid-template-columns: 180px 1fr 160px 150px;
             align-items: center;
             padding: 1rem;
             margin: 0.5rem 0;
@@ -146,15 +206,14 @@
             border-left-color: #f59e0b;
         }
         
-        .transaction-date {
-            font-weight: 500;
-            color: #ffffff;
-            font-size: 0.9rem;
-        }
-        
         .transaction-description {
             color: #ffffff;
             font-size: 0.95rem;
+        }
+        
+        .transaction-dates {
+            color: #90cdf4;
+            font-size: 0.85rem;
         }
         
         .transaction-amount {
@@ -369,44 +428,6 @@
             font-weight: 500;
         }
         
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
-        
-        .summary-card {
-            background: rgba(30, 41, 59, 0.4);
-            padding: 1.2rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .summary-label {
-            font-size: 0.9rem;
-            color: #a0aec0;
-            margin-bottom: 0.5rem;
-        }
-        
-        .summary-value {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #ffffff;
-        }
-        
-        .hold-value {
-            color: #8b5cf6 !important;
-        }
-        
-        .positive-amount {
-            color: #48bb78 !important;
-        }
-        
-        .negative-amount {
-            color: #f56565 !important;
-        }
-        
         .notification {
             position: fixed;
             top: 20px;
@@ -506,97 +527,124 @@
             </div>
         </div>
         
-        <!-- Hold Information -->
-        <div class="hold-info">
-            <i class="fas fa-info-circle" style="color: #8b5cf6;"></i>
-            <strong style="margin-left: 8px;">Einnahmen werden 2 Tage nach Kauf freigegeben. Aktuelle Schulden: 12.000.000 $</strong> 
-        </div>
-        
-        <!-- Balance Cards -->
-        <div class="balance-section">
-            <div class="balance-card hold-balance-card">
-                <div class="balance-label">Zurückgehaltene Beträge</div>
-                <div class="balance-amount hold-value" id="holdBalance">0 $</div>
-                <div class="balance-detail">Werden in 2 Tagen freigegeben</div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Hold Information -->
+            <div class="hold-info">
+                <i class="fas fa-info-circle" style="color: #8b5cf6;"></i>
+                <strong style="margin-left: 8px;">Einnahmen werden 2 Tage nach Kauf freigegeben. Aktuelle Schulden: 12.000.000 $</strong> 
             </div>
             
-            <div class="balance-card available-balance-card">
-                <div class="balance-label">Verfügbares Guthaben</div>
-                <div class="balance-amount" id="availableBalance">0 $</div>
-                <div class="balance-detail">Sofort verfügbar für Auszahlungen</div>
-            </div>
-            
-            <div class="balance-card alltime-balance-card">
-                <div class="balance-label">All-Time Einnahmen</div>
-                <div class="balance-amount" id="alltimeBalance">0 $</div>
-                <div class="balance-detail">Gesamteinnahmen seit Beginn</div>
-            </div>
-            
-            <div class="balance-card debt-balance-card">
-                <div class="balance-label">Verbleibende Schulden</div>
-                <div class="balance-amount" id="debtBalance">12.000.000 $</div>
-                <div class="balance-detail">Noch zurückzuzahlen</div>
-            </div>
-        </div>
-        
-        <!-- Expense Card -->
-        <div class="summary-cards">
-            <div class="summary-card">
-                <div class="summary-label">Ausgaben für Aufträge</div>
-                <div class="summary-value negative-amount" id="totalExpenses">0 $</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-label">Monatliche Einnahmen</div>
-                <div class="summary-value positive-amount" id="monthlyIncome">0 $</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-label">Heute fällig</div>
-                <div class="summary-value hold-value" id="dueToday">0 $</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-label">Netto-Gewinn</div>
-                <div class="summary-value" id="netProfit">0 $</div>
-            </div>
-        </div>
-        
-        <!-- Transaction Buttons -->
-        <div class="transaction-buttons">
-            <button class="transaction-btn hold-btn" onclick="openHoldModal()">
-                <i class="fas fa-pause-circle"></i>
-                <span>Einnahme hinzufügen</span>
-            </button>
-            <button class="transaction-btn deposit-btn" onclick="openDepositModal()">
-                <i class="fas fa-plus-circle"></i>
-                <span>Direkt einzahlen</span>
-            </button>
-            <button class="transaction-btn debt-btn" onclick="openDebtModal()">
-                <i class="fas fa-credit-card"></i>
-                <span>Schulden zurückzahlen</span>
-            </button>
-            <button class="transaction-btn expense-btn" onclick="openExpenseModal()">
-                <i class="fas fa-shopping-cart"></i>
-                <span>Auftragskosten</span>
-            </button>
-        </div>
-        
-        <!-- Transaction History -->
-        <div class="transaction-history">
-            <div class="history-header">
-                <h3 style="color: #ffffff;">
-                    <i class="fas fa-history"></i> Transaktionshistorie
-                </h3>
-                <div class="filters">
-                    <button class="filter-btn active" onclick="filterTransactions('all')">Alle</button>
-                    <button class="filter-btn" onclick="filterTransactions('hold')">Zurückgehalten</button>
-                    <button class="filter-btn" onclick="filterTransactions('deposit')">Einzahlungen</button>
-                    <button class="filter-btn" onclick="filterTransactions('debt')">Schuldenzahlungen</button>
-                    <button class="filter-btn" onclick="filterTransactions('expense')">Auftragskosten</button>
+            <!-- Balance Cards -->
+            <div class="balance-section">
+                <div class="balance-card hold-balance-card">
+                    <div class="balance-label">Zurückgehaltene Beträge</div>
+                    <div class="balance-amount hold-value" id="holdBalance">0 $</div>
+                    <div class="balance-detail">Werden in 2 Tagen freigegeben</div>
+                </div>
+                
+                <div class="balance-card available-balance-card">
+                    <div class="balance-label">Verfügbares Guthaben</div>
+                    <div class="balance-amount" id="availableBalance">0 $</div>
+                    <div class="balance-detail">Sofort verfügbar für Auszahlungen</div>
+                </div>
+                
+                <div class="balance-card alltime-balance-card">
+                    <div class="balance-label">All-Time Einnahmen</div>
+                    <div class="balance-amount" id="alltimeBalance">0 $</div>
+                    <div class="balance-detail">Gesamteinnahmen seit Beginn</div>
+                </div>
+                
+                <div class="balance-card debt-balance-card">
+                    <div class="balance-label">Verbleibende Schulden</div>
+                    <div class="balance-amount" id="debtBalance">12.000.000 $</div>
+                    <div class="balance-detail">Noch zurückzuzahlen</div>
                 </div>
             </div>
-            <div id="transactionHistory">
-                <div class="empty-state">
-                    <i class="fas fa-history" style="font-size: 3rem; margin-bottom: 1rem; color: #8b5cf6;"></i>
-                    <p>Keine Transaktionen vorhanden</p>
+            
+            <!-- Transaction Buttons -->
+            <div class="transaction-buttons">
+                <button class="transaction-btn hold-btn" onclick="openHoldModal()">
+                    <i class="fas fa-pause-circle"></i>
+                    <span>Einnahme hinzufügen</span>
+                </button>
+                <button class="transaction-btn deposit-btn" onclick="openDepositModal()">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Direkt einzahlen</span>
+                </button>
+                <button class="transaction-btn debt-btn" onclick="openDebtModal()">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Schulden zurückzahlen</span>
+                </button>
+                <button class="transaction-btn expense-btn" onclick="openExpenseModal()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Auftragskosten</span>
+                </button>
+            </div>
+            
+            <!-- Transaction History -->
+            <div class="transaction-history">
+                <div class="history-header">
+                    <h3 style="color: #ffffff;">
+                        <i class="fas fa-history"></i> Transaktionshistorie
+                    </h3>
+                    <div class="filters">
+                        <button class="filter-btn active" onclick="filterTransactions('all')">Alle</button>
+                        <button class="filter-btn" onclick="filterTransactions('hold')">Zurückgehalten</button>
+                        <button class="filter-btn" onclick="filterTransactions('deposit')">Einzahlungen</button>
+                        <button class="filter-btn" onclick="filterTransactions('debt')">Schuldenzahlungen</button>
+                        <button class="filter-btn" onclick="filterTransactions('expense')">Auftragskosten</button>
+                    </div>
+                </div>
+                <div id="transactionHistory">
+                    <div class="empty-state">
+                        <i class="fas fa-history" style="font-size: 3rem; margin-bottom: 1rem; color: #8b5cf6;"></i>
+                        <p>Keine Transaktionen vorhanden</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Sidebar -->
+        <div class="stats-sidebar">
+            <div class="stats-card">
+                <div class="stats-title">
+                    <i class="fas fa-chart-pie"></i> Statistiken
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Ausgaben für Aufträge</div>
+                    <div class="stat-value stat-negative" id="totalExpenses">0 $</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Monatliche Einnahmen</div>
+                    <div class="stat-value stat-positive" id="monthlyIncome">0 $</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Netto-Gewinn</div>
+                    <div class="stat-value stat-positive" id="netProfit">0 $</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Jährliche Einnahmen</div>
+                    <div class="stat-value stat-positive" id="yearlyIncome">0 $</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Durchschn. monatl.</div>
+                    <div class="stat-value stat-positive" id="avgMonthly">0 $</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Verfügbar für Auszahlung</div>
+                    <div class="stat-value" id="availableForWithdrawal">0 $</div>
+                </div>
+            </div>
+            
+            <div class="stats-card">
+                <div class="stats-title">
+                    <i class="fas fa-calendar-alt"></i> Nächste Freigaben
+                </div>
+                <div id="upcomingReleases">
+                    <div class="empty-state" style="padding: 1rem; color: #a0aec0;">
+                        Keine anstehenden Freigaben
+                    </div>
                 </div>
             </div>
         </div>
@@ -848,7 +896,7 @@
                 const releaseDate = new Date(holdDate);
                 releaseDate.setDate(releaseDate.getDate() + 2);
                 const formattedReleaseDate = `${releaseDate.getDate()}.${releaseDate.getMonth() + 1}.${releaseDate.getFullYear()}`;
-                document.getElementById('releaseDateDisplay').value = `Von ${formattedDate} bis ${formattedReleaseDate}`;
+                document.getElementById('releaseDateDisplay').value = `Vom ${formattedDate} bis ${formattedReleaseDate}`;
             }
         }
         
@@ -1109,19 +1157,16 @@
             document.getElementById('debtBalance').textContent = totalDebt.toLocaleString() + ' $';
             document.getElementById('totalExpenses').textContent = totalExpenses.toLocaleString() + ' $';
             document.getElementById('netProfit').textContent = netProfit.toLocaleString() + ' $';
-            document.getElementById('netProfit').style.color = netProfit >= 0 ? '#10b981' : '#ef4444';
+            
+            // Farbe für Netto-Gewinn
+            const netProfitElement = document.getElementById('netProfit');
+            netProfitElement.className = netProfit >= 0 ? 'stat-value stat-positive' : 'stat-value stat-negative';
             
             // Weitere Berechnungen
-            const today = new Date().toISOString().split('T')[0];
-            
-            const dueToday = pendingTransactions
-                .filter(t => t.releaseDate === today)
-                .reduce((sum, t) => sum + t.amount, 0);
-            
-            // Monatliche Einnahmen
             const currentMonth = new Date().getMonth();
             const currentYear = new Date().getFullYear();
             
+            // Monatliche Einnahmen
             const monthlyIncome = transactions
                 .filter(t => {
                     const date = new Date(t.createdAt);
@@ -1131,11 +1176,81 @@
                 })
                 .reduce((sum, t) => sum + t.amount, 0);
             
-            document.getElementById('dueToday').textContent = dueToday.toLocaleString() + ' $';
+            // Jährliche Einnahmen
+            const yearlyIncome = transactions
+                .filter(t => {
+                    const date = new Date(t.createdAt);
+                    return date.getFullYear() === currentYear &&
+                           (t.type === 'hold' || t.type === 'deposit');
+                })
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            // Durchschnittliche monatliche Einnahmen
+            const avgMonthly = monthlyIncome;
+            
+            // Verfügbar für Auszahlung (Available Balance - Mindestreserve)
+            const availableForWithdrawal = availableBalance;
+            
             document.getElementById('monthlyIncome').textContent = monthlyIncome.toLocaleString() + ' $';
+            document.getElementById('yearlyIncome').textContent = yearlyIncome.toLocaleString() + ' $';
+            document.getElementById('avgMonthly').textContent = avgMonthly.toLocaleString() + ' $';
+            document.getElementById('availableForWithdrawal').textContent = availableForWithdrawal.toLocaleString() + ' $';
+            document.getElementById('availableForWithdrawal').className = availableForWithdrawal >= 0 ? 'stat-value stat-positive' : 'stat-value stat-negative';
             
             // Transaktionshistorie anzeigen
             updateTransactionHistory();
+            
+            // Nächste Freigaben anzeigen
+            updateUpcomingReleases();
+        }
+        
+        // NÄCHSTE FREIGABEN ANZEIGEN
+        function updateUpcomingReleases() {
+            const container = document.getElementById('upcomingReleases');
+            const pendingTransactions = transactions.filter(t => t.status === 'pending');
+            
+            if (pendingTransactions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="padding: 1rem; color: #a0aec0;">
+                        Keine anstehenden Freigaben
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sortieren nach Freigabedatum
+            const sortedTransactions = [...pendingTransactions].sort((a, b) => 
+                new Date(a.releaseDate) - new Date(b.releaseDate)
+            );
+            
+            // Nächste 5 Freigaben anzeigen
+            const upcoming = sortedTransactions.slice(0, 5);
+            
+            container.innerHTML = '';
+            
+            upcoming.forEach(transaction => {
+                const releaseDate = new Date(transaction.releaseDate);
+                const formattedDate = `${releaseDate.getDate()}.${releaseDate.getMonth() + 1}.${releaseDate.getFullYear()}`;
+                
+                const div = document.createElement('div');
+                div.className = 'stat-item';
+                div.innerHTML = `
+                    <div class="stat-label">${formattedDate}</div>
+                    <div class="stat-value stat-hold">${transaction.amount.toLocaleString()} $</div>
+                `;
+                container.appendChild(div);
+            });
+            
+            // Wenn mehr als 5 existieren, Zeige "und X mehr"
+            if (pendingTransactions.length > 5) {
+                const moreDiv = document.createElement('div');
+                moreDiv.className = 'stat-item';
+                moreDiv.style.color = '#90cdf4';
+                moreDiv.style.fontSize = '0.9rem';
+                moreDiv.style.justifyContent = 'center';
+                moreDiv.textContent = `und ${pendingTransactions.length - 5} weitere...`;
+                container.appendChild(moreDiv);
+            }
         }
         
         // FILTER FUNKTIONEN
@@ -1193,46 +1308,45 @@
                 let amountClass = '';
                 let statusText = '';
                 let statusClass = '';
-                let dateText = '';
+                let datesText = '';
                 
                 if (transaction.type === 'hold') {
                     amountClass = 'hold';
                     if (transaction.status === 'pending') {
                         statusText = 'Zurückgehalten';
                         statusClass = 'status-hold';
-                        // Format: Zurückgehalten von 19.1.2026 bis zum 21.1.2026
+                        // Format: Einnahme Vom 19.1.2026 +123.060 $ Zurückgehalten bis 21.1.2026
                         const fromDate = new Date(transaction.purchaseDate);
                         const toDate = new Date(transaction.releaseDate);
-                        dateText = `Von ${fromDate.getDate()}.${fromDate.getMonth() + 1}.${fromDate.getFullYear()} bis ${toDate.getDate()}.${toDate.getMonth() + 1}.${toDate.getFullYear()}`;
+                        datesText = `Vom ${fromDate.getDate()}.${fromDate.getMonth() + 1}.${fromDate.getFullYear()} bis ${toDate.getDate()}.${toDate.getMonth() + 1}.${toDate.getFullYear()}`;
                     } else {
                         statusText = 'Freigegeben';
                         statusClass = 'status-released';
-                        dateText = new Date(transaction.createdAt).toLocaleDateString('de-DE');
+                        datesText = `Freigegeben am ${new Date(transaction.createdAt).getDate()}.${new Date(transaction.createdAt).getMonth() + 1}.${new Date(transaction.createdAt).getFullYear()}`;
                     }
                 } else if (transaction.type === 'deposit') {
                     amountClass = 'positive';
                     statusText = 'Einzahlung';
                     statusClass = 'status-released';
-                    dateText = new Date(transaction.createdAt).toLocaleDateString('de-DE');
+                    datesText = `Eingezahlt am ${new Date(transaction.createdAt).getDate()}.${new Date(transaction.createdAt).getMonth() + 1}.${new Date(transaction.createdAt).getFullYear()}`;
                 } else if (transaction.type === 'debt-payment') {
                     amountClass = 'negative';
                     statusText = 'Schuldenzahlung';
                     statusClass = 'status-debt';
-                    dateText = new Date(transaction.createdAt).toLocaleDateString('de-DE');
+                    datesText = `Bezahlt am ${new Date(transaction.createdAt).getDate()}.${new Date(transaction.createdAt).getMonth() + 1}.${new Date(transaction.createdAt).getFullYear()}`;
                 } else if (transaction.type === 'expense') {
                     amountClass = 'negative';
                     statusText = 'Auftragskosten';
                     statusClass = 'status-expense';
-                    dateText = new Date(transaction.createdAt).toLocaleDateString('de-DE');
+                    datesText = `Ausgegeben am ${new Date(transaction.createdAt).getDate()}.${new Date(transaction.createdAt).getMonth() + 1}.${new Date(transaction.createdAt).getFullYear()}`;
                 }
                 
                 div.className = `transaction-item ${transaction.type} ${transaction.status === 'released' ? 'released' : ''}`;
                 div.innerHTML = `
-                    <div class="transaction-date">${dateText}</div>
+                    <div class="transaction-dates">${datesText}</div>
                     <div class="transaction-description">${description}</div>
                     <div class="transaction-amount ${amountClass}">${transaction.type === 'expense' || transaction.type === 'debt-payment' ? '-' : '+'}${transaction.amount.toLocaleString()} $</div>
                     <div class="transaction-status ${statusClass}">${statusText}</div>
-                    <div class="transaction-date">${new Date(transaction.createdAt).toLocaleDateString('de-DE')}</div>
                 `;
                 container.appendChild(div);
             });
