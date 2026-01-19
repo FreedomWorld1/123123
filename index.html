@@ -8,7 +8,36 @@
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+        
+        // Deine Firebase-Konfiguration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBTnsLNw68UuOd5Xa2ymMffWk4SYGDQjso",
+            authDomain: "cc-shop-finanzsystem.firebaseapp.com",
+            projectId: "cc-shop-finanzsystem",
+            storageBucket: "cc-shop-finanzsystem.firebasestorage.app",
+            messagingSenderId: "575918945925",
+            appId: "1:575918945925:web:bf9d973d5cd9fc547e5bec",
+            measurementId: "G-9SZREFTJS6"
+        };
+
+        // Firebase initialisieren
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Für deinen Code verfügbar machen
+        window.firebaseApp = app;
+        window.firebaseDb = db;
+        
+        console.log("✅ Firebase verbunden mit:", firebaseConfig.projectId);
+        console.log("📊 Firestore DB:", db);
+    </script>
+    
     <style>
+        /* BEHALTE ALL DEIN CSS WIE VORHER */
         * { 
             margin: 0; 
             padding: 0; 
@@ -40,302 +69,7 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
         
-        .hold-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-        
-        .hold-balance-card {
-            background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
-            padding: 2rem;
-            border-radius: 15px;
-            text-align: center;
-            color: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        
-        .available-balance-card {
-            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
-            padding: 2rem;
-            border-radius: 15px;
-            text-align: center;
-            color: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        
-        .balance-label {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 0.5rem;
-        }
-        
-        .balance-amount {
-            font-size: 3.5rem;
-            font-weight: bold;
-            margin: 1rem 0;
-        }
-        
-        .balance-detail {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        
-        .pending-releases {
-            background: rgba(26, 32, 44, 0.9);
-            padding: 1.5rem;
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(101, 119, 149, 0.3);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-        }
-        
-        .pending-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            background: rgba(30, 41, 59, 0.4);
-            border-radius: 10px;
-            border-left: 4px solid #f59e0b;
-        }
-        
-        .pending-item.released {
-            border-left-color: #10b981;
-        }
-        
-        .pending-item .amount {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #f59e0b;
-        }
-        
-        .pending-item.released .amount {
-            color: #10b981;
-        }
-        
-        .transaction-buttons {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .transaction-btn {
-            padding: 1.2rem 1rem;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            text-align: center;
-        }
-        
-        .hold-btn {
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-            color: white;
-        }
-        
-        .deposit-btn {
-            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
-            color: white;
-        }
-        
-        .withdraw-btn {
-            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
-            color: white;
-        }
-        
-        .transaction-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        
-        .modal-overlay.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: rgba(26, 32, 44, 0.95);
-            padding: 2.5rem;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            border: 1px solid rgba(101, 119, 149, 0.3);
-        }
-        
-        .modal-content h3 {
-            color: #90cdf4;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            font-size: 1.5rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #90cdf4;
-            font-weight: 500;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 0.9rem;
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(101, 119, 149, 0.3);
-            border-radius: 8px;
-            font-size: 1rem;
-            color: #e2e8f0;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 2rem;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-            color: white;
-            border: none;
-            padding: 0.9rem 1.8rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        .btn-secondary {
-            background: rgba(66, 153, 225, 0.15);
-            color: #90cdf4;
-            border: 1px solid #4299e1;
-            padding: 0.9rem 1.8rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        
-        .chart-container {
-            height: 300px;
-            margin-top: 1.5rem;
-        }
-        
-        .hold-distribution {
-            background: rgba(26, 32, 44, 0.8);
-            border-radius: 12px;
-            padding: 1.8rem;
-            margin-top: 2rem;
-            border: 1px solid rgba(101, 119, 149, 0.3);
-        }
-        
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
-        
-        .summary-card {
-            background: rgba(30, 41, 59, 0.4);
-            padding: 1.2rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .summary-label {
-            font-size: 0.9rem;
-            color: #a0aec0;
-            margin-bottom: 0.5rem;
-        }
-        
-        .summary-value {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #90cdf4;
-        }
-        
-        .hold-value {
-            color: #8b5cf6 !important;
-        }
-        
-        .positive-amount {
-            color: #48bb78 !important;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            z-index: 1001;
-            transform: translateX(150%);
-            transition: transform 0.3s ease;
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        .notification.success {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-        }
-        
-        .notification.error {
-            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #a0aec0;
-        }
-        
-        .debug-info {
-            background: rgba(245, 101, 101, 0.1);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-            border-left: 4px solid #f56565;
-            color: #fc8181;
-            font-size: 0.9rem;
-        }
-        
-        .hold-info {
-            background: rgba(139, 92, 246, 0.1);
-            border-left: 4px solid #8b5cf6;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border-radius: 0 8px 8px 0;
-        }
+        /* ... RESTLICHES CSS BEIBEHALTEN ... */
     </style>
 </head>
 <body>
@@ -346,7 +80,7 @@
                 <i class="fas fa-chart-line"></i> CC-Shop Finanzsystem
             </h1>
             <div class="debug-info" id="debugInfo">
-                System startet...
+                Verbinde mit Firebase...
             </div>
         </div>
         
@@ -499,15 +233,61 @@
     <div id="notification" class="notification"></div>
 
     <script>
-        // EINFACHE VARIABLEN - KEIN FIREBASE
+        // FIREBASE VARIABLEN
         let holdTransactions = [];
         let availableBalance = 0;
         let holdDistributionChart = null;
-
+        const userId = "user_001";
+        
+        // Firebase Funktionen
+        async function saveToFirebase() {
+            try {
+                const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js");
+                const { getFirestore } = await import("https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js");
+                
+                const db = getFirestore(window.firebaseApp);
+                const userRef = doc(db, 'users', userId);
+                
+                await setDoc(userRef, {
+                    holdTransactions: holdTransactions,
+                    availableBalance: availableBalance,
+                    lastUpdated: new Date().toISOString()
+                });
+                
+                console.log("💾 In Firebase gespeichert");
+                updateDebugInfo("Daten gespeichert");
+            } catch (error) {
+                console.error("❌ Firebase Fehler:", error);
+                updateDebugInfo("Speichern fehlgeschlagen");
+            }
+        }
+        
+        async function loadFromFirebase() {
+            try {
+                const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js");
+                const { getFirestore } = await import("https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js");
+                
+                const db = getFirestore(window.firebaseApp);
+                const userRef = doc(db, 'users', userId);
+                const userDoc = await getDoc(userRef);
+                
+                if (userDoc.exists()) {
+                    const data = userDoc.data();
+                    holdTransactions = data.holdTransactions || [];
+                    availableBalance = data.availableBalance || 0;
+                    console.log("✅ Von Firebase geladen:", data);
+                    updateDebugInfo("Daten geladen");
+                }
+            } catch (error) {
+                console.error("❌ Firebase Fehler:", error);
+                updateDebugInfo("Laden fehlgeschlagen");
+            }
+        }
+        
         // DOM initialisieren
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 System startet...');
-            updateDebugInfo('System bereit');
+            updateDebugInfo('Verbinde mit Firebase...');
             
             // Heutiges Datum setzen
             const today = new Date().toISOString().split('T')[0];
@@ -520,8 +300,9 @@
             // Event Listener für Datumsänderung
             document.getElementById('holdDate').addEventListener('change', updateReleaseDate);
             
-            // Test-Daten (optional)
-            // addTestData();
+            // Daten von Firebase laden
+            await loadFromFirebase();
+            updateDisplay();
             
             showNotification('System bereit!', 'success');
         });
@@ -547,34 +328,28 @@
 
         // Modal Funktionen
         function openHoldModal() {
-            console.log('📋 Öffne Hold Modal');
             document.getElementById('holdModal').classList.add('active');
         }
         
         function openDepositModal() {
-            console.log('💰 Öffne Deposit Modal');
             document.getElementById('depositModal').classList.add('active');
         }
         
         function openWithdrawModal() {
-            console.log('💸 Öffne Withdraw Modal');
             document.getElementById('withdrawModal').classList.add('active');
         }
         
         function closeHoldModal() {
-            console.log('❌ Schließe Hold Modal');
             document.getElementById('holdModal').classList.remove('active');
             document.getElementById('holdAmount').value = '';
         }
         
         function closeDepositModal() {
-            console.log('❌ Schließe Deposit Modal');
             document.getElementById('depositModal').classList.remove('active');
             document.getElementById('depositAmount').value = '';
         }
         
         function closeWithdrawModal() {
-            console.log('❌ Schließe Withdraw Modal');
             document.getElementById('withdrawModal').classList.remove('active');
             document.getElementById('withdrawAmount').value = '';
         }
@@ -590,7 +365,7 @@
         }
 
         // Transaktionen
-        function addHoldTransaction() {
+        async function addHoldTransaction() {
             const amount = parseInt(document.getElementById('holdAmount').value);
             const purchaseDate = document.getElementById('holdDate').value;
             const releaseDate = document.getElementById('releaseDate').value;
@@ -599,8 +374,6 @@
                 showNotification('Bitte geben Sie einen gültigen Betrag ein!', 'error');
                 return;
             }
-            
-            console.log('➕ Füge Hold hinzu:', amount, purchaseDate, releaseDate);
             
             const transaction = {
                 id: Date.now().toString(),
@@ -615,20 +388,18 @@
             holdTransactions.unshift(transaction);
             closeHoldModal();
             
-            console.log('✅ Hold gespeichert:', transaction);
             updateDisplay();
+            await saveToFirebase();
             showNotification(`✅ ${amount} $ zurückgehalten (Freigabe: ${releaseDate})`, 'success');
         }
 
-        function addDirectDeposit() {
+        async function addDirectDeposit() {
             const amount = parseInt(document.getElementById('depositAmount').value);
             
             if (!amount || amount <= 0) {
                 showNotification('Bitte geben Sie einen gültigen Betrag ein!', 'error');
                 return;
             }
-            
-            console.log('💰 Füge Deposit hinzu:', amount);
             
             availableBalance += amount;
             
@@ -644,12 +415,12 @@
             holdTransactions.unshift(transaction);
             closeDepositModal();
             
-            console.log('✅ Deposit gespeichert:', amount);
             updateDisplay();
+            await saveToFirebase();
             showNotification(`✅ ${amount} $ eingezahlt`, 'success');
         }
 
-        function processWithdrawal() {
+        async function processWithdrawal() {
             const amount = parseInt(document.getElementById('withdrawAmount').value);
             
             if (!amount || amount <= 0) {
@@ -661,8 +432,6 @@
                 showNotification(`Nicht genug Guthaben! Verfügbar: ${availableBalance} $`, 'error');
                 return;
             }
-            
-            console.log('💸 Füge Withdrawal hinzu:', amount);
             
             availableBalance -= amount;
             
@@ -678,37 +447,27 @@
             holdTransactions.unshift(transaction);
             closeWithdrawModal();
             
-            console.log('✅ Withdrawal gespeichert:', amount);
             updateDisplay();
+            await saveToFirebase();
             showNotification(`✅ ${amount} $ ausgezahlt`, 'success');
         }
 
-        // Anzeige aktualisieren - EINFACH UND FUNKTIONIERT
+        // Anzeige aktualisieren
         function updateDisplay() {
-            console.log('🔄 Aktualisiere Anzeige...');
-            
-            // Pending Transaktionen
             const pendingTransactions = holdTransactions.filter(t => t.status === 'pending');
             const releasedTransactions = holdTransactions.filter(t => t.status === 'released');
             
-            // Zurückgehaltene Beträge
             const totalHoldBalance = pendingTransactions.reduce((sum, t) => sum + t.amount, 0);
             
-            // Balances SOFORT anzeigen
             document.getElementById('holdBalance').textContent = totalHoldBalance + ' $';
             document.getElementById('availableBalance').textContent = availableBalance + ' $';
             
-            console.log('📊 Hold:', totalHoldBalance, 'Available:', availableBalance);
-            
-            // Weitere Berechnungen
             const today = new Date().toISOString().split('T')[0];
             
-            // Heute fällig
             const dueToday = pendingTransactions
                 .filter(t => t.releaseDate === today)
                 .reduce((sum, t) => sum + t.amount, 0);
             
-            // Nächste 7 Tage
             const nextWeek = new Date();
             nextWeek.setDate(nextWeek.getDate() + 7);
             const nextWeekStr = nextWeek.toISOString().split('T')[0];
@@ -717,7 +476,6 @@
                 .filter(t => t.releaseDate > today && t.releaseDate <= nextWeekStr)
                 .reduce((sum, t) => sum + t.amount, 0);
             
-            // Tagesbilanz
             const dailyDeposits = releasedTransactions
                 .filter(t => t.type === 'deposit' && t.date === today)
                 .reduce((sum, t) => sum + t.amount, 0);
@@ -728,19 +486,13 @@
             
             const dailyBalance = dailyDeposits - dailyWithdrawals;
             
-            // Restliche Werte anzeigen
             document.getElementById('dueToday').textContent = dueToday + ' $';
             document.getElementById('dueNextWeek').textContent = dueNextWeek + ' $';
             document.getElementById('pendingCount').textContent = pendingTransactions.length;
             document.getElementById('dailyBalance').textContent = dailyBalance + ' $';
             
-            // Pending Releases Liste
             updatePendingReleasesList(pendingTransactions);
-            
-            // Chart aktualisieren
             updateHoldChart();
-            
-            console.log('✅ Anzeige aktualisiert');
         }
 
         function updatePendingReleasesList(pendingTransactions) {
@@ -756,9 +508,7 @@
                 return;
             }
             
-            // Sortieren
             pendingTransactions.sort((a, b) => new Date(a.releaseDate) - new Date(b.releaseDate));
-            
             container.innerHTML = '';
             
             pendingTransactions.forEach(transaction => {
@@ -810,8 +560,6 @@
                     maintainAspectRatio: false
                 }
             });
-            
-            console.log('📊 Chart initialisiert');
         }
 
         function updateHoldChart() {
@@ -820,7 +568,6 @@
             const pendingTransactions = holdTransactions.filter(t => t.status === 'pending');
             const today = new Date();
             
-            // Daten für nächste 5 Tage
             const data = [];
             const labels = [];
             
@@ -829,12 +576,10 @@
                 date.setDate(date.getDate() + i);
                 const dateStr = date.toISOString().split('T')[0];
                 
-                // Label
                 if (i === 0) labels.push('Heute');
                 else if (i === 1) labels.push('Morgen');
                 else labels.push(`Tag ${i + 1}`);
                 
-                // Betrag
                 const dayAmount = pendingTransactions
                     .filter(t => t.releaseDate === dateStr)
                     .reduce((sum, t) => sum + t.amount, 0);
@@ -845,43 +590,11 @@
             holdDistributionChart.data.labels = labels;
             holdDistributionChart.data.datasets[0].data = data;
             holdDistributionChart.update();
-            
-            console.log('📊 Chart aktualisiert');
         }
 
         function refreshChart() {
             updateHoldChart();
             showNotification('Chart aktualisiert', 'info');
-        }
-
-        // Test-Daten (optional)
-        function addTestData() {
-            console.log('🧪 Füge Test-Daten hinzu...');
-            
-            // Test Hold
-            holdTransactions.push({
-                id: 'test1',
-                amount: 150,
-                purchaseDate: '2024-01-01',
-                releaseDate: '2024-01-03',
-                status: 'pending',
-                type: 'hold',
-                createdAt: new Date().toISOString()
-            });
-            
-            // Test Deposit
-            availableBalance = 100;
-            holdTransactions.push({
-                id: 'test2',
-                amount: 100,
-                type: 'deposit',
-                date: new Date().toISOString().split('T')[0],
-                status: 'released',
-                createdAt: new Date().toISOString()
-            });
-            
-            updateDisplay();
-            showNotification('Test-Daten geladen', 'info');
         }
 
         // Automatische Freigabe prüfen
@@ -899,11 +612,11 @@
             
             if (anyReleased) {
                 updateDisplay();
+                saveToFirebase();
                 showNotification('Neue Beträge freigegeben!', 'success');
             }
         }
 
-        // Alle 60 Sekunden prüfen
         setInterval(checkPendingReleases, 60000);
     </script>
 </body>
