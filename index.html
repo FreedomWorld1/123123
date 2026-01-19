@@ -57,7 +57,6 @@
             position: relative;
         }
         
-        /* Animated Background */
         .animated-bg {
             position: fixed;
             top: 0;
@@ -85,7 +84,6 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Container */
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -94,7 +92,6 @@
             z-index: 1;
         }
         
-        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -193,7 +190,6 @@
             50% { opacity: 0.5; }
         }
         
-        /* Alert Card */
         .alert-card {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
             border-left: 4px solid var(--warning);
@@ -218,7 +214,6 @@
             }
         }
         
-        /* Balance Cards */
         .balance-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -337,7 +332,6 @@
             opacity: 0.9;
         }
         
-        /* Action Buttons */
         .action-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -414,7 +408,6 @@
             background: linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%);
         }
         
-        /* Stats Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -428,6 +421,7 @@
             border-radius: var(--radius-xl);
             border: 1px solid var(--border);
             transition: var(--transition-smooth);
+            cursor: pointer;
         }
         
         .stat-card:hover {
@@ -492,7 +486,6 @@
             color: var(--info);
         }
         
-        /* Transaction Section */
         .transaction-section {
             background: linear-gradient(135deg, var(--dark-card) 0%, rgba(30, 41, 59, 0.95) 100%);
             padding: 32px;
@@ -670,7 +663,6 @@
             transform: rotate(15deg);
         }
         
-        /* Modals */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -812,7 +804,6 @@
             box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
         }
         
-        /* Notification */
         .notification {
             position: fixed;
             top: 24px;
@@ -846,7 +837,6 @@
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 0.9) 100%);
         }
         
-        /* Loading Animation */
         .loading {
             position: relative;
             overflow: hidden;
@@ -868,7 +858,13 @@
             100% { transform: translateX(100%); }
         }
         
-        /* Responsive */
+        .period-display {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            font-style: italic;
+        }
+        
         @media (max-width: 1200px) {
             .balance-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -943,7 +939,7 @@
                 </div>
                 <div class="brand-text">
                     <h1>CC-Shop Finanzsystem</h1>
-                    <div class="subtitle">Business ID: CC-SHOP-13</div>
+                    <div class="subtitle">Business ID: 13</div>
                 </div>
             </div>
             <div class="status-badge">
@@ -962,40 +958,44 @@
         
         <!-- Balance Cards -->
         <div class="balance-grid">
-            <div class="balance-card hold">
+            <div class="balance-card hold" onclick="showHoldTransactions()">
                 <div class="balance-icon">
                     <i class="fas fa-pause-circle"></i>
                 </div>
                 <div class="balance-label">Zurückgehaltene Beträge</div>
                 <div class="balance-amount" id="holdBalance">0 $</div>
                 <div class="balance-detail">Werden in 2 Tagen freigegeben</div>
+                <div class="period-display" id="holdPeriod"></div>
             </div>
             
-            <div class="balance-card available">
+            <div class="balance-card available" onclick="showAvailableTransactions()">
                 <div class="balance-icon">
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <div class="balance-label">Verfügbares Guthaben</div>
                 <div class="balance-amount" id="availableBalance">0 $</div>
                 <div class="balance-detail">Sofort verfügbar</div>
+                <div class="period-display" id="availablePeriod"></div>
             </div>
             
-            <div class="balance-card alltime">
+            <div class="balance-card alltime" onclick="showAllTimeTransactions()">
                 <div class="balance-icon">
                     <i class="fas fa-chart-line"></i>
                 </div>
                 <div class="balance-label">All-Time Einnahmen</div>
                 <div class="balance-amount" id="alltimeBalance">0 $</div>
-                <div class="balance-detail">Gesamteinnahmen</div>
+                <div class="balance-detail">Gesamteinnahmen seit Beginn</div>
+                <div class="period-display" id="alltimePeriod"></div>
             </div>
             
-            <div class="balance-card debt">
+            <div class="balance-card debt" onclick="showDebtTransactions()">
                 <div class="balance-icon">
                     <i class="fas fa-credit-card"></i>
                 </div>
                 <div class="balance-label">Verbleibende Schulden</div>
                 <div class="balance-amount" id="debtBalance">12.000.000 $</div>
                 <div class="balance-detail">Noch zurückzuzahlen</div>
+                <div class="period-display" id="debtPeriod"></div>
             </div>
         </div>
         
@@ -1025,7 +1025,7 @@
         
         <!-- Statistics -->
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card" onclick="showExpenseDetails()">
                 <div class="stat-header">
                     <div class="stat-icon">
                         <i class="fas fa-shopping-cart"></i>
@@ -1033,8 +1033,9 @@
                     <div class="stat-title">Ausgaben für Aufträge</div>
                 </div>
                 <div class="stat-value" id="totalExpenses">0 $</div>
+                <div class="period-display" id="expensePeriod">Einzelne Rechnungen</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" onclick="showMonthlyIncome()">
                 <div class="stat-header">
                     <div class="stat-icon">
                         <i class="fas fa-calendar-alt"></i>
@@ -1042,8 +1043,9 @@
                     <div class="stat-title">Monatliche Einnahmen</div>
                 </div>
                 <div class="stat-value" id="monthlyIncome">0 $</div>
+                <div class="period-display" id="monthlyPeriod">Vom 01. bis heute</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" onclick="showYearlyIncome()">
                 <div class="stat-header">
                     <div class="stat-icon">
                         <i class="fas fa-calendar-star"></i>
@@ -1051,6 +1053,7 @@
                     <div class="stat-title">Jährliche Einnahmen</div>
                 </div>
                 <div class="stat-value" id="yearlyIncome">0 $</div>
+                <div class="period-display" id="yearlyPeriod">Vom 01.01. bis heute</div>
             </div>
         </div>
         
@@ -1059,15 +1062,15 @@
             <div class="section-header">
                 <h2 class="section-title">
                     <i class="fas fa-history"></i>
-                    Transaktionshistorie
+                    <span id="sectionTitle">Transaktionshistorie</span>
                 </h2>
-                <div class="filter-group">
-                    <button class="filter-btn active" onclick="filterTransactions('all')">Alle</button>
-                    <button class="filter-btn" onclick="filterTransactions('hold')">Zurückgehalten</button>
-                    <button class="filter-btn" onclick="filterTransactions('deposit')">Einzahlungen</button>
-                    <button class="filter-btn" onclick="filterTransactions('withdrawal')">Auszahlungen</button>
-                    <button class="filter-btn" onclick="filterTransactions('debt')">Schulden</button>
-                    <button class="filter-btn" onclick="filterTransactions('expense')">Kosten</button>
+                <div class="filter-group" id="mainFilterGroup">
+                    <button class="filter-btn active" onclick="showAllTransactions()">Alle</button>
+                    <button class="filter-btn" onclick="showHoldTransactions()">Zurückgehalten</button>
+                    <button class="filter-btn" onclick="showDepositTransactions()">Einzahlungen</button>
+                    <button class="filter-btn" onclick="showWithdrawalTransactions()">Auszahlungen</button>
+                    <button class="filter-btn" onclick="showDebtTransactions()">Schulden</button>
+                    <button class="filter-btn" onclick="showExpenseTransactions()">Kosten</button>
                 </div>
             </div>
             <div class="transaction-list" id="transactionHistory">
@@ -1078,7 +1081,7 @@
         </section>
     </div>
     
-    <!-- Modals (vereinfachte Version - die Logik bleibt gleich) -->
+    <!-- Modals -->
     <div id="holdModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -1110,9 +1113,6 @@
     <div id="notification" class="notification"></div>
 
     <script>
-        // Optimiertes JavaScript mit verbesserter Performance
-        'use strict';
-        
         // App State
         const state = {
             transactions: [],
@@ -1120,11 +1120,11 @@
             alltimeBalance: 0,
             totalDebt: 12000000,
             totalExpenses: 0,
-            currentFilter: 'all',
+            currentView: 'all',
             editingTransactionId: null
         };
         
-        // DOM Elemente cachen
+        // DOM Elemente
         const elements = {};
         
         // Initialisierung
@@ -1132,6 +1132,7 @@
             initializeElements();
             setupEventListeners();
             await loadData();
+            updatePeriodDisplays();
             initializeAnimations();
             startAutoRefresh();
         });
@@ -1146,6 +1147,16 @@
             elements.yearlyIncome = document.getElementById('yearlyIncome');
             elements.transactionHistory = document.getElementById('transactionHistory');
             elements.notification = document.getElementById('notification');
+            elements.sectionTitle = document.getElementById('sectionTitle');
+            
+            // Period displays
+            elements.holdPeriod = document.getElementById('holdPeriod');
+            elements.availablePeriod = document.getElementById('availablePeriod');
+            elements.alltimePeriod = document.getElementById('alltimePeriod');
+            elements.debtPeriod = document.getElementById('debtPeriod');
+            elements.expensePeriod = document.getElementById('expensePeriod');
+            elements.monthlyPeriod = document.getElementById('monthlyPeriod');
+            elements.yearlyPeriod = document.getElementById('yearlyPeriod');
             
             // Set initial date for hold modal
             const holdDate = document.getElementById('holdDate');
@@ -1157,13 +1168,11 @@
         }
         
         function setupEventListeners() {
-            // Date display update
             const holdDate = document.getElementById('holdDate');
             if (holdDate) {
                 holdDate.addEventListener('change', updateDateDisplay);
             }
             
-            // Modal close on overlay click
             document.querySelectorAll('.modal-overlay').forEach(modal => {
                 modal.addEventListener('click', function(e) {
                     if (e.target === this) {
@@ -1185,12 +1194,26 @@
             }
         }
         
+        function updatePeriodDisplays() {
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear();
+            const today = now.getDate();
+            
+            // Update period displays
+            if (elements.monthlyPeriod) {
+                elements.monthlyPeriod.textContent = `Vom 01.${currentMonth}. bis ${today}.${currentMonth}.`;
+            }
+            
+            if (elements.yearlyPeriod) {
+                elements.yearlyPeriod.textContent = `Vom 01.01.${currentYear} bis ${today}.${currentMonth}.${currentYear}`;
+            }
+        }
+        
         async function loadData() {
             try {
-                // Simulate loading
                 showLoading();
                 
-                // Load from localStorage (or Firebase in real implementation)
                 const saved = localStorage.getItem('ccShopData');
                 if (saved) {
                     const data = JSON.parse(saved);
@@ -1198,9 +1221,7 @@
                 }
                 
                 updateDisplay();
-                updateTransactionHistory();
-                
-                // Hide loading
+                showAllTransactions();
                 hideLoading();
                 
             } catch (error) {
@@ -1260,11 +1281,119 @@
             elements.yearlyIncome.textContent = `${formatCurrency(yearlyIncome)}`;
         }
         
-        function updateTransactionHistory() {
-            const container = elements.transactionHistory;
-            const filtered = getFilteredTransactions();
+        // Filter Functions
+        function showAllTransactions() {
+            state.currentView = 'all';
+            elements.sectionTitle.textContent = 'Alle Transaktionen';
+            updateTransactionList(state.transactions);
+            updateFilterButtons('all');
+        }
+        
+        function showHoldTransactions() {
+            state.currentView = 'hold';
+            elements.sectionTitle.textContent = 'Zurückgehaltene Beträge';
+            const holdTransactions = state.transactions.filter(t => t.type === 'hold');
+            updateTransactionList(holdTransactions);
+            updateFilterButtons('hold');
+        }
+        
+        function showAvailableTransactions() {
+            state.currentView = 'available';
+            elements.sectionTitle.textContent = 'Verfügbares Guthaben';
+            const availableTransactions = state.transactions.filter(t => 
+                (t.type === 'deposit') || 
+                (t.type === 'hold' && t.status === 'released')
+            );
+            updateTransactionList(availableTransactions);
+            updateFilterButtons('available');
+        }
+        
+        function showAllTimeTransactions() {
+            state.currentView = 'alltime';
+            elements.sectionTitle.textContent = 'All-Time Einnahmen';
+            const alltimeTransactions = state.transactions.filter(t => 
+                t.type === 'hold' || t.type === 'deposit'
+            );
+            updateTransactionList(alltimeTransactions);
+            updateFilterButtons('alltime');
+        }
+        
+        function showDebtTransactions() {
+            state.currentView = 'debt';
+            elements.sectionTitle.textContent = 'Schuldenzahlungen';
+            const debtTransactions = state.transactions.filter(t => t.type === 'debt-payment');
+            updateTransactionList(debtTransactions);
+            updateFilterButtons('debt');
+        }
+        
+        function showExpenseDetails() {
+            state.currentView = 'expense-details';
+            elements.sectionTitle.textContent = 'Ausgaben für Aufträge';
+            const expenseTransactions = state.transactions.filter(t => t.type === 'expense');
+            updateTransactionList(expenseTransactions);
+            updateFilterButtons('expense-details');
+        }
+        
+        function showMonthlyIncome() {
+            state.currentView = 'monthly';
+            elements.sectionTitle.textContent = 'Monatliche Einnahmen';
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
             
-            if (filtered.length === 0) {
+            const monthlyTransactions = state.transactions.filter(t => {
+                const date = new Date(t.createdAt || t.date);
+                return date.getMonth() === currentMonth && 
+                       date.getFullYear() === currentYear &&
+                       (t.type === 'hold' || t.type === 'deposit');
+            });
+            updateTransactionList(monthlyTransactions);
+            updateFilterButtons('monthly');
+        }
+        
+        function showYearlyIncome() {
+            state.currentView = 'yearly';
+            elements.sectionTitle.textContent = 'Jährliche Einnahmen';
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            
+            const yearlyTransactions = state.transactions.filter(t => {
+                const date = new Date(t.createdAt || t.date);
+                return date.getFullYear() === currentYear &&
+                       (t.type === 'hold' || t.type === 'deposit');
+            });
+            updateTransactionList(yearlyTransactions);
+            updateFilterButtons('yearly');
+        }
+        
+        function showDepositTransactions() {
+            state.currentView = 'deposit';
+            elements.sectionTitle.textContent = 'Einzahlungen';
+            const depositTransactions = state.transactions.filter(t => t.type === 'deposit');
+            updateTransactionList(depositTransactions);
+            updateFilterButtons('deposit');
+        }
+        
+        function showWithdrawalTransactions() {
+            state.currentView = 'withdrawal';
+            elements.sectionTitle.textContent = 'Auszahlungen';
+            const withdrawalTransactions = state.transactions.filter(t => t.type === 'withdrawal');
+            updateTransactionList(withdrawalTransactions);
+            updateFilterButtons('withdrawal');
+        }
+        
+        function showExpenseTransactions() {
+            state.currentView = 'expense';
+            elements.sectionTitle.textContent = 'Kosten';
+            const expenseTransactions = state.transactions.filter(t => t.type === 'expense');
+            updateTransactionList(expenseTransactions);
+            updateFilterButtons('expense');
+        }
+        
+        function updateTransactionList(transactions) {
+            const container = elements.transactionHistory;
+            
+            if (transactions.length === 0) {
                 container.innerHTML = `
                     <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
                         <i class="fas fa-history" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
@@ -1274,8 +1403,11 @@
                 return;
             }
             
+            // Sort by date (newest first)
+            transactions.sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date));
+            
             let html = '';
-            filtered.forEach(transaction => {
+            transactions.forEach(transaction => {
                 const type = transaction.type;
                 const amountClass = getAmountClass(type);
                 const statusClass = getStatusClass(transaction.status);
@@ -1304,16 +1436,20 @@
             container.innerHTML = html;
         }
         
-        function getFilteredTransactions() {
-            if (state.currentFilter === 'all') return state.transactions;
-            return state.transactions.filter(t => {
-                if (state.currentFilter === 'hold') return t.type === 'hold';
-                if (state.currentFilter === 'deposit') return t.type === 'deposit';
-                if (state.currentFilter === 'withdrawal') return t.type === 'withdrawal';
-                if (state.currentFilter === 'debt') return t.type === 'debt-payment';
-                if (state.currentFilter === 'expense') return t.type === 'expense';
-                return true;
-            }).sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date));
+        function updateFilterButtons(activeFilter) {
+            // Update main filter buttons
+            document.querySelectorAll('#mainFilterGroup .filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Find and activate the corresponding button if it exists
+            const activeBtn = document.querySelector(`#mainFilterGroup .filter-btn[onclick*="${activeFilter}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            } else {
+                // If no exact match, activate "Alle"
+                document.querySelector('#mainFilterGroup .filter-btn[onclick*="All"]').classList.add('active');
+            }
         }
         
         function getAmountClass(type) {
@@ -1351,15 +1487,14 @@
         }
         
         function showLoading() {
-            // Could add loading indicators here
+            // Loading indicator
         }
         
         function hideLoading() {
-            // Hide loading indicators
+            // Hide loading
         }
         
         function initializeAnimations() {
-            // Initialize any custom animations
             const cards = document.querySelectorAll('.balance-card, .stat-card');
             cards.forEach((card, index) => {
                 card.style.animationDelay = `${index * 0.1}s`;
@@ -1367,7 +1502,6 @@
         }
         
         function startAutoRefresh() {
-            // Check for pending releases every minute
             setInterval(checkPendingReleases, 60000);
         }
         
@@ -1386,7 +1520,16 @@
             if (released) {
                 updateDisplay();
                 saveData();
-                updateTransactionHistory();
+                // Refresh current view
+                switch(state.currentView) {
+                    case 'all': showAllTransactions(); break;
+                    case 'hold': showHoldTransactions(); break;
+                    case 'available': showAvailableTransactions(); break;
+                    case 'alltime': showAllTimeTransactions(); break;
+                    case 'debt': showDebtTransactions(); break;
+                    case 'monthly': showMonthlyIncome(); break;
+                    case 'yearly': showYearlyIncome(); break;
+                }
                 showNotification('Neue Beträge wurden freigegeben!', 'success');
             }
         }
@@ -1401,7 +1544,6 @@
         }
         
         function openDepositModal() {
-            // Similar implementation
             showNotification('Funktion wird demnächst implementiert', 'info');
         }
         
@@ -1452,7 +1594,7 @@
             
             closeHoldModal();
             updateDisplay();
-            updateTransactionHistory();
+            showHoldTransactions(); // Show hold transactions after adding
             saveData();
             
             showNotification(`${formatCurrency(amount)} als Einnahme hinzugefügt`, 'success');
@@ -1460,18 +1602,6 @@
             // Reset form
             document.getElementById('holdAmount').value = '';
             document.getElementById('holdDescription').value = '';
-        }
-        
-        function filterTransactions(filter) {
-            state.currentFilter = filter;
-            
-            // Update active button
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            updateTransactionHistory();
         }
         
         function showNotification(message, type = 'info') {
@@ -1485,7 +1615,7 @@
             }, 3000);
         }
         
-        // Export functions to global scope for onclick handlers
+        // Export functions to global scope
         window.openHoldModal = openHoldModal;
         window.closeHoldModal = closeHoldModal;
         window.addHoldTransaction = addHoldTransaction;
@@ -1493,7 +1623,17 @@
         window.openWithdrawModal = openWithdrawModal;
         window.openDebtModal = openDebtModal;
         window.openExpenseModal = openExpenseModal;
-        window.filterTransactions = filterTransactions;
+        window.showAllTransactions = showAllTransactions;
+        window.showHoldTransactions = showHoldTransactions;
+        window.showAvailableTransactions = showAvailableTransactions;
+        window.showAllTimeTransactions = showAllTimeTransactions;
+        window.showDebtTransactions = showDebtTransactions;
+        window.showExpenseDetails = showExpenseDetails;
+        window.showMonthlyIncome = showMonthlyIncome;
+        window.showYearlyIncome = showYearlyIncome;
+        window.showDepositTransactions = showDepositTransactions;
+        window.showWithdrawalTransactions = showWithdrawalTransactions;
+        window.showExpenseTransactions = showExpenseTransactions;
         window.openEditModal = openEditModal;
     </script>
 </body>
