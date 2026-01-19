@@ -239,13 +239,14 @@
         
         .transaction-item {
             display: grid;
-            grid-template-columns: 1fr auto 120px 100px;
+            grid-template-columns: 1fr auto 120px 100px 40px;
             align-items: center;
             padding: 1rem;
             margin-bottom: 0.5rem;
             background: rgba(30, 41, 59, 0.4);
             border-radius: 8px;
             gap: 1rem;
+            position: relative;
         }
         
         .transaction-info {
@@ -313,6 +314,25 @@
             background: rgba(255, 65, 108, 0.8);
         }
         
+        .edit-btn {
+            background: rgba(66, 153, 225, 0.2);
+            border: 1px solid rgba(66, 153, 225, 0.5);
+            color: #90cdf4;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .edit-btn:hover {
+            background: rgba(66, 153, 225, 0.4);
+            transform: scale(1.1);
+        }
+        
         .empty-state {
             text-align: center;
             padding: 3rem;
@@ -341,7 +361,7 @@
             padding: 2rem;
             border-radius: 15px;
             width: 90%;
-            max-width: 400px;
+            max-width: 500px;
             border: 1px solid rgba(101, 119, 149, 0.3);
         }
         
@@ -401,6 +421,16 @@
             font-weight: 500;
         }
         
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
         .notification {
             position: fixed;
             top: 20px;
@@ -453,6 +483,12 @@
             border-left: 4px solid #f56565;
             color: #fc8181;
             font-size: 0.8rem;
+        }
+        
+        .action-buttons-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
         }
     </style>
     
@@ -685,6 +721,35 @@
         </div>
     </div>
     
+    <!-- Edit Transaction Modal -->
+    <div id="editTransactionModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3><i class="fas fa-edit"></i> Transaktion bearbeiten</h3>
+            <div class="form-group">
+                <label for="editAmount">Betrag ($)</label>
+                <input type="number" id="editAmount" min="0" step="1" placeholder="0">
+                <div class="date-display">Für Auszahlungen/Schulden/Kosten: Minus-Betrag eingeben</div>
+            </div>
+            <div class="form-group">
+                <label for="editDescription">Beschreibung</label>
+                <input type="text" id="editDescription" placeholder="Beschreibung">
+            </div>
+            <div class="form-group">
+                <label for="editPurchaseDate">Kaufdatum (nur bei zurückgehaltenen)</label>
+                <input type="date" id="editPurchaseDate">
+            </div>
+            <div class="action-buttons-row">
+                <button type="button" class="btn-danger" onclick="deleteTransaction()">
+                    <i class="fas fa-trash"></i> Löschen
+                </button>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn-secondary" onclick="closeEditTransactionModal()">Abbrechen</button>
+                <button type="button" class="btn-primary" onclick="updateTransaction()">Speichern</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Notification -->
     <div id="notification" class="notification"></div>
 
@@ -697,8 +762,9 @@
         let totalDebt = 12000000; // 12 Millionen Schulden
         let totalExpenses = 0;
         const userId = "user_001";
-        const businessId = "CC-SHOP-13"; // Business ID
+        const businessId = "CC-SHOP-13";
         let currentFilter = 'all';
+        let editingTransactionId = null;
         
         // DOM initialisieren
         document.addEventListener('DOMContentLoaded', function() {
@@ -833,6 +899,27 @@
             document.getElementById('expenseModal').classList.add('active');
         }
         
+        function openEditTransactionModal(transactionId) {
+            const transaction = transactions.find(t => t.id === transactionId);
+            if (!transaction) return;
+            
+            editingTransactionId = transactionId;
+            
+            // Felder mit aktuellen Werten füllen
+            document.getElementById('editAmount').value = Math.abs(transaction.amount);
+            document.getElementById('editDescription').value = transaction.description;
+            
+            // Kaufdatum nur bei hold Transaktionen anzeigen
+            if (transaction.type === 'hold' && transaction.purchaseDate) {
+                document.getElementById('editPurchaseDate').value = transaction.purchaseDate;
+                document.getElementById('editPurchaseDate').parentElement.style.display = 'block';
+            } else {
+                document.getElementById('editPurchaseDate').parentElement.style.display = 'none';
+            }
+            
+            document.getElementById('editTransactionModal').classList.add('active');
+        }
+        
         function closeHoldModal() {
             document.getElementById('holdModal').classList.remove('active');
             document.getElementById('holdAmount').value = '';
@@ -861,6 +948,14 @@
             document.getElementById('expenseModal').classList.remove('active');
             document.getElementById('expenseAmount').value = '';
             document.getElementById('expenseDescription').value = '';
+        }
+        
+        function closeEditTransactionModal() {
+            document.getElementById('editTransactionModal').classList.remove('active');
+            editingTransactionId = null;
+            document.getElementById('editAmount').value = '';
+            document.getElementById('editDescription').value = '';
+            document.getElementById('editPurchaseDate').value = '';
         }
         
         // TRANSAKTIONEN
@@ -1033,6 +1128,133 @@
             showNotification(`${amount.toLocaleString()} $ für Kosten verbucht`, 'info');
         }
         
+        // TRANSAKTION BEARBEITEN
+        async function updateTransaction() {
+            if (!editingTransactionId) return;
+            
+            const newAmount = parseInt(document.getElementById('editAmount').value);
+            const newDescription = document.getElementById('editDescription').value;
+            const newPurchaseDate = document.getElementById('editPurchaseDate').value;
+            
+            if (!newAmount || newAmount <= 0) {
+                showNotification('Bitte einen gültigen Betrag eingeben!', 'error');
+                return;
+            }
+            
+            const transactionIndex = transactions.findIndex(t => t.id === editingTransactionId);
+            if (transactionIndex === -1) return;
+            
+            const oldTransaction = transactions[transactionIndex];
+            const oldAmount = oldTransaction.amount;
+            
+            // Unterscheidung nach Transaktionstyp
+            if (oldTransaction.type === 'hold') {
+                // Für Hold: All-Time Balance anpassen
+                const difference = newAmount - oldAmount;
+                alltimeBalance += difference;
+                
+                // Transaktion aktualisieren
+                oldTransaction.amount = newAmount;
+                oldTransaction.description = newDescription;
+                if (newPurchaseDate) {
+                    oldTransaction.purchaseDate = newPurchaseDate;
+                    const releaseDate = new Date(newPurchaseDate);
+                    releaseDate.setDate(releaseDate.getDate() + 2);
+                    oldTransaction.releaseDate = releaseDate.toISOString().split('T')[0];
+                }
+                
+                showNotification(`Hold-Transaktion aktualisiert: ${newAmount.toLocaleString()} $`, 'success');
+                
+            } else if (oldTransaction.type === 'deposit') {
+                // Für Einzahlungen: Available und All-Time anpassen
+                const difference = newAmount - oldAmount;
+                availableBalance += difference;
+                alltimeBalance += difference;
+                
+                oldTransaction.amount = newAmount;
+                oldTransaction.description = newDescription;
+                
+                showNotification(`Einzahlung aktualisiert: ${newAmount.toLocaleString()} $`, 'success');
+                
+            } else if (oldTransaction.type === 'withdrawal') {
+                // Für Auszahlungen: Minus beachten!
+                const difference = newAmount - oldAmount;
+                availableBalance -= difference; // Minus weil es eine Auszahlung ist
+                
+                oldTransaction.amount = newAmount;
+                oldTransaction.description = newDescription;
+                
+                showNotification(`Auszahlung aktualisiert: ${newAmount.toLocaleString()} $`, 'success');
+                
+            } else if (oldTransaction.type === 'debt-payment') {
+                // Für Schuldenzahlungen: Schulden anpassen
+                const difference = newAmount - oldAmount;
+                totalDebt -= difference; // Minus weil Schulden reduziert werden
+                
+                oldTransaction.amount = newAmount;
+                oldTransaction.description = newDescription;
+                
+                showNotification(`Schuldenzahlung aktualisiert: ${newAmount.toLocaleString()} $`, 'success');
+                
+            } else if (oldTransaction.type === 'expense') {
+                // Für Kosten: Available und Gesamtausgaben anpassen
+                const difference = newAmount - oldAmount;
+                availableBalance -= difference; // Minus weil Kosten
+                totalExpenses += difference;
+                
+                oldTransaction.amount = newAmount;
+                oldTransaction.description = newDescription;
+                
+                showNotification(`Kosten aktualisiert: ${newAmount.toLocaleString()} $`, 'success');
+            }
+            
+            closeEditTransactionModal();
+            updateDisplay();
+            await saveData();
+        }
+        
+        // TRANSAKTION LÖSCHEN
+        async function deleteTransaction() {
+            if (!editingTransactionId) return;
+            
+            if (!confirm('Diese Transaktion wirklich löschen?')) return;
+            
+            const transactionIndex = transactions.findIndex(t => t.id === editingTransactionId);
+            if (transactionIndex === -1) return;
+            
+            const transaction = transactions[transactionIndex];
+            
+            // Transaktion rückgängig machen basierend auf Typ
+            if (transaction.type === 'hold') {
+                if (transaction.status === 'pending') {
+                    // Pending Hold: All-Time reduzieren
+                    alltimeBalance -= transaction.amount;
+                } else {
+                    // Released Hold: All-Time und Available reduzieren
+                    alltimeBalance -= transaction.amount;
+                    availableBalance -= transaction.amount;
+                }
+            } else if (transaction.type === 'deposit') {
+                availableBalance -= transaction.amount;
+                alltimeBalance -= transaction.amount;
+            } else if (transaction.type === 'withdrawal') {
+                availableBalance += transaction.amount; // Rückgängig machen
+            } else if (transaction.type === 'debt-payment') {
+                totalDebt += transaction.amount; // Schulden wieder erhöhen
+            } else if (transaction.type === 'expense') {
+                availableBalance += transaction.amount; // Geld zurück
+                totalExpenses -= transaction.amount; // Ausgaben reduzieren
+            }
+            
+            // Transaktion entfernen
+            transactions.splice(transactionIndex, 1);
+            
+            closeEditTransactionModal();
+            updateDisplay();
+            await saveData();
+            showNotification('Transaktion gelöscht', 'success');
+        }
+        
         // AUTOMATISCHE FREIGABE
         function checkPendingReleases() {
             const today = new Date().toISOString().split('T')[0];
@@ -1178,6 +1400,9 @@
                     </div>
                     <div class="transaction-amount ${amountClass}">${transaction.type === 'expense' || transaction.type === 'debt-payment' || transaction.type === 'withdrawal' ? '-' : '+'}${transaction.amount.toLocaleString()} $</div>
                     <div class="transaction-status ${statusClass}">${statusText}</div>
+                    <div class="edit-btn" onclick="openEditTransactionModal('${transaction.id}')">
+                        <i class="fas fa-edit"></i>
+                    </div>
                 `;
                 container.appendChild(div);
             });
