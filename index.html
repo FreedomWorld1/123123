@@ -625,6 +625,26 @@
             color: var(--text-secondary);
         }
         
+        .hold-dates {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 4px;
+        }
+        
+        .hold-date-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .hold-date-item i {
+            font-size: 10px;
+            color: var(--primary-light);
+        }
+        
         .transaction-amount {
             font-size: 20px;
             font-weight: 700;
@@ -1673,10 +1693,33 @@
                 
                 let statusText = '';
                 let statusClass = '';
+                let holdDates = '';
                 
                 if (type === 'hold') {
                     statusText = transaction.status === 'pending' ? 'Zurückgehalten' : 'Freigegeben';
                     statusClass = transaction.status === 'pending' ? 'pending' : 'released';
+                    
+                    if (transaction.purchaseDate && transaction.releaseDate) {
+                        const purchaseDate = new Date(transaction.purchaseDate);
+                        const releaseDate = new Date(transaction.releaseDate);
+                        
+                        // Nur den Tag anzeigen (z.B. "15" statt "15.01.2024")
+                        const purchaseDay = purchaseDate.getDate();
+                        const releaseDay = releaseDate.getDate();
+                        
+                        holdDates = `
+                            <div class="hold-dates">
+                                <div class="hold-date-item">
+                                    <i class="fas fa-calendar-day"></i>
+                                    Kaufdatum: ${purchaseDay}
+                                </div>
+                                <div class="hold-date-item">
+                                    <i class="fas fa-calendar-check"></i>
+                                    Freigabe: ${releaseDay}
+                                </div>
+                            </div>
+                        `;
+                    }
                 } else if (type === 'deposit') {
                     statusText = 'Einzahlung';
                     statusClass = 'completed';
@@ -1696,6 +1739,7 @@
                         <div class="transaction-info">
                             <div class="transaction-title">${transaction.description || 'Keine Beschreibung'}</div>
                             <div class="transaction-date">${formattedDate}</div>
+                            ${holdDates}
                         </div>
                         <div class="transaction-amount ${type === 'withdrawal' || type === 'expense' || type === 'debt-payment' ? 'negative' : 'positive'}">
                             ${type === 'withdrawal' || type === 'expense' || type === 'debt-payment' ? '-' : '+'}${formatCurrency(transaction.amount)}
