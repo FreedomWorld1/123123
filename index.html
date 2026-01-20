@@ -8,7 +8,6 @@
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet">
     
     <style>
-        /* CSS bleibt gleich wie vorher */
         :root {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
@@ -838,10 +837,6 @@
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 0.9) 100%);
         }
         
-        .notification.warning {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.9) 0%, rgba(217, 119, 6, 0.9) 100%);
-        }
-        
         .loading {
             position: relative;
             overflow: hidden;
@@ -868,20 +863,6 @@
             color: var(--text-secondary);
             margin-top: 4px;
             font-style: italic;
-        }
-        
-        .sync-status {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-        
-        .sync-status.online {
-            color: var(--success);
-        }
-        
-        .sync-status.offline {
-            color: var(--warning);
         }
         
         @media (max-width: 1200px) {
@@ -959,11 +940,10 @@
                 <div class="brand-text">
                     <h1>CC-Shop Finanzsystem</h1>
                     <div class="subtitle">Business ID: 13</div>
-                    <div class="sync-status offline" id="syncStatus">Lokal gespeichert</div>
                 </div>
             </div>
-            <div class="status-badge" id="connectionStatus">
-                Verbinde...
+            <div class="status-badge">
+                System online • Echtzeit-Daten
             </div>
         </header>
         
@@ -1141,30 +1121,16 @@
             totalDebt: 12000000,
             totalExpenses: 0,
             currentView: 'all',
-            editingTransactionId: null,
-            firebaseInitialized: false,
-            db: null
+            editingTransactionId: null
         };
         
         // DOM Elemente
         const elements = {};
         
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBTnsLNw68UuOd5Xa2ymMffWk4SYGDQjso",
-            authDomain: "cc-shop-finanzsystem.firebaseapp.com",
-            projectId: "cc-shop-finanzsystem",
-            storageBucket: "cc-shop-finanzsystem.firebasestorage.app",
-            messagingSenderId: "575918945925",
-            appId: "1:575918945925:web:bf9d973d5cd9fc547e5bec",
-            measurementId: "G-9SZREFTJS6"
-        };
-        
         // Initialisierung
         document.addEventListener('DOMContentLoaded', async () => {
             initializeElements();
             setupEventListeners();
-            await initializeFirebase();
             await loadData();
             updatePeriodDisplays();
             initializeAnimations();
@@ -1182,8 +1148,6 @@
             elements.transactionHistory = document.getElementById('transactionHistory');
             elements.notification = document.getElementById('notification');
             elements.sectionTitle = document.getElementById('sectionTitle');
-            elements.connectionStatus = document.getElementById('connectionStatus');
-            elements.syncStatus = document.getElementById('syncStatus');
             
             // Period displays
             elements.holdPeriod = document.getElementById('holdPeriod');
@@ -1216,67 +1180,6 @@
                     }
                 });
             });
-            
-            // Offline/Online detection
-            window.addEventListener('online', handleOnlineStatus);
-            window.addEventListener('offline', handleOnlineStatus);
-        }
-        
-        function handleOnlineStatus() {
-            if (navigator.onLine) {
-                elements.connectionStatus.innerHTML = '<span style="color: #10b981;">●</span> Online';
-                if (state.firebaseInitialized) {
-                    elements.syncStatus.textContent = 'Mit Firebase synchronisiert';
-                    elements.syncStatus.className = 'sync-status online';
-                    // Try to sync with Firebase
-                    syncWithFirebase();
-                }
-            } else {
-                elements.connectionStatus.innerHTML = '<span style="color: #f59e0b;">●</span> Offline';
-                elements.syncStatus.textContent = 'Lokal gespeichert';
-                elements.syncStatus.className = 'sync-status offline';
-            }
-        }
-        
-        async function initializeFirebase() {
-            try {
-                // Check if firebase scripts are loaded
-                if (typeof firebase === 'undefined') {
-                    throw new Error('Firebase SDK nicht geladen');
-                }
-                
-                // Initialize Firebase
-                firebase.initializeApp(firebaseConfig);
-                state.db = firebase.firestore();
-                state.firebaseInitialized = true;
-                
-                // Enable offline persistence
-                await firebase.firestore().enablePersistence()
-                    .catch((err) => {
-                        if (err.code == 'failed-precondition') {
-                            console.warn('Mehrere Tabs geöffnet, Offline-Persistenz nur in einem Tab');
-                        } else if (err.code == 'unimplemented') {
-                            console.warn('Browser unterstützt keine Offline-Persistenz');
-                        }
-                    });
-                
-                elements.connectionStatus.innerHTML = '<span style="color: #10b981;">●</span> Mit Firebase verbunden';
-                elements.syncStatus.textContent = 'Mit Firebase synchronisiert';
-                elements.syncStatus.className = 'sync-status online';
-                
-                showNotification('Mit Firebase verbunden', 'success');
-                
-            } catch (error) {
-                console.warn('Firebase konnte nicht initialisiert werden:', error.message);
-                state.firebaseInitialized = false;
-                elements.connectionStatus.innerHTML = '<span style="color: #f59e0b;">●</span> Lokaler Modus';
-                elements.syncStatus.textContent = 'Nur lokale Speicherung';
-                elements.syncStatus.className = 'sync-status offline';
-                showNotification('Lokaler Modus aktiv - Daten werden nur lokal gespeichert', 'warning');
-            }
-            
-            // Update online status display
-            handleOnlineStatus();
         }
         
         function updateDateDisplay() {
@@ -1311,21 +1214,10 @@
             try {
                 showLoading();
                 
-                // Try to load from Firebase first
-                if (state.firebaseInitialized) {
-                    try {
-                        await loadFromFirebase();
-                        showNotification('Daten von Firebase geladen', 'success');
-                    } catch (firebaseError) {
-                        console.warn('Firebase-Laden fehlgeschlagen:', firebaseError);
-                        // Fallback to localStorage
-                        await loadFromLocalStorage();
-                        showNotification('Daten lokal geladen', 'info');
-                    }
-                } else {
-                    // Firebase not initialized, use localStorage
-                    await loadFromLocalStorage();
-                    showNotification('Daten lokal geladen', 'info');
+                const saved = localStorage.getItem('ccShopData');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    Object.assign(state, data);
                 }
                 
                 updateDisplay();
@@ -1333,181 +1225,21 @@
                 hideLoading();
                 
             } catch (error) {
-                console.error('Fehler beim Laden der Daten:', error);
                 showNotification('Fehler beim Laden der Daten', 'error');
-                // Load sample data for demonstration
-                loadSampleData();
             }
         }
         
-        async function loadFromFirebase() {
-            if (!state.firebaseInitialized || !state.db) return;
-            
-            try {
-                const userDoc = await state.db.collection('users').doc('user_001').get();
-                
-                if (userDoc.exists) {
-                    const data = userDoc.data();
-                    state.transactions = data.transactions || [];
-                    state.availableBalance = data.availableBalance || 0;
-                    state.alltimeBalance = data.alltimeBalance || 0;
-                    state.totalDebt = data.totalDebt || 12000000;
-                    state.totalExpenses = data.totalExpenses || 0;
-                    
-                    // Save to localStorage as backup
-                    saveToLocalStorage();
-                } else {
-                    // Create initial user in Firebase
-                    await createInitialUserData();
-                }
-            } catch (error) {
-                throw error;
-            }
-        }
-        
-        async function createInitialUserData() {
-            const initialData = {
-                transactions: [],
-                availableBalance: 0,
-                alltimeBalance: 0,
-                totalDebt: 12000000,
-                totalExpenses: 0,
-                businessId: "13",
-                createdAt: new Date().toISOString(),
-                lastUpdated: new Date().toISOString()
-            };
-            
-            if (state.firebaseInitialized) {
-                await state.db.collection('users').doc('user_001').set(initialData);
-            }
-            
-            Object.assign(state, initialData);
-            saveToLocalStorage();
-        }
-        
-        async function loadFromLocalStorage() {
-            const saved = localStorage.getItem('ccShopData_v2');
-            if (saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    state.transactions = data.transactions || [];
-                    state.availableBalance = data.availableBalance || 0;
-                    state.alltimeBalance = data.alltimeBalance || 0;
-                    state.totalDebt = data.totalDebt || 12000000;
-                    state.totalExpenses = data.totalExpenses || 0;
-                } catch (e) {
-                    console.warn('Ungültige lokale Daten');
-                    loadSampleData();
-                }
-            } else {
-                // Try old format
-                const oldSaved = localStorage.getItem('ccShopData');
-                if (oldSaved) {
-                    try {
-                        const data = JSON.parse(oldSaved);
-                        state.transactions = data.transactions || [];
-                        state.availableBalance = data.availableBalance || 0;
-                        state.alltimeBalance = data.alltimeBalance || 0;
-                        state.totalDebt = data.totalDebt || 12000000;
-                        state.totalExpenses = data.totalExpenses || 0;
-                        saveToLocalStorage(); // Save in new format
-                    } catch (e) {
-                        loadSampleData();
-                    }
-                } else {
-                    loadSampleData();
-                }
-            }
-        }
-        
-        function loadSampleData() {
-            // Add some sample data for demonstration
-            const sampleDate = new Date();
-            sampleDate.setDate(sampleDate.getDate() - 1);
-            
-            state.transactions = [
-                {
-                    id: '1',
-                    amount: 5000,
-                    description: 'Produktverkauf #123',
-                    purchaseDate: sampleDate.toISOString().split('T')[0],
-                    releaseDate: new Date(sampleDate.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                    status: 'pending',
-                    type: 'hold',
-                    date: sampleDate.toISOString().split('T')[0],
-                    createdAt: sampleDate.toISOString()
-                },
-                {
-                    id: '2',
-                    amount: 2000,
-                    description: 'Direkteinzahlung',
-                    type: 'deposit',
-                    date: new Date().toISOString().split('T')[0],
-                    status: 'released',
-                    createdAt: new Date().toISOString()
-                }
-            ];
-            
-            state.availableBalance = 2000;
-            state.alltimeBalance = 7000;
-            state.totalDebt = 12000000;
-            state.totalExpenses = 0;
-        }
-        
-        async function saveData() {
+        function saveData() {
             const data = {
                 transactions: state.transactions,
                 availableBalance: state.availableBalance,
                 alltimeBalance: state.alltimeBalance,
                 totalDebt: state.totalDebt,
                 totalExpenses: state.totalExpenses,
-                businessId: "13",
                 lastUpdated: new Date().toISOString()
             };
             
-            // Always save to localStorage first for immediate availability
-            saveToLocalStorage();
-            
-            // Try to save to Firebase if available
-            if (state.firebaseInitialized) {
-                try {
-                    await state.db.collection('users').doc('user_001').set(data, { merge: true });
-                    elements.syncStatus.textContent = 'Mit Firebase synchronisiert';
-                    elements.syncStatus.className = 'sync-status online';
-                } catch (error) {
-                    console.warn('Firebase-Speichern fehlgeschlagen:', error);
-                    elements.syncStatus.textContent = 'Lokal gespeichert (Firebase Fehler)';
-                    elements.syncStatus.className = 'sync-status offline';
-                    showNotification('Daten lokal gespeichert - Firebase Fehler', 'warning');
-                }
-            }
-        }
-        
-        function saveToLocalStorage() {
-            const data = {
-                transactions: state.transactions,
-                availableBalance: state.availableBalance,
-                alltimeBalance: state.alltimeBalance,
-                totalDebt: state.totalDebt,
-                totalExpenses: state.totalExpenses,
-                businessId: "13",
-                lastUpdated: new Date().toISOString()
-            };
-            
-            localStorage.setItem('ccShopData_v2', JSON.stringify(data));
-        }
-        
-        async function syncWithFirebase() {
-            if (!state.firebaseInitialized || !navigator.onLine) return;
-            
-            try {
-                // Load latest from Firebase
-                await loadFromFirebase();
-                updateDisplay();
-                showNotification('Daten mit Firebase synchronisiert', 'success');
-            } catch (error) {
-                console.warn('Sync mit Firebase fehlgeschlagen:', error);
-            }
+            localStorage.setItem('ccShopData', JSON.stringify(data));
         }
         
         function updateDisplay() {
@@ -1549,7 +1281,7 @@
             elements.yearlyIncome.textContent = `${formatCurrency(yearlyIncome)}`;
         }
         
-        // Filter Functions (remain the same as before)
+        // Filter Functions
         function showAllTransactions() {
             state.currentView = 'all';
             elements.sectionTitle.textContent = 'Alle Transaktionen';
@@ -1705,14 +1437,17 @@
         }
         
         function updateFilterButtons(activeFilter) {
+            // Update main filter buttons
             document.querySelectorAll('#mainFilterGroup .filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             
+            // Find and activate the corresponding button if it exists
             const activeBtn = document.querySelector(`#mainFilterGroup .filter-btn[onclick*="${activeFilter}"]`);
             if (activeBtn) {
                 activeBtn.classList.add('active');
             } else {
+                // If no exact match, activate "Alle"
                 document.querySelector('#mainFilterGroup .filter-btn[onclick*="All"]').classList.add('active');
             }
         }
@@ -1768,8 +1503,6 @@
         
         function startAutoRefresh() {
             setInterval(checkPendingReleases, 60000);
-            // Try to sync with Firebase every 5 minutes
-            setInterval(syncWithFirebase, 300000);
         }
         
         function checkPendingReleases() {
@@ -1787,6 +1520,7 @@
             if (released) {
                 updateDisplay();
                 saveData();
+                // Refresh current view
                 switch(state.currentView) {
                     case 'all': showAllTransactions(); break;
                     case 'hold': showHoldTransactions(); break;
@@ -1860,8 +1594,8 @@
             
             closeHoldModal();
             updateDisplay();
-            showHoldTransactions();
-            await saveData();
+            showHoldTransactions(); // Show hold transactions after adding
+            saveData();
             
             showNotification(`${formatCurrency(amount)} als Einnahme hinzugefügt`, 'success');
             
