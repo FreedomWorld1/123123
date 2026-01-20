@@ -804,6 +804,16 @@
             box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
         }
         
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+        
         .notification {
             position: fixed;
             top: 24px;
@@ -1081,7 +1091,7 @@
         </section>
     </div>
     
-    <!-- Modals -->
+    <!-- Hold Modal -->
     <div id="holdModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -1107,7 +1117,120 @@
         </div>
     </div>
     
-    <!-- Weitere Modals hier... -->
+    <!-- Deposit Modal -->
+    <div id="depositModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle"></i> Direkt einzahlen</h3>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Betrag ($)</label>
+                <input type="number" id="depositAmount" class="form-input" placeholder="0" min="0">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Beschreibung</label>
+                <input type="text" id="depositDescription" class="form-input" placeholder="z.B. Direkteinzahlung">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeDepositModal()">Abbrechen</button>
+                <button class="btn btn-primary" onclick="addDirectDeposit()">Einzahlen</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Withdraw Modal -->
+    <div id="withdrawModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-money-bill-wave"></i> Auszahlen</h3>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Betrag ($)</label>
+                <input type="number" id="withdrawAmount" class="form-input" placeholder="0" min="0">
+                <div class="form-hint">Verfügbar: <span id="availableForWithdrawalDisplay">0 $</span></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Beschreibung</label>
+                <input type="text" id="withdrawDescription" class="form-input" placeholder="z.B. Bankauszahlung">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeWithdrawModal()">Abbrechen</button>
+                <button class="btn btn-primary" onclick="processWithdrawal()">Auszahlen</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Debt Modal -->
+    <div id="debtModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-credit-card"></i> Schulden zurückzahlen</h3>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Betrag ($)</label>
+                <input type="number" id="debtAmount" class="form-input" placeholder="0" min="0">
+                <div class="form-hint">Aktuelle Schulden: <span id="currentDebtDisplay">12.000.000 $</span></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Beschreibung</label>
+                <input type="text" id="debtDescription" class="form-input" placeholder="z.B. Monatliche Rate">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeDebtModal()">Abbrechen</button>
+                <button class="btn btn-primary" onclick="payDebt()">Zurückzahlen</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Expense Modal -->
+    <div id="expenseModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-shopping-cart"></i> Kosten hinzufügen</h3>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Kosten ($)</label>
+                <input type="number" id="expenseAmount" class="form-input" placeholder="0" min="0">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Beschreibung</label>
+                <input type="text" id="expenseDescription" class="form-input" placeholder="z.B. Serverkosten, Marketing">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeExpenseModal()">Abbrechen</button>
+                <button class="btn btn-primary" onclick="addExpense()">Hinzufügen</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Transaction Modal -->
+    <div id="editTransactionModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Transaktion bearbeiten</h3>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Betrag ($)</label>
+                <input type="number" id="editAmount" class="form-input" placeholder="0" min="0">
+                <div class="form-hint">Für Auszahlungen/Schulden/Kosten: Positiven Betrag eingeben</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Beschreibung</label>
+                <input type="text" id="editDescription" class="form-input" placeholder="Beschreibung">
+            </div>
+            <div class="form-group" id="editPurchaseDateGroup" style="display: none;">
+                <label class="form-label">Kaufdatum</label>
+                <input type="date" id="editPurchaseDate" class="form-input">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-danger" onclick="deleteTransaction()">
+                    <i class="fas fa-trash"></i> Löschen
+                </button>
+                <button class="btn btn-secondary" onclick="closeEditTransactionModal()">Abbrechen</button>
+                <button class="btn btn-primary" onclick="updateTransaction()">Speichern</button>
+            </div>
+        </div>
+    </div>
     
     <!-- Notification -->
     <div id="notification" class="notification"></div>
@@ -1138,6 +1261,7 @@
         });
         
         function initializeElements() {
+            // Balance elements
             elements.holdBalance = document.getElementById('holdBalance');
             elements.availableBalance = document.getElementById('availableBalance');
             elements.alltimeBalance = document.getElementById('alltimeBalance');
@@ -1202,7 +1326,7 @@
             
             // Update period displays
             if (elements.monthlyPeriod) {
-                elements.monthlyPeriod.textContent = `Vom 01.${currentMonth}. bis ${today.toString().padStart(2, '0')}.${currentMonth}.`;
+                elements.monthlyPeriod.textContent = `Vom 01.${currentMonth.toString().padStart(2, '0')}. bis ${today.toString().padStart(2, '0')}.${currentMonth.toString().padStart(2, '0')}.`;
             }
             
             if (elements.yearlyPeriod) {
@@ -1425,7 +1549,7 @@
                 const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
                 
                 html += `
-                    <div class="transaction-item ${type}" onclick="openEditModal('${transaction.id}')">
+                    <div class="transaction-item ${type}" onclick="openEditTransactionModal('${transaction.id}')">
                         <div class="transaction-info">
                             <div class="transaction-title">${transaction.description || 'Keine Beschreibung'}</div>
                             <div class="transaction-date">${formattedDate}</div>
@@ -1513,6 +1637,431 @@
             return amount.toLocaleString('de-DE') + ' $';
         }
         
+        // Modal Functions
+        function openHoldModal() {
+            document.getElementById('holdModal').classList.add('active');
+        }
+        
+        function closeHoldModal() {
+            document.getElementById('holdModal').classList.remove('active');
+            document.getElementById('holdAmount').value = '';
+            document.getElementById('holdDescription').value = '';
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('holdDate').value = today;
+            updateDateDisplay();
+        }
+        
+        function openDepositModal() {
+            document.getElementById('depositModal').classList.add('active');
+        }
+        
+        function closeDepositModal() {
+            document.getElementById('depositModal').classList.remove('active');
+            document.getElementById('depositAmount').value = '';
+            document.getElementById('depositDescription').value = '';
+        }
+        
+        function openWithdrawModal() {
+            document.getElementById('availableForWithdrawalDisplay').textContent = formatCurrency(state.availableBalance);
+            document.getElementById('withdrawModal').classList.add('active');
+        }
+        
+        function closeWithdrawModal() {
+            document.getElementById('withdrawModal').classList.remove('active');
+            document.getElementById('withdrawAmount').value = '';
+            document.getElementById('withdrawDescription').value = '';
+        }
+        
+        function openDebtModal() {
+            document.getElementById('currentDebtDisplay').textContent = formatCurrency(state.totalDebt);
+            document.getElementById('debtModal').classList.add('active');
+        }
+        
+        function closeDebtModal() {
+            document.getElementById('debtModal').classList.remove('active');
+            document.getElementById('debtAmount').value = '';
+            document.getElementById('debtDescription').value = '';
+        }
+        
+        function openExpenseModal() {
+            document.getElementById('expenseModal').classList.add('active');
+        }
+        
+        function closeExpenseModal() {
+            document.getElementById('expenseModal').classList.remove('active');
+            document.getElementById('expenseAmount').value = '';
+            document.getElementById('expenseDescription').value = '';
+        }
+        
+        function openEditTransactionModal(transactionId) {
+            const transaction = state.transactions.find(t => t.id === transactionId);
+            if (!transaction) return;
+            
+            state.editingTransactionId = transactionId;
+            
+            // Felder mit aktuellen Werten füllen
+            document.getElementById('editAmount').value = Math.abs(transaction.amount);
+            document.getElementById('editDescription').value = transaction.description;
+            
+            // Kaufdatum nur bei hold Transaktionen anzeigen
+            const purchaseDateGroup = document.getElementById('editPurchaseDateGroup');
+            if (transaction.type === 'hold' && transaction.purchaseDate) {
+                purchaseDateGroup.style.display = 'block';
+                document.getElementById('editPurchaseDate').value = transaction.purchaseDate;
+            } else {
+                purchaseDateGroup.style.display = 'none';
+            }
+            
+            document.getElementById('editTransactionModal').classList.add('active');
+        }
+        
+        function closeEditTransactionModal() {
+            document.getElementById('editTransactionModal').classList.remove('active');
+            state.editingTransactionId = null;
+            document.getElementById('editAmount').value = '';
+            document.getElementById('editDescription').value = '';
+            document.getElementById('editPurchaseDate').value = '';
+            document.getElementById('editPurchaseDateGroup').style.display = 'none';
+        }
+        
+        // Transaction Functions
+        async function addHoldTransaction() {
+            const amount = parseInt(document.getElementById('holdAmount').value);
+            const description = document.getElementById('holdDescription').value.trim() || 'Einnahme';
+            const purchaseDate = document.getElementById('holdDate').value;
+            
+            if (!amount || amount <= 0) {
+                showNotification('Bitte einen gültigen Betrag eingeben', 'error');
+                return;
+            }
+            
+            if (!purchaseDate) {
+                showNotification('Bitte ein Kaufdatum auswählen', 'error');
+                return;
+            }
+            
+            const releaseDate = new Date(purchaseDate);
+            releaseDate.setDate(releaseDate.getDate() + 2);
+            
+            const transaction = {
+                id: Date.now().toString(),
+                amount: amount,
+                description: description,
+                purchaseDate: purchaseDate,
+                releaseDate: releaseDate.toISOString().split('T')[0],
+                status: 'pending',
+                type: 'hold',
+                date: new Date().toISOString().split('T')[0],
+                createdAt: new Date().toISOString()
+            };
+            
+            state.transactions.unshift(transaction);
+            state.alltimeBalance += amount;
+            
+            closeHoldModal();
+            updateDisplay();
+            showHoldTransactions(); // Show hold transactions after adding
+            saveData();
+            
+            showNotification(`${formatCurrency(amount)} als Einnahme hinzugefügt`, 'success');
+        }
+        
+        async function addDirectDeposit() {
+            const amount = parseInt(document.getElementById('depositAmount').value);
+            const description = document.getElementById('depositDescription').value.trim() || 'Direkteinzahlung';
+            
+            if (!amount || amount <= 0) {
+                showNotification('Bitte einen gültigen Betrag eingeben!', 'error');
+                return;
+            }
+            
+            state.availableBalance += amount;
+            state.alltimeBalance += amount;
+            
+            const transaction = {
+                id: Date.now().toString(),
+                amount: amount,
+                description: description,
+                type: 'deposit',
+                date: new Date().toISOString().split('T')[0],
+                status: 'released',
+                createdAt: new Date().toISOString()
+            };
+            
+            state.transactions.unshift(transaction);
+            closeDepositModal();
+            updateDisplay();
+            showDepositTransactions();
+            saveData();
+            showNotification(`${formatCurrency(amount)} direkt eingezahlt`, 'success');
+        }
+        
+        async function processWithdrawal() {
+            const amount = parseInt(document.getElementById('withdrawAmount').value);
+            const description = document.getElementById('withdrawDescription').value.trim() || 'Auszahlung';
+            
+            if (!amount || amount <= 0) {
+                showNotification('Bitte einen gültigen Betrag eingeben!', 'error');
+                return;
+            }
+            
+            if (amount > state.availableBalance) {
+                showNotification(`Nicht genug Guthaben! Verfügbar: ${formatCurrency(state.availableBalance)}`, 'error');
+                return;
+            }
+            
+            // Guthaben wird reduziert, All-Time bleibt gleich
+            state.availableBalance -= amount;
+            
+            const transaction = {
+                id: Date.now().toString(),
+                amount: amount,
+                description: description,
+                type: 'withdrawal',
+                date: new Date().toISOString().split('T')[0],
+                status: 'released',
+                createdAt: new Date().toISOString()
+            };
+            
+            state.transactions.unshift(transaction);
+            closeWithdrawModal();
+            updateDisplay();
+            showWithdrawalTransactions();
+            saveData();
+            showNotification(`${formatCurrency(amount)} ausgezahlt`, 'success');
+        }
+        
+        async function payDebt() {
+            const amount = parseInt(document.getElementById('debtAmount').value);
+            const description = document.getElementById('debtDescription').value.trim() || 'Schuldenzahlung';
+            
+            if (!amount || amount <= 0) {
+                showNotification('Bitte einen gültigen Betrag eingeben!', 'error');
+                return;
+            }
+            
+            if (amount > state.totalDebt) {
+                showNotification(`Betrag übersteigt Schulden! Schulden: ${formatCurrency(state.totalDebt)}`, 'error');
+                return;
+            }
+            
+            // WICHTIG: availableBalance wird NICHT reduziert!
+            // Nur die Schulden werden reduziert
+            state.totalDebt -= amount;
+            
+            const transaction = {
+                id: Date.now().toString(),
+                amount: amount,
+                description: description,
+                type: 'debt-payment',
+                date: new Date().toISOString().split('T')[0],
+                status: 'released',
+                createdAt: new Date().toISOString()
+            };
+            
+            state.transactions.unshift(transaction);
+            closeDebtModal();
+            updateDisplay();
+            showDebtTransactions();
+            saveData();
+            showNotification(`${formatCurrency(amount)} für Schulden zurückgezahlt`, 'success');
+        }
+        
+        async function addExpense() {
+            const amount = parseInt(document.getElementById('expenseAmount').value);
+            const description = document.getElementById('expenseDescription').value.trim() || 'Auftragskosten';
+            
+            if (!amount || amount <= 0) {
+                showNotification('Bitte einen gültigen Betrag eingeben!', 'error');
+                return;
+            }
+            
+            if (amount > state.availableBalance) {
+                showNotification(`Nicht genug Guthaben! Verfügbar: ${formatCurrency(state.availableBalance)}`, 'error');
+                return;
+            }
+            
+            state.availableBalance -= amount;
+            state.totalExpenses += amount;
+            
+            const transaction = {
+                id: Date.now().toString(),
+                amount: amount,
+                description: description,
+                type: 'expense',
+                date: new Date().toISOString().split('T')[0],
+                status: 'released',
+                createdAt: new Date().toISOString()
+            };
+            
+            state.transactions.unshift(transaction);
+            closeExpenseModal();
+            updateDisplay();
+            showExpenseTransactions();
+            saveData();
+            showNotification(`${formatCurrency(amount)} für Kosten verbucht`, 'info');
+        }
+        
+        // Bearbeitungsfunktionen
+        async function updateTransaction() {
+            if (!state.editingTransactionId) return;
+            
+            const newAmount = parseInt(document.getElementById('editAmount').value);
+            const newDescription = document.getElementById('editDescription').value.trim();
+            const newPurchaseDate = document.getElementById('editPurchaseDate').value;
+            
+            if (!newAmount || newAmount <= 0) {
+                showNotification('Bitte einen gültigen Betrag eingeben!', 'error');
+                return;
+            }
+            
+            const transactionIndex = state.transactions.findIndex(t => t.id === state.editingTransactionId);
+            if (transactionIndex === -1) return;
+            
+            const oldTransaction = state.transactions[transactionIndex];
+            const oldAmount = oldTransaction.amount;
+            
+            // Unterscheidung nach Transaktionstyp
+            if (oldTransaction.type === 'hold') {
+                // Für Hold: All-Time Balance anpassen
+                const difference = newAmount - oldAmount;
+                state.alltimeBalance += difference;
+                
+                // Transaktion aktualisieren
+                oldTransaction.amount = newAmount;
+                oldTransaction.description = newDescription || oldTransaction.description;
+                if (newPurchaseDate) {
+                    oldTransaction.purchaseDate = newPurchaseDate;
+                    const releaseDate = new Date(newPurchaseDate);
+                    releaseDate.setDate(releaseDate.getDate() + 2);
+                    oldTransaction.releaseDate = releaseDate.toISOString().split('T')[0];
+                }
+                
+                showNotification(`Hold-Transaktion aktualisiert: ${formatCurrency(newAmount)}`, 'success');
+                
+            } else if (oldTransaction.type === 'deposit') {
+                // Für Einzahlungen: Available und All-Time anpassen
+                const difference = newAmount - oldAmount;
+                state.availableBalance += difference;
+                state.alltimeBalance += difference;
+                
+                oldTransaction.amount = newAmount;
+                oldTransaction.description = newDescription || oldTransaction.description;
+                
+                showNotification(`Einzahlung aktualisiert: ${formatCurrency(newAmount)}`, 'success');
+                
+            } else if (oldTransaction.type === 'withdrawal') {
+                // Für Auszahlungen: Available anpassen
+                const difference = newAmount - oldAmount;
+                state.availableBalance += difference; // Da Auszahlung, wird Guthaben erhöht wenn Betrag reduziert
+                
+                oldTransaction.amount = newAmount;
+                oldTransaction.description = newDescription || oldTransaction.description;
+                
+                showNotification(`Auszahlung aktualisiert: ${formatCurrency(newAmount)}`, 'success');
+                
+            } else if (oldTransaction.type === 'debt-payment') {
+                // Für Schuldenzahlungen: Schulden anpassen
+                const difference = newAmount - oldAmount;
+                state.totalDebt += difference; // Wenn Betrag erhöht wird, Schulden sinken mehr
+                
+                oldTransaction.amount = newAmount;
+                oldTransaction.description = newDescription || oldTransaction.description;
+                
+                showNotification(`Schuldenzahlung aktualisiert: ${formatCurrency(newAmount)}`, 'success');
+                
+            } else if (oldTransaction.type === 'expense') {
+                // Für Kosten: Available und Gesamtausgaben anpassen
+                const difference = newAmount - oldAmount;
+                state.availableBalance += difference; // Wenn Kosten erhöht werden, Guthaben sinkt mehr
+                state.totalExpenses += difference;
+                
+                oldTransaction.amount = newAmount;
+                oldTransaction.description = newDescription || oldTransaction.description;
+                
+                showNotification(`Kosten aktualisiert: ${formatCurrency(newAmount)}`, 'success');
+            }
+            
+            closeEditTransactionModal();
+            updateDisplay();
+            
+            // Aktuelle Ansicht aktualisieren
+            switch(state.currentView) {
+                case 'all': showAllTransactions(); break;
+                case 'hold': showHoldTransactions(); break;
+                case 'available': showAvailableTransactions(); break;
+                case 'alltime': showAllTimeTransactions(); break;
+                case 'debt': showDebtTransactions(); break;
+                case 'expense-details': showExpenseDetails(); break;
+                case 'monthly': showMonthlyIncome(); break;
+                case 'yearly': showYearlyIncome(); break;
+                case 'deposit': showDepositTransactions(); break;
+                case 'withdrawal': showWithdrawalTransactions(); break;
+                case 'expense': showExpenseTransactions(); break;
+                default: showAllTransactions();
+            }
+            
+            saveData();
+        }
+        
+        async function deleteTransaction() {
+            if (!state.editingTransactionId) return;
+            
+            if (!confirm('Diese Transaktion wirklich löschen?')) return;
+            
+            const transactionIndex = state.transactions.findIndex(t => t.id === state.editingTransactionId);
+            if (transactionIndex === -1) return;
+            
+            const transaction = state.transactions[transactionIndex];
+            
+            // Transaktion rückgängig machen basierend auf Typ
+            if (transaction.type === 'hold') {
+                if (transaction.status === 'pending') {
+                    // Pending Hold: All-Time reduzieren
+                    state.alltimeBalance -= transaction.amount;
+                } else {
+                    // Released Hold: All-Time und Available reduzieren
+                    state.alltimeBalance -= transaction.amount;
+                    state.availableBalance -= transaction.amount;
+                }
+            } else if (transaction.type === 'deposit') {
+                state.availableBalance -= transaction.amount;
+                state.alltimeBalance -= transaction.amount;
+            } else if (transaction.type === 'withdrawal') {
+                state.availableBalance += transaction.amount; // Rückgängig machen
+            } else if (transaction.type === 'debt-payment') {
+                state.totalDebt += transaction.amount; // Schulden wieder erhöhen
+            } else if (transaction.type === 'expense') {
+                state.availableBalance += transaction.amount; // Geld zurück
+                state.totalExpenses -= transaction.amount; // Ausgaben reduzieren
+            }
+            
+            // Transaktion entfernen
+            state.transactions.splice(transactionIndex, 1);
+            
+            closeEditTransactionModal();
+            updateDisplay();
+            
+            // Aktuelle Ansicht aktualisieren
+            switch(state.currentView) {
+                case 'all': showAllTransactions(); break;
+                case 'hold': showHoldTransactions(); break;
+                case 'available': showAvailableTransactions(); break;
+                case 'alltime': showAllTimeTransactions(); break;
+                case 'debt': showDebtTransactions(); break;
+                case 'expense-details': showExpenseDetails(); break;
+                case 'monthly': showMonthlyIncome(); break;
+                case 'yearly': showYearlyIncome(); break;
+                case 'deposit': showDepositTransactions(); break;
+                case 'withdrawal': showWithdrawalTransactions(); break;
+                case 'expense': showExpenseTransactions(); break;
+                default: showAllTransactions();
+            }
+            
+            saveData();
+            showNotification('Transaktion gelöscht', 'success');
+        }
+        
         function showLoading() {
             const container = elements.transactionHistory;
             container.innerHTML = `
@@ -1568,84 +2117,6 @@
             }
         }
         
-        // Modal Functions
-        function openHoldModal() {
-            document.getElementById('holdModal').classList.add('active');
-        }
-        
-        function closeHoldModal() {
-            document.getElementById('holdModal').classList.remove('active');
-        }
-        
-        function openDepositModal() {
-            showNotification('Funktion wird demnächst implementiert', 'info');
-        }
-        
-        function openWithdrawModal() {
-            showNotification('Funktion wird demnächst implementiert', 'info');
-        }
-        
-        function openDebtModal() {
-            showNotification('Funktion wird demnächst implementiert', 'info');
-        }
-        
-        function openExpenseModal() {
-            showNotification('Funktion wird demnächst implementiert', 'info');
-        }
-        
-        function openEditModal(id) {
-            showNotification('Bearbeitungsfunktion wird demnächst implementiert', 'info');
-        }
-        
-        // Transaction Functions
-        async function addHoldTransaction() {
-            const amount = parseInt(document.getElementById('holdAmount').value);
-            const description = document.getElementById('holdDescription').value.trim() || 'Einnahme';
-            const purchaseDate = document.getElementById('holdDate').value;
-            
-            if (!amount || amount <= 0) {
-                showNotification('Bitte einen gültigen Betrag eingeben', 'error');
-                return;
-            }
-            
-            if (!purchaseDate) {
-                showNotification('Bitte ein Kaufdatum auswählen', 'error');
-                return;
-            }
-            
-            const releaseDate = new Date(purchaseDate);
-            releaseDate.setDate(releaseDate.getDate() + 2);
-            
-            const transaction = {
-                id: Date.now().toString(),
-                amount: amount,
-                description: description,
-                purchaseDate: purchaseDate,
-                releaseDate: releaseDate.toISOString().split('T')[0],
-                status: 'pending',
-                type: 'hold',
-                date: new Date().toISOString().split('T')[0],
-                createdAt: new Date().toISOString()
-            };
-            
-            state.transactions.unshift(transaction);
-            state.alltimeBalance += amount;
-            
-            closeHoldModal();
-            updateDisplay();
-            showHoldTransactions(); // Show hold transactions after adding
-            saveData();
-            
-            showNotification(`${formatCurrency(amount)} als Einnahme hinzugefügt`, 'success');
-            
-            // Reset form
-            document.getElementById('holdAmount').value = '';
-            document.getElementById('holdDescription').value = '';
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('holdDate').value = today;
-            updateDateDisplay();
-        }
-        
         function showNotification(message, type = 'info') {
             const notification = elements.notification;
             notification.textContent = message;
@@ -1662,9 +2133,17 @@
         window.closeHoldModal = closeHoldModal;
         window.addHoldTransaction = addHoldTransaction;
         window.openDepositModal = openDepositModal;
+        window.closeDepositModal = closeDepositModal;
+        window.addDirectDeposit = addDirectDeposit;
         window.openWithdrawModal = openWithdrawModal;
+        window.closeWithdrawModal = closeWithdrawModal;
+        window.processWithdrawal = processWithdrawal;
         window.openDebtModal = openDebtModal;
+        window.closeDebtModal = closeDebtModal;
+        window.payDebt = payDebt;
         window.openExpenseModal = openExpenseModal;
+        window.closeExpenseModal = closeExpenseModal;
+        window.addExpense = addExpense;
         window.showAllTransactions = showAllTransactions;
         window.showHoldTransactions = showHoldTransactions;
         window.showAvailableTransactions = showAvailableTransactions;
@@ -1676,7 +2155,10 @@
         window.showDepositTransactions = showDepositTransactions;
         window.showWithdrawalTransactions = showWithdrawalTransactions;
         window.showExpenseTransactions = showExpenseTransactions;
-        window.openEditModal = openEditModal;
+        window.openEditTransactionModal = openEditTransactionModal;
+        window.closeEditTransactionModal = closeEditTransactionModal;
+        window.updateTransaction = updateTransaction;
+        window.deleteTransaction = deleteTransaction;
     </script>
 </body>
 </html>
