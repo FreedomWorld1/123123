@@ -1186,7 +1186,7 @@
             const holdDate = document.getElementById('holdDate')?.value;
             if (holdDate) {
                 const date = new Date(holdDate);
-                const formatted = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+                const formatted = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
                 const display = document.getElementById('holdDateDisplay');
                 if (display) {
                     display.textContent = `Kaufdatum: ${formatted}`;
@@ -1202,11 +1202,11 @@
             
             // Update period displays
             if (elements.monthlyPeriod) {
-                elements.monthlyPeriod.textContent = `Vom 01.${currentMonth}. bis ${today}.${currentMonth}.`;
+                elements.monthlyPeriod.textContent = `Vom 01.${currentMonth}. bis ${today.toString().padStart(2, '0')}.${currentMonth}.`;
             }
             
             if (elements.yearlyPeriod) {
-                elements.yearlyPeriod.textContent = `Vom 01.01.${currentYear} bis ${today}.${currentMonth}.${currentYear}`;
+                elements.yearlyPeriod.textContent = `Vom 01.01.${currentYear} bis ${today.toString().padStart(2, '0')}.${currentMonth.toString().padStart(2, '0')}.${currentYear}`;
             }
         }
         
@@ -1253,7 +1253,13 @@
             elements.availableBalance.textContent = `${formatCurrency(state.availableBalance)}`;
             elements.alltimeBalance.textContent = `${formatCurrency(state.alltimeBalance)}`;
             elements.debtBalance.textContent = `${formatCurrency(state.totalDebt)}`;
-            elements.totalExpenses.textContent = `${formatCurrency(state.totalExpenses)}`;
+            
+            // Calculate total expenses
+            const totalExpenses = state.transactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+            state.totalExpenses = totalExpenses;
+            elements.totalExpenses.textContent = `${formatCurrency(totalExpenses)}`;
             
             // Calculate monthly and yearly income
             const now = new Date();
@@ -1331,7 +1337,7 @@
             elements.sectionTitle.textContent = 'Ausgaben für Aufträge';
             const expenseTransactions = state.transactions.filter(t => t.type === 'expense');
             updateTransactionList(expenseTransactions);
-            updateFilterButtons('expense-details');
+            updateFilterButtons('expense');
         }
         
         function showMonthlyIncome() {
@@ -1393,7 +1399,7 @@
         function updateTransactionList(transactions) {
             const container = elements.transactionHistory;
             
-            if (transactions.length === 0) {
+            if (!transactions || transactions.length === 0) {
                 container.innerHTML = `
                     <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
                         <i class="fas fa-history" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
@@ -1404,24 +1410,28 @@
             }
             
             // Sort by date (newest first)
-            transactions.sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date));
+            const sortedTransactions = [...transactions].sort((a, b) => {
+                return new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date);
+            });
             
             let html = '';
-            transactions.forEach(transaction => {
+            sortedTransactions.forEach(transaction => {
+                if (!transaction) return;
+                
                 const type = transaction.type;
                 const amountClass = getAmountClass(type);
                 const statusClass = getStatusClass(transaction.status);
-                const date = new Date(transaction.createdAt || transaction.date);
-                const formattedDate = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+                const date = new Date(transaction.createdAt || transaction.date || new Date());
+                const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
                 
                 html += `
                     <div class="transaction-item ${type}" onclick="openEditModal('${transaction.id}')">
                         <div class="transaction-info">
-                            <div class="transaction-title">${transaction.description}</div>
+                            <div class="transaction-title">${transaction.description || 'Keine Beschreibung'}</div>
                             <div class="transaction-date">${formattedDate}</div>
                         </div>
                         <div class="transaction-amount ${amountClass}">
-                            ${type === 'withdrawal' || type === 'expense' || type === 'debt-payment' ? '-' : '+'}${formatCurrency(transaction.amount)}
+                            ${type === 'withdrawal' || type === 'expense' || type === 'debt-payment' ? '-' : '+'}${formatCurrency(transaction.amount || 0)}
                         </div>
                         <div class="transaction-status ${statusClass}">
                             ${getStatusText(type, transaction.status)}
@@ -1442,12 +1452,29 @@
                 btn.classList.remove('active');
             });
             
-            // Find and activate the corresponding button if it exists
-            const activeBtn = document.querySelector(`#mainFilterGroup .filter-btn[onclick*="${activeFilter}"]`);
+            // Map custom views to filter buttons
+            const filterMap = {
+                'all': 'All',
+                'hold': 'hold',
+                'available': 'hold', // Show hold filter as active
+                'alltime': 'hold', // Show hold filter as active
+                'debt': 'debt',
+                'expense-details': 'expense',
+                'monthly': 'All',
+                'yearly': 'All',
+                'deposit': 'deposit',
+                'withdrawal': 'withdrawal',
+                'expense': 'expense'
+            };
+            
+            const filterToShow = filterMap[activeFilter] || 'All';
+            
+            // Find and activate the corresponding button
+            const activeBtn = document.querySelector(`#mainFilterGroup .filter-btn[onclick*="${filterToShow}"]`);
             if (activeBtn) {
                 activeBtn.classList.add('active');
             } else {
-                // If no exact match, activate "Alle"
+                // If no match, activate "Alle"
                 document.querySelector('#mainFilterGroup .filter-btn[onclick*="All"]').classList.add('active');
             }
         }
@@ -1487,11 +1514,17 @@
         }
         
         function showLoading() {
-            // Loading indicator
+            const container = elements.transactionHistory;
+            container.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 48px; margin-bottom: 16px;"></i>
+                    <p style="font-size: 16px;">Lade Daten...</p>
+                </div>
+            `;
         }
         
         function hideLoading() {
-            // Hide loading
+            // Loading is hidden when transactions are shown
         }
         
         function initializeAnimations() {
@@ -1529,6 +1562,7 @@
                     case 'debt': showDebtTransactions(); break;
                     case 'monthly': showMonthlyIncome(); break;
                     case 'yearly': showYearlyIncome(); break;
+                    default: showAllTransactions();
                 }
                 showNotification('Neue Beträge wurden freigegeben!', 'success');
             }
@@ -1574,6 +1608,11 @@
                 return;
             }
             
+            if (!purchaseDate) {
+                showNotification('Bitte ein Kaufdatum auswählen', 'error');
+                return;
+            }
+            
             const releaseDate = new Date(purchaseDate);
             releaseDate.setDate(releaseDate.getDate() + 2);
             
@@ -1602,6 +1641,9 @@
             // Reset form
             document.getElementById('holdAmount').value = '';
             document.getElementById('holdDescription').value = '';
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('holdDate').value = today;
+            updateDateDisplay();
         }
         
         function showNotification(message, type = 'info') {
