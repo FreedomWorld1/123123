@@ -1,1974 +1,225 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CC-Shop Finanzsystem</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #818cf8;
-            --success: #10b981;
-            --success-dark: #059669;
-            --warning: #f59e0b;
-            --warning-dark: #d97706;
-            --danger: #ef4444;
-            --danger-dark: #dc2626;
-            --info: #3b82f6;
-            --info-dark: #2563eb;
-            --dark: #0f172a;
-            --dark-card: #1e293b;
-            --dark-surface: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --border: rgba(148, 163, 184, 0.2);
-            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            --shadow-md: 0 10px 20px rgba(0, 0, 0, 0.3);
-            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
-            --radius-xl: 24px;
-            --radius-lg: 16px;
-            --radius-md: 12px;
-            --radius-sm: 8px;
-            --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-fast: all 0.2s ease;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, var(--dark) 0%, #1a202c 100%);
-            min-height: 100vh;
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-            position: relative;
-        }
-        
-        /* Animated Background */
-        .animated-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-        
-        .animated-bg::before {
-            content: '';
-            position: absolute;
-            width: 300%;
-            height: 300%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.08) 0%, transparent 50%);
-            animation: rotate 60s linear infinite;
-        }
-        
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 24px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-            padding: 20px 32px;
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
-            backdrop-filter: blur(20px);
-            border-radius: var(--radius-xl);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--primary), var(--success), var(--warning));
-            animation: gradient-shift 3s ease infinite;
-        }
-        
-        @keyframes gradient-shift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        
-        .logo {
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: white;
-            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
-            transition: var(--transition-smooth);
-        }
-        
-        .logo:hover {
-            transform: rotate(15deg) scale(1.1);
-            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.4);
-        }
-        
-        .brand-text h1 {
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .brand-text .subtitle {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-        
-        .status-badge {
-            padding: 8px 16px;
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--success);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .status-badge::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        /* Alert Card */
-        .alert-card {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
-            border-left: 4px solid var(--warning);
-            padding: 20px;
-            margin-bottom: 32px;
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
-            animation: slideUp 0.6s ease-out;
-            border: 1px solid rgba(245, 158, 11, 0.2);
-        }
-        
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Balance Cards */
-        .balance-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-bottom: 40px;
-        }
-        
-        .balance-card {
-            background: linear-gradient(135deg, var(--dark-card) 0%, rgba(30, 41, 59, 0.8) 100%);
-            padding: 28px;
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-            transition: var(--transition-smooth);
-            cursor: pointer;
-        }
-        
-        .balance-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 100%;
-            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.03) 100%);
-            opacity: 0;
-            transition: var(--transition-smooth);
-        }
-        
-        .balance-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .balance-card:hover::before {
-            opacity: 1;
-        }
-        
-        .balance-card.hold {
-            border-top: 4px solid var(--primary);
-        }
-        
-        .balance-card.available {
-            border-top: 4px solid var(--success);
-        }
-        
-        .balance-card.alltime {
-            border-top: 4px solid var(--info);
-        }
-        
-        .balance-card.debt {
-            border-top: 4px solid var(--danger);
-        }
-        
-        .balance-icon {
-            width: 56px;
-            height: 56px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin-bottom: 20px;
-            transition: var(--transition-smooth);
-        }
-        
-        .balance-card:hover .balance-icon {
-            transform: scale(1.1) rotate(5deg);
-        }
-        
-        .balance-card.hold .balance-icon {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(79, 70, 229, 0.1) 100%);
-            color: var(--primary-light);
-        }
-        
-        .balance-card.available .balance-icon {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%);
-            color: var(--success);
-        }
-        
-        .balance-card.alltime .balance-icon {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.1) 100%);
-            color: var(--info);
-        }
-        
-        .balance-card.debt .balance-icon {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%);
-            color: var(--danger);
-        }
-        
-        .balance-label {
-            font-size: 14px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        
-        .balance-amount {
-            font-size: 42px;
-            font-weight: 800;
-            line-height: 1;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .balance-detail {
-            font-size: 14px;
-            color: var(--text-secondary);
-            opacity: 0.9;
-        }
-        
-        /* Action Buttons */
-        .action-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-        
-        .action-btn {
-            padding: 24px;
-            border: none;
-            border-radius: var(--radius-lg);
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            text-align: center;
-            color: white;
-            position: relative;
-            overflow: hidden;
-            background: linear-gradient(135deg, var(--dark-surface) 0%, var(--dark-card) 100%);
-            border: 1px solid var(--border);
-        }
-        
-        .action-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.7s;
-        }
-        
-        .action-btn:hover::before {
-            left: 100%;
-        }
-        
-        .action-btn:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .action-btn i {
-            font-size: 32px;
-            transition: var(--transition-smooth);
-        }
-        
-        .action-btn:hover i {
-            transform: scale(1.2);
-        }
-        
-        .action-btn:nth-child(1) {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-        }
-        
-        .action-btn:nth-child(2) {
-            background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
-        }
-        
-        .action-btn:nth-child(3) {
-            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
-        }
-        
-        .action-btn:nth-child(4) {
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-        }
-        
-        .action-btn:nth-child(5) {
-            background: linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%);
-        }
-        
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px;
-            margin-bottom: 40px;
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, var(--dark-card) 0%, rgba(30, 41, 59, 0.8) 100%);
-            padding: 28px;
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--border);
-            transition: var(--transition-smooth);
-            cursor: pointer;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .stat-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        
-        .stat-card:nth-child(1) .stat-icon {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%);
-            color: var(--danger);
-        }
-        
-        .stat-card:nth-child(2) .stat-icon {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%);
-            color: var(--success);
-        }
-        
-        .stat-card:nth-child(3) .stat-icon {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.1) 100%);
-            color: var(--info);
-        }
-        
-        .stat-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .stat-value {
-            font-size: 36px;
-            font-weight: 800;
-            line-height: 1;
-        }
-        
-        .stat-card:nth-child(1) .stat-value {
-            color: var(--danger);
-        }
-        
-        .stat-card:nth-child(2) .stat-value {
-            color: var(--success);
-        }
-        
-        .stat-card:nth-child(3) .stat-value {
-            color: var(--info);
-        }
-        
-        /* Transaction Section */
-        .transaction-section {
-            background: linear-gradient(135deg, var(--dark-card) 0%, rgba(30, 41, 59, 0.95) 100%);
-            padding: 32px;
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-md);
-            backdrop-filter: blur(10px);
-        }
-        
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        
-        .section-title {
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .filter-group {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .filter-btn {
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition-fast);
-        }
-        
-        .filter-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-        }
-        
-        .filter-btn.active {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            border-color: transparent;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-        
-        .transaction-list {
-            max-height: 500px;
-            overflow-y: auto;
-            padding-right: 8px;
-        }
-        
-        .transaction-list::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .transaction-list::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 3px;
-        }
-        
-        .transaction-list::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            border-radius: 3px;
-        }
-        
-        .transaction-item {
-            display: grid;
-            grid-template-columns: 2fr 1fr auto 40px;
-            align-items: center;
-            padding: 20px;
-            margin-bottom: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: var(--radius-lg);
-            gap: 20px;
-            transition: var(--transition-fast);
-            border: 1px solid transparent;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .transaction-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-        }
-        
-        .transaction-item.hold::before { background: var(--primary); }
-        .transaction-item.deposit::before { background: var(--success); }
-        .transaction-item.withdrawal::before { background: #ec4899; }
-        .transaction-item.debt-payment::before { background: #8b5cf6; }
-        .transaction-item.expense::before { background: var(--warning); }
-        
-        .transaction-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateX(4px);
-        }
-        
-        .transaction-info {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        
-        .transaction-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .transaction-date {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-        
-        .hold-dates {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            margin-top: 4px;
-        }
-        
-        .hold-date-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        
-        .hold-date-item i {
-            font-size: 10px;
-            color: var(--primary-light);
-        }
-        
-        .transaction-amount {
-            font-size: 20px;
-            font-weight: 700;
-            text-align: right;
-        }
-        
-        .transaction-amount.positive { color: var(--success); }
-        .transaction-amount.negative { color: var(--danger); }
-        .transaction-amount.hold { color: var(--primary); }
-        
-        .transaction-status {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-align: center;
-            color: white;
-            min-width: 120px;
-        }
-        
-        .transaction-status.pending { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
-        .transaction-status.released { background: rgba(16, 185, 129, 0.2); color: var(--success); }
-        .transaction-status.completed { background: rgba(59, 130, 246, 0.2); color: var(--info); }
-        
-        .edit-btn {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: var(--transition-fast);
-        }
-        
-        .edit-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            transform: rotate(15deg);
-        }
-        
-        /* Modals */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            animation: fadeIn 0.3s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .modal.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: linear-gradient(135deg, var(--dark-card) 0%, rgba(30, 41, 59, 0.98) 100%);
-            padding: 40px;
-            border-radius: var(--radius-xl);
-            width: 100%;
-            max-width: 500px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-lg);
-            animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        @keyframes modalSlideIn {
-            from { opacity: 0; transform: translateY(40px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        
-        .modal-content::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--primary), var(--success), var(--warning));
-        }
-        
-        .modal-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-        
-        .modal-header h3 {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-        
-        .form-group {
-            margin-bottom: 24px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-            font-weight: 500;
-            font-size: 14px;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            font-size: 15px;
-            color: var(--text-primary);
-            transition: var(--transition-fast);
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-        
-        .form-hint {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 32px;
-        }
-        
-        .btn {
-            padding: 12px 28px;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition-fast);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            transform: translateY(-2px);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%);
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
-        }
-        
-        /* Period Display */
-        .period-display {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-            font-style: italic;
-        }
-        
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-secondary);
-        }
-        
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.3;
-        }
-        
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .balance-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 16px;
-            }
-            
-            .header {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
-                padding: 24px;
-            }
-            
-            .balance-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .action-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .transaction-item {
-                grid-template-columns: 1fr;
-                gap: 12px;
-                text-align: center;
-            }
-            
-            .section-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .filter-group {
-                justify-content: center;
-            }
-            
-            .modal-content {
-                padding: 24px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .action-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .balance-amount {
-                font-size: 36px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Animated Background -->
-    <div class="animated-bg"></div>
-    
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="brand">
-                <div class="logo">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="brand-text">
-                    <h1>CC-Shop Finanzsystem</h1>
-                    <div class="subtitle">Business ID: 13</div>
-                </div>
-            </div>
-            <div class="status-badge">
-                System online • Echtzeit-Daten
-            </div>
-        </header>
-        
-        <!-- Alert -->
-        <div class="alert-card">
-            <i class="fas fa-info-circle" style="color: var(--warning); font-size: 20px;"></i>
-            <div>
-                <strong>Wichtig:</strong> Einnahmen werden 2 Tage nach Kauf freigegeben. 
-                Schulden: 12.000.000 $ (Zahlungen ändern nur Schulden, nicht das Guthaben)
-            </div>
-        </div>
-        
-        <!-- Balance Cards -->
-        <div class="balance-grid">
-            <div class="balance-card hold" onclick="showHoldTransactions()">
-                <div class="balance-icon">
-                    <i class="fas fa-pause-circle"></i>
-                </div>
-                <div class="balance-label">Zurückgehaltene Beträge</div>
-                <div class="balance-amount" id="holdBalance">0 $</div>
-                <div class="balance-detail">Werden in 2 Tagen freigegeben</div>
-                <div class="period-display" id="holdPeriod"></div>
-            </div>
-            
-            <div class="balance-card available" onclick="showAvailableTransactions()">
-                <div class="balance-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <div class="balance-label">Verfügbares Guthaben</div>
-                <div class="balance-amount" id="availableBalance">0 $</div>
-                <div class="balance-detail">Sofort verfügbar</div>
-                <div class="period-display" id="availablePeriod"></div>
-            </div>
-            
-            <div class="balance-card alltime" onclick="showAllTimeTransactions()">
-                <div class="balance-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="balance-label">All-Time Einnahmen</div>
-                <div class="balance-amount" id="alltimeBalance">0 $</div>
-                <div class="balance-detail">Gesamteinnahmen seit Beginn</div>
-                <div class="period-display" id="alltimePeriod"></div>
-            </div>
-            
-            <div class="balance-card debt" onclick="showDebtTransactions()">
-                <div class="balance-icon">
-                    <i class="fas fa-credit-card"></i>
-                </div>
-                <div class="balance-label">Verbleibende Schulden</div>
-                <div class="balance-amount" id="debtBalance">12.000.000 $</div>
-                <div class="balance-detail">Noch zurückzuzahlen</div>
-                <div class="period-display" id="debtPeriod"></div>
-            </div>
-        </div>
-        
-        <!-- Action Buttons -->
-        <div class="action-grid">
-            <button class="action-btn" onclick="openModal('holdModal')">
-                <i class="fas fa-pause-circle"></i>
-                <span>Einnahme hinzufügen</span>
-            </button>
-            <button class="action-btn" onclick="openModal('depositModal')">
-                <i class="fas fa-plus-circle"></i>
-                <span>Direkt einzahlen</span>
-            </button>
-            <button class="action-btn" onclick="openModal('withdrawModal')">
-                <i class="fas fa-money-bill-wave"></i>
-                <span>Auszahlen</span>
-            </button>
-            <button class="action-btn" onclick="openModal('debtModal')">
-                <i class="fas fa-credit-card"></i>
-                <span>Schulden zahlen</span>
-            </button>
-            <button class="action-btn" onclick="openModal('expenseModal')">
-                <i class="fas fa-shopping-cart"></i>
-                <span>Kosten hinzufügen</span>
-            </button>
-        </div>
-        
-        <!-- Statistics -->
-        <div class="stats-grid">
-            <div class="stat-card" onclick="showExpenseTransactions()">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-shopping-cart"></i>
-                    </div>
-                    <div class="stat-title">Ausgaben für Aufträge</div>
-                </div>
-                <div class="stat-value" id="totalExpenses">0 $</div>
-                <div class="period-display">Einzelne Rechnungen</div>
-            </div>
-            <div class="stat-card" onclick="showMonthlyIncome()">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                    <div class="stat-title">Monatliche Einnahmen</div>
-                </div>
-                <div class="stat-value" id="monthlyIncome">0 $</div>
-                <div class="period-display">Vom 01. bis heute</div>
-            </div>
-            <div class="stat-card" onclick="showYearlyIncome()">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-calendar-star"></i>
-                    </div>
-                    <div class="stat-title">Jährliche Einnahmen</div>
-                </div>
-                <div class="stat-value" id="yearlyIncome">0 $</div>
-                <div class="period-display">Vom 01.01. bis heute</div>
-            </div>
-        </div>
-        
-        <!-- Transaction History -->
-        <section class="transaction-section">
-            <div class="section-header">
-                <h2 class="section-title">
-                    <i class="fas fa-history"></i>
-                    <span id="sectionTitle">Transaktionshistorie</span>
-                </h2>
-                <div class="filter-group" id="filterButtons">
-                    <button class="filter-btn active" onclick="showAllTransactions()">Alle</button>
-                    <button class="filter-btn" onclick="showHoldTransactions()">Zurückgehalten</button>
-                    <button class="filter-btn" onclick="showDepositTransactions()">Einzahlungen</button>
-                    <button class="filter-btn" onclick="showWithdrawalTransactions()">Auszahlungen</button>
-                    <button class="filter-btn" onclick="showDebtTransactions()">Schulden</button>
-                    <button class="filter-btn" onclick="showExpenseTransactions()">Kosten</button>
-                </div>
-            </div>
-            <div class="transaction-list" id="transactionHistory">
-                <div class="empty-state">
-                    <i class="fas fa-history"></i>
-                    <p>Keine Transaktionen vorhanden</p>
-                </div>
-            </div>
-        </section>
-    </div>
-    
-    <!-- Modals -->
-    <!-- Hold Modal -->
-    <div id="holdModal" class="modal" onclick="if(event.target === this) closeModal('holdModal')">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-pause-circle"></i> Einnahme hinzufügen</h3>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Betrag ($)</label>
-                <input type="number" id="holdAmount" class="form-input" placeholder="0" min="0">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Beschreibung</label>
-                <input type="text" id="holdDescription" class="form-input" placeholder="z.B. Produktverkauf">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Kaufdatum</label>
-                <input type="date" id="holdDate" class="form-input">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeModal('holdModal')">Abbrechen</button>
-                <button class="btn btn-primary" onclick="addHoldTransaction()">Hinzufügen</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Deposit Modal -->
-    <div id="depositModal" class="modal" onclick="if(event.target === this) closeModal('depositModal')">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-plus-circle"></i> Direkt einzahlen</h3>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Betrag ($)</label>
-                <input type="number" id="depositAmount" class="form-input" placeholder="0" min="0">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Beschreibung</label>
-                <input type="text" id="depositDescription" class="form-input" placeholder="z.B. Direkteinzahlung">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeModal('depositModal')">Abbrechen</button>
-                <button class="btn btn-primary" onclick="addDirectDeposit()">Einzahlen</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Withdraw Modal -->
-    <div id="withdrawModal" class="modal" onclick="if(event.target === this) closeModal('withdrawModal')">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-money-bill-wave"></i> Auszahlen</h3>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Betrag ($)</label>
-                <input type="number" id="withdrawAmount" class="form-input" placeholder="0" min="0">
-                <div class="form-hint">Verfügbar: <span id="availableForWithdrawalDisplay">0 $</span></div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Beschreibung</label>
-                <input type="text" id="withdrawDescription" class="form-input" placeholder="z.B. Bankauszahlung">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeModal('withdrawModal')">Abbrechen</button>
-                <button class="btn btn-primary" onclick="processWithdrawal()">Auszahlen</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Debt Modal -->
-    <div id="debtModal" class="modal" onclick="if(event.target === this) closeModal('debtModal')">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-credit-card"></i> Schulden zurückzahlen</h3>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Betrag ($)</label>
-                <input type="number" id="debtAmount" class="form-input" placeholder="0" min="0">
-                <div class="form-hint">Aktuelle Schulden: <span id="currentDebtDisplay">12.000.000 $</span></div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Beschreibung</label>
-                <input type="text" id="debtDescription" class="form-input" placeholder="z.B. Monatliche Rate">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeModal('debtModal')">Abbrechen</button>
-                <button class="btn btn-primary" onclick="payDebt()">Zurückzahlen</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Expense Modal -->
-    <div id="expenseModal" class="modal" onclick="if(event.target === this) closeModal('expenseModal')">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-shopping-cart"></i> Kosten hinzufügen</h3>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Kosten ($)</label>
-                <input type="number" id="expenseAmount" class="form-input" placeholder="0" min="0">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Beschreibung</label>
-                <input type="text" id="expenseDescription" class="form-input" placeholder="z.B. Serverkosten, Marketing">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeModal('expenseModal')">Abbrechen</button>
-                <button class="btn btn-primary" onclick="addExpense()">Hinzufügen</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Edit Modal -->
-    <div id="editModal" class="modal" onclick="if(event.target === this) closeModal('editModal')">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-edit"></i> Transaktion bearbeiten</h3>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Betrag ($)</label>
-                <input type="number" id="editAmount" class="form-input" placeholder="0" min="0">
-                <div class="form-hint">Für Auszahlungen/Schulden/Kosten: Positiven Betrag eingeben</div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Beschreibung</label>
-                <input type="text" id="editDescription" class="form-input" placeholder="Beschreibung">
-            </div>
-            <div class="form-group" id="editDateGroup" style="display: none;">
-                <label class="form-label">Kaufdatum</label>
-                <input type="date" id="editDate" class="form-input">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-danger" onclick="deleteTransaction()">
-                    <i class="fas fa-trash"></i> Löschen
-                </button>
-                <button class="btn btn-secondary" onclick="closeModal('editModal')">Abbrechen</button>
-                <button class="btn btn-primary" onclick="updateTransaction()">Speichern</button>
-            </div>
-        </div>
-    </div>
 
-    <script>
-        // App State
-        let state = {
-            transactions: [],
-            availableBalance: 0,
-            alltimeBalance: 0,
-            totalDebt: 12000000,
-            totalExpenses: 0,
-            currentFilter: 'all',
-            editingTransactionId: null
-        };
-        
-        // DOM Elements
-        const elements = {};
-        
-        // Initialize App
-        function init() {
-            // Get DOM elements
-            elements.holdBalance = document.getElementById('holdBalance');
-            elements.availableBalance = document.getElementById('availableBalance');
-            elements.alltimeBalance = document.getElementById('alltimeBalance');
-            elements.debtBalance = document.getElementById('debtBalance');
-            elements.totalExpenses = document.getElementById('totalExpenses');
-            elements.monthlyIncome = document.getElementById('monthlyIncome');
-            elements.yearlyIncome = document.getElementById('yearlyIncome');
-            elements.transactionHistory = document.getElementById('transactionHistory');
-            elements.sectionTitle = document.getElementById('sectionTitle');
-            
-            // Set today's date for hold modal
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('holdDate').value = today;
-            document.getElementById('editDate').value = today;
-            
-            // Load saved data
-            loadData();
-            
-            // Show all transactions initially
-            showAllTransactions();
-            
-            // Start auto-check for pending releases
-            setInterval(checkPendingReleases, 60000);
-            
-            // Set current period displays
-            updatePeriodDisplays();
-        }
-        
-        function updatePeriodDisplays() {
-            const now = new Date();
-            const month = (now.getMonth() + 1).toString().padStart(2, '0');
-            const year = now.getFullYear();
-            const day = now.getDate().toString().padStart(2, '0');
-            
-            // Update period displays if elements exist
-            const monthlyPeriod = document.getElementById('monthlyPeriod');
-            const yearlyPeriod = document.getElementById('yearlyPeriod');
-            
-            if (monthlyPeriod) {
-                monthlyPeriod.textContent = `Vom 01.${month}. bis ${day}.${month}.`;
-            }
-            
-            if (yearlyPeriod) {
-                yearlyPeriod.textContent = `Vom 01.01.${year} bis ${day}.${month}.${year}`;
-            }
-        }
-        
-        // Data Management
-        function loadData() {
-            const saved = localStorage.getItem('ccShopData');
-            if (saved) {
-                const data = JSON.parse(saved);
-                state = { ...state, ...data };
-            }
-            updateDisplay();
-        }
-        
-        function saveData() {
-            localStorage.setItem('ccShopData', JSON.stringify(state));
-        }
-        
-        function updateDisplay() {
-            // Calculate balances
-            const holdBalance = state.transactions
-                .filter(t => t.type === 'hold' && t.status === 'pending')
-                .reduce((sum, t) => sum + t.amount, 0);
-                
-            const totalExpenses = state.transactions
-                .filter(t => t.type === 'expense')
-                .reduce((sum, t) => sum + t.amount, 0);
-                
-            const now = new Date();
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
-            
-            const monthlyIncome = state.transactions
-                .filter(t => {
-                    const date = new Date(t.date || t.createdAt);
-                    return date.getMonth() === currentMonth && 
-                           date.getFullYear() === currentYear &&
-                           (t.type === 'hold' || t.type === 'deposit');
-                })
-                .reduce((sum, t) => sum + t.amount, 0);
-                
-            const yearlyIncome = state.transactions
-                .filter(t => {
-                    const date = new Date(t.date || t.createdAt);
-                    return date.getFullYear() === currentYear &&
-                           (t.type === 'hold' || t.type === 'deposit');
-                })
-                .reduce((sum, t) => sum + t.amount, 0);
-            
-            // Update displays
-            elements.holdBalance.textContent = formatCurrency(holdBalance);
-            elements.availableBalance.textContent = formatCurrency(state.availableBalance);
-            elements.alltimeBalance.textContent = formatCurrency(state.alltimeBalance);
-            elements.debtBalance.textContent = formatCurrency(state.totalDebt);
-            elements.totalExpenses.textContent = formatCurrency(totalExpenses);
-            elements.monthlyIncome.textContent = formatCurrency(monthlyIncome);
-            elements.yearlyIncome.textContent = formatCurrency(yearlyIncome);
-            
-            state.totalExpenses = totalExpenses;
-        }
-        
-        // Modal Functions
-        function openModal(modalId) {
-            if (modalId === 'withdrawModal') {
-                document.getElementById('availableForWithdrawalDisplay').textContent = formatCurrency(state.availableBalance);
-            }
-            if (modalId === 'debtModal') {
-                document.getElementById('currentDebtDisplay').textContent = formatCurrency(state.totalDebt);
-            }
-            document.getElementById(modalId).classList.add('active');
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-            // Reset form
-            const form = document.getElementById(modalId).querySelectorAll('input');
-            form.forEach(input => input.value = '');
-            
-            // Reset edit date group
-            if (modalId === 'editModal') {
-                document.getElementById('editDateGroup').style.display = 'none';
-                state.editingTransactionId = null;
-            }
-        }
-        
-        // Transaction Functions
-        function addHoldTransaction() {
-            const amount = parseInt(document.getElementById('holdAmount').value);
-            const description = document.getElementById('holdDescription').value || 'Einnahme';
-            const purchaseDate = document.getElementById('holdDate').value;
-            
-            if (!amount || amount <= 0) {
-                alert('Bitte einen gültigen Betrag eingeben');
-                return;
-            }
-            
-            if (!purchaseDate) {
-                alert('Bitte ein Kaufdatum auswählen');
-                return;
-            }
-            
-            const releaseDate = new Date(purchaseDate);
-            releaseDate.setDate(releaseDate.getDate() + 2);
-            
-            const transaction = {
-                id: Date.now().toString(),
-                amount: amount,
-                description: description,
-                type: 'hold',
-                status: 'pending',
-                purchaseDate: purchaseDate,
-                releaseDate: releaseDate.toISOString().split('T')[0],
-                date: new Date().toISOString().split('T')[0],
-                createdAt: new Date().toISOString()
-            };
-            
-            state.transactions.unshift(transaction);
-            state.alltimeBalance += amount;
-            
-            closeModal('holdModal');
-            updateDisplay();
-            showHoldTransactions();
-            saveData();
-        }
-        
-        function addDirectDeposit() {
-            const amount = parseInt(document.getElementById('depositAmount').value);
-            const description = document.getElementById('depositDescription').value || 'Direkteinzahlung';
-            
-            if (!amount || amount <= 0) {
-                alert('Bitte einen gültigen Betrag eingeben');
-                return;
-            }
-            
-            state.availableBalance += amount;
-            state.alltimeBalance += amount;
-            
-            const transaction = {
-                id: Date.now().toString(),
-                amount: amount,
-                description: description,
-                type: 'deposit',
-                status: 'released',
-                date: new Date().toISOString().split('T')[0],
-                createdAt: new Date().toISOString()
-            };
-            
-            state.transactions.unshift(transaction);
-            closeModal('depositModal');
-            updateDisplay();
-            showDepositTransactions();
-            saveData();
-        }
-        
-        function processWithdrawal() {
-            const amount = parseInt(document.getElementById('withdrawAmount').value);
-            const description = document.getElementById('withdrawDescription').value || 'Auszahlung';
-            
-            if (!amount || amount <= 0) {
-                alert('Bitte einen gültigen Betrag eingeben');
-                return;
-            }
-            
-            if (amount > state.availableBalance) {
-                alert('Nicht genug Guthaben');
-                return;
-            }
-            
-            state.availableBalance -= amount;
-            
-            const transaction = {
-                id: Date.now().toString(),
-                amount: amount,
-                description: description,
-                type: 'withdrawal',
-                status: 'released',
-                date: new Date().toISOString().split('T')[0],
-                createdAt: new Date().toISOString()
-            };
-            
-            state.transactions.unshift(transaction);
-            closeModal('withdrawModal');
-            updateDisplay();
-            showWithdrawalTransactions();
-            saveData();
-        }
-        
-        function payDebt() {
-            const amount = parseInt(document.getElementById('debtAmount').value);
-            const description = document.getElementById('debtDescription').value || 'Schuldenzahlung';
-            
-            if (!amount || amount <= 0) {
-                alert('Bitte einen gültigen Betrag eingeben');
-                return;
-            }
-            
-            if (amount > state.totalDebt) {
-                alert('Betrag übersteigt Schulden');
-                return;
-            }
-            
-            // Wichtig: Nur Schulden werden reduziert, Guthaben bleibt gleich
-            state.totalDebt -= amount;
-            
-            const transaction = {
-                id: Date.now().toString(),
-                amount: amount,
-                description: description,
-                type: 'debt-payment',
-                status: 'released',
-                date: new Date().toISOString().split('T')[0],
-                createdAt: new Date().toISOString()
-            };
-            
-            state.transactions.unshift(transaction);
-            closeModal('debtModal');
-            updateDisplay();
-            showDebtTransactions();
-            saveData();
-        }
-        
-        function addExpense() {
-            const amount = parseInt(document.getElementById('expenseAmount').value);
-            const description = document.getElementById('expenseDescription').value || 'Kosten';
-            
-            if (!amount || amount <= 0) {
-                alert('Bitte einen gültigen Betrag eingeben');
-                return;
-            }
-            
-            if (amount > state.availableBalance) {
-                alert('Nicht genug Guthaben');
-                return;
-            }
-            
-            state.availableBalance -= amount;
-            state.totalExpenses += amount;
-            
-            const transaction = {
-                id: Date.now().toString(),
-                amount: amount,
-                description: description,
-                type: 'expense',
-                status: 'released',
-                date: new Date().toISOString().split('T')[0],
-                createdAt: new Date().toISOString()
-            };
-            
-            state.transactions.unshift(transaction);
-            closeModal('expenseModal');
-            updateDisplay();
-            showExpenseTransactions();
-            saveData();
-        }
-        
-        // View Functions
-        function showAllTransactions() {
-            state.currentFilter = 'all';
-            elements.sectionTitle.textContent = 'Alle Transaktionen';
-            updateFilterButtons('all');
-            renderTransactions(state.transactions);
-        }
-        
-        function showHoldTransactions() {
-            state.currentFilter = 'hold';
-            elements.sectionTitle.textContent = 'Zurückgehaltene Beträge';
-            updateFilterButtons('hold');
-            const holdTransactions = state.transactions.filter(t => t.type === 'hold');
-            renderTransactions(holdTransactions);
-        }
-        
-        function showAvailableTransactions() {
-            state.currentFilter = 'available';
-            elements.sectionTitle.textContent = 'Verfügbares Guthaben';
-            updateFilterButtons('hold');
-            const availableTransactions = state.transactions.filter(t => 
-                t.type === 'deposit' || (t.type === 'hold' && t.status === 'released')
-            );
-            renderTransactions(availableTransactions);
-        }
-        
-        function showAllTimeTransactions() {
-            state.currentFilter = 'alltime';
-            elements.sectionTitle.textContent = 'All-Time Einnahmen';
-            updateFilterButtons('hold');
-            const alltimeTransactions = state.transactions.filter(t => 
-                t.type === 'hold' || t.type === 'deposit'
-            );
-            renderTransactions(alltimeTransactions);
-        }
-        
-        function showDebtTransactions() {
-            state.currentFilter = 'debt';
-            elements.sectionTitle.textContent = 'Schuldenzahlungen';
-            updateFilterButtons('debt');
-            const debtTransactions = state.transactions.filter(t => t.type === 'debt-payment');
-            renderTransactions(debtTransactions);
-        }
-        
-        function showExpenseTransactions() {
-            state.currentFilter = 'expense';
-            elements.sectionTitle.textContent = 'Ausgaben für Aufträge';
-            updateFilterButtons('expense');
-            const expenseTransactions = state.transactions.filter(t => t.type === 'expense');
-            renderTransactions(expenseTransactions);
-        }
-        
-        function showDepositTransactions() {
-            state.currentFilter = 'deposit';
-            elements.sectionTitle.textContent = 'Einzahlungen';
-            updateFilterButtons('deposit');
-            const depositTransactions = state.transactions.filter(t => t.type === 'deposit');
-            renderTransactions(depositTransactions);
-        }
-        
-        function showWithdrawalTransactions() {
-            state.currentFilter = 'withdrawal';
-            elements.sectionTitle.textContent = 'Auszahlungen';
-            updateFilterButtons('withdrawal');
-            const withdrawalTransactions = state.transactions.filter(t => t.type === 'withdrawal');
-            renderTransactions(withdrawalTransactions);
-        }
-        
-        function showMonthlyIncome() {
-            state.currentFilter = 'monthly';
-            elements.sectionTitle.textContent = 'Monatliche Einnahmen';
-            updateFilterButtons('all');
-            const now = new Date();
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
-            
-            const monthlyTransactions = state.transactions.filter(t => {
-                const date = new Date(t.date || t.createdAt);
-                return date.getMonth() === currentMonth && 
-                       date.getFullYear() === currentYear &&
-                       (t.type === 'hold' || t.type === 'deposit');
-            });
-            renderTransactions(monthlyTransactions);
-        }
-        
-        function showYearlyIncome() {
-            state.currentFilter = 'yearly';
-            elements.sectionTitle.textContent = 'Jährliche Einnahmen';
-            updateFilterButtons('all');
-            const now = new Date();
-            const currentYear = now.getFullYear();
-            
-            const yearlyTransactions = state.transactions.filter(t => {
-                const date = new Date(t.date || t.createdAt);
-                return date.getFullYear() === currentYear &&
-                       (t.type === 'hold' || t.type === 'deposit');
-            });
-            renderTransactions(yearlyTransactions);
-        }
-        
-        function updateFilterButtons(activeFilter) {
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Find button that matches the filter
-            const buttons = document.querySelectorAll('.filter-btn');
-            let activeBtn = null;
-            
-            buttons.forEach(btn => {
-                const btnText = btn.textContent.toLowerCase();
-                if (btnText.includes(activeFilter.toLowerCase())) {
-                    activeBtn = btn;
-                }
-            });
-            
-            if (activeBtn) {
-                activeBtn.classList.add('active');
-            } else {
-                // Default to "Alle" if no match found
-                document.querySelector('.filter-btn').classList.add('active');
-            }
-        }
-        
-        function renderTransactions(transactions) {
-            const container = elements.transactionHistory;
-            
-            if (!transactions || transactions.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-history"></i>
-                        <p>Keine Transaktionen gefunden</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Sort by date (newest first)
-            const sortedTransactions = [...transactions].sort((a, b) => {
-                return new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt);
-            });
-            
-            let html = '';
-            sortedTransactions.forEach(transaction => {
-                const type = transaction.type;
-                const date = new Date(transaction.date || transaction.createdAt);
-                const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
-                
-                let statusText = '';
-                let statusClass = '';
-                let holdDates = '';
-                
-                if (type === 'hold') {
-                    statusText = transaction.status === 'pending' ? 'Zurückgehalten' : 'Freigegeben';
-                    statusClass = transaction.status === 'pending' ? 'pending' : 'released';
-                    
-                    if (transaction.purchaseDate && transaction.releaseDate) {
-                        const purchaseDate = new Date(transaction.purchaseDate);
-                        const releaseDate = new Date(transaction.releaseDate);
-                        
-                        // Nur den Tag anzeigen (z.B. "15" statt "15.01.2024")
-                        const purchaseDay = purchaseDate.getDate();
-                        const releaseDay = releaseDate.getDate();
-                        
-                        holdDates = `
-                            <div class="hold-dates">
-                                <div class="hold-date-item">
-                                    <i class="fas fa-calendar-day"></i>
-                                    Kaufdatum: ${purchaseDay}
-                                </div>
-                                <div class="hold-date-item">
-                                    <i class="fas fa-calendar-check"></i>
-                                    Freigabe: ${releaseDay}
-                                </div>
-                            </div>
-                        `;
-                    }
-                } else if (type === 'deposit') {
-                    statusText = 'Einzahlung';
-                    statusClass = 'completed';
-                } else if (type === 'withdrawal') {
-                    statusText = 'Auszahlung';
-                    statusClass = 'completed';
-                } else if (type === 'debt-payment') {
-                    statusText = 'Schuldenzahlung';
-                    statusClass = 'completed';
-                } else if (type === 'expense') {
-                    statusText = 'Kosten';
-                    statusClass = 'completed';
-                }
-                
-                html += `
-                    <div class="transaction-item ${type}" onclick="openEditModal('${transaction.id}')">
-                        <div class="transaction-info">
-                            <div class="transaction-title">${transaction.description || 'Keine Beschreibung'}</div>
-                            <div class="transaction-date">${formattedDate}</div>
-                            ${holdDates}
-                        </div>
-                        <div class="transaction-amount ${type === 'withdrawal' || type === 'expense' || type === 'debt-payment' ? 'negative' : 'positive'}">
-                            ${type === 'withdrawal' || type === 'expense' || type === 'debt-payment' ? '-' : '+'}${formatCurrency(transaction.amount)}
-                        </div>
-                        <div class="transaction-status ${statusClass}">
-                            ${statusText}
-                        </div>
-                        <div class="edit-btn">
-                            <i class="fas fa-edit"></i>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-        }
-        
-        // Edit Functions
-        function openEditModal(transactionId) {
-            const transaction = state.transactions.find(t => t.id === transactionId);
-            if (!transaction) return;
-            
-            state.editingTransactionId = transactionId;
-            
-            document.getElementById('editAmount').value = transaction.amount;
-            document.getElementById('editDescription').value = transaction.description;
-            
-            const dateGroup = document.getElementById('editDateGroup');
-            if (transaction.type === 'hold' && transaction.purchaseDate) {
-                dateGroup.style.display = 'block';
-                document.getElementById('editDate').value = transaction.purchaseDate;
-            } else {
-                dateGroup.style.display = 'none';
-            }
-            
-            openModal('editModal');
-        }
-        
-        function updateTransaction() {
-            if (!state.editingTransactionId) return;
-            
-            const newAmount = parseInt(document.getElementById('editAmount').value);
-            const newDescription = document.getElementById('editDescription').value;
-            const newDate = document.getElementById('editDate').value;
-            
-            if (!newAmount || newAmount <= 0) {
-                alert('Bitte einen gültigen Betrag eingeben');
-                return;
-            }
-            
-            const transaction = state.transactions.find(t => t.id === state.editingTransactionId);
-            if (!transaction) return;
-            
-            const oldAmount = transaction.amount;
-            const difference = newAmount - oldAmount;
-            
-            // Update based on transaction type
-            switch(transaction.type) {
-                case 'hold':
-                    state.alltimeBalance += difference;
-                    transaction.amount = newAmount;
-                    transaction.description = newDescription || transaction.description;
-                    if (newDate) {
-                        transaction.purchaseDate = newDate;
-                        const releaseDate = new Date(newDate);
-                        releaseDate.setDate(releaseDate.getDate() + 2);
-                        transaction.releaseDate = releaseDate.toISOString().split('T')[0];
-                    }
-                    break;
-                    
-                case 'deposit':
-                    state.availableBalance += difference;
-                    state.alltimeBalance += difference;
-                    transaction.amount = newAmount;
-                    transaction.description = newDescription || transaction.description;
-                    break;
-                    
-                case 'withdrawal':
-                    state.availableBalance -= difference; // Inverse for withdrawals
-                    transaction.amount = newAmount;
-                    transaction.description = newDescription || transaction.description;
-                    break;
-                    
-                case 'debt-payment':
-                    state.totalDebt += difference; // If amount increases, debt decreases more
-                    transaction.amount = newAmount;
-                    transaction.description = newDescription || transaction.description;
-                    break;
-                    
-                case 'expense':
-                    state.availableBalance -= difference;
-                    state.totalExpenses += difference;
-                    transaction.amount = newAmount;
-                    transaction.description = newDescription || transaction.description;
-                    break;
-            }
-            
-            closeModal('editModal');
-            updateDisplay();
-            
-            // Refresh current view
-            switch(state.currentFilter) {
-                case 'all': showAllTransactions(); break;
-                case 'hold': showHoldTransactions(); break;
-                case 'available': showAvailableTransactions(); break;
-                case 'alltime': showAllTimeTransactions(); break;
-                case 'debt': showDebtTransactions(); break;
-                case 'expense': showExpenseTransactions(); break;
-                case 'deposit': showDepositTransactions(); break;
-                case 'withdrawal': showWithdrawalTransactions(); break;
-                case 'monthly': showMonthlyIncome(); break;
-                case 'yearly': showYearlyIncome(); break;
-                default: showAllTransactions();
-            }
-            
-            saveData();
-        }
-        
-        function deleteTransaction() {
-            if (!state.editingTransactionId) return;
-            
-            if (!confirm('Diese Transaktion wirklich löschen?')) return;
-            
-            const transactionIndex = state.transactions.findIndex(t => t.id === state.editingTransactionId);
-            if (transactionIndex === -1) return;
-            
-            const transaction = state.transactions[transactionIndex];
-            
-            // Reverse the transaction
-            switch(transaction.type) {
-                case 'hold':
-                    state.alltimeBalance -= transaction.amount;
-                    if (transaction.status === 'released') {
-                        state.availableBalance -= transaction.amount;
-                    }
-                    break;
-                    
-                case 'deposit':
-                    state.availableBalance -= transaction.amount;
-                    state.alltimeBalance -= transaction.amount;
-                    break;
-                    
-                case 'withdrawal':
-                    state.availableBalance += transaction.amount;
-                    break;
-                    
-                case 'debt-payment':
-                    state.totalDebt += transaction.amount;
-                    break;
-                    
-                case 'expense':
-                    state.availableBalance += transaction.amount;
-                    state.totalExpenses -= transaction.amount;
-                    break;
-            }
-            
-            state.transactions.splice(transactionIndex, 1);
-            
-            closeModal('editModal');
-            updateDisplay();
-            
-            // Refresh current view
-            switch(state.currentFilter) {
-                case 'all': showAllTransactions(); break;
-                case 'hold': showHoldTransactions(); break;
-                case 'available': showAvailableTransactions(); break;
-                case 'alltime': showAllTimeTransactions(); break;
-                case 'debt': showDebtTransactions(); break;
-                case 'expense': showExpenseTransactions(); break;
-                case 'deposit': showDepositTransactions(); break;
-                case 'withdrawal': showWithdrawalTransactions(); break;
-                case 'monthly': showMonthlyIncome(); break;
-                case 'yearly': showYearlyIncome(); break;
-                default: showAllTransactions();
-            }
-            
-            saveData();
-        }
-        
-        // Utility Functions
-        function formatCurrency(amount) {
-            return amount.toLocaleString('de-DE') + ' $';
-        }
-        
-        function checkPendingReleases() {
-            const today = new Date().toISOString().split('T')[0];
-            let released = false;
-            
-            state.transactions.forEach(t => {
-                if (t.type === 'hold' && t.status === 'pending' && t.releaseDate <= today) {
-                    t.status = 'released';
-                    state.availableBalance += t.amount;
-                    released = true;
-                }
-            });
-            
-            if (released) {
-                updateDisplay();
-                saveData();
-                if (state.currentFilter === 'hold') {
-                    showHoldTransactions();
-                }
-            }
-        }
-        
-        // Initialize on load
-        window.addEventListener('DOMContentLoaded', init);
-        
-        // Make functions globally available for onclick handlers
-        window.openModal = openModal;
-        window.closeModal = closeModal;
-        window.addHoldTransaction = addHoldTransaction;
-        window.addDirectDeposit = addDirectDeposit;
-        window.processWithdrawal = processWithdrawal;
-        window.payDebt = payDebt;
-        window.addExpense = addExpense;
-        window.showAllTransactions = showAllTransactions;
-        window.showHoldTransactions = showHoldTransactions;
-        window.showAvailableTransactions = showAvailableTransactions;
-        window.showAllTimeTransactions = showAllTimeTransactions;
-        window.showDebtTransactions = showDebtTransactions;
-        window.showExpenseTransactions = showExpenseTransactions;
-        window.showDepositTransactions = showDepositTransactions;
-        window.showWithdrawalTransactions = showWithdrawalTransactions;
-        window.showMonthlyIncome = showMonthlyIncome;
-        window.showYearlyIncome = showYearlyIncome;
-        window.openEditModal = openEditModal;
-        window.updateTransaction = updateTransaction;
-        window.deleteTransaction = deleteTransaction;
-    </script>
+<head>
+<meta charset="UTF-8">
+<title>Medical Evaluation</title>
+
+<style>
+
+body{
+background:#111;
+color:white;
+font-family:Arial;
+}
+
+.container{
+width:90%;
+margin:auto;
+}
+
+.title{
+color:#3cff00;
+background:#1b1b1b;
+padding:15px;
+font-size:26px;
+text-align:center;
+margin-top:20px;
+}
+
+.controls{
+margin:15px 0;
+display:flex;
+justify-content:space-between;
+}
+
+input,button{
+padding:8px;
+background:#222;
+color:white;
+border:1px solid #444;
+}
+
+button:hover{
+background:#333;
+cursor:pointer;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th{
+background:#1f3b1f;
+padding:10px;
+border:1px solid #333;
+}
+
+td{
+border:1px solid #333;
+padding:8px;
+background:#1a1a1a;
+text-align:center;
+}
+
+.name{
+background:#2b2b2b;
+text-align:left;
+}
+
+.linkInput{
+width:90%;
+background:#222;
+border:none;
+color:#2d8cff;
+}
+
+a{
+color:#2d8cff;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="title">
+MEDICAL & PSYCHOLOGICAL EVALUATION
+</div>
+
+<div class="controls">
+
+<div>
+<input id="newPatient" placeholder="Neuer Patient">
+<button onclick="addPatient()">Hinzufügen</button>
+</div>
+
+<div>
+Suche:
+<input id="search" placeholder="Name suchen">
+</div>
+
+</div>
+
+<table id="table">
+
+<thead>
+<tr>
+<th>Patient</th>
+<th>Docx</th>
+<th>Docx</th>
+<th>Docx</th>
+<th>Docx</th>
+<th>Docx</th>
+</tr>
+</thead>
+
+<tbody>
+
+</tbody>
+
+</table>
+
+</div>
+
+<script>
+
+let patients = JSON.parse(localStorage.getItem("patients")) || [
+
+{ name:"Percy Wright", docs:["","","","",""] },
+{ name:"Kevin Walker", docs:["","","","",""] },
+{ name:"Michael Bortega", docs:["","","","",""] }
+
+];
+
+function save(){
+localStorage.setItem("patients",JSON.stringify(patients));
+}
+
+function render(){
+
+let tbody=document.querySelector("#table tbody");
+tbody.innerHTML="";
+
+patients.forEach((p,i)=>{
+
+let row=document.createElement("tr");
+
+let name=document.createElement("td");
+name.className="name";
+name.innerText=p.name;
+
+row.appendChild(name);
+
+p.docs.forEach((link,j)=>{
+
+let td=document.createElement("td");
+
+let input=document.createElement("input");
+input.value=link;
+input.className="linkInput";
+
+input.onchange=()=>{
+patients[i].docs[j]=input.value;
+save();
+}
+
+td.appendChild(input);
+
+if(link){
+let open=document.createElement("div");
+open.innerHTML=`<a href="${link}" target="_blank">OPEN</a>`;
+td.appendChild(open);
+}
+
+row.appendChild(td);
+
+});
+
+tbody.appendChild(row);
+
+});
+
+}
+
+function addPatient(){
+
+let name=document.getElementById("newPatient").value;
+
+if(name==="")return;
+
+patients.push({
+name:name,
+docs:["","","","",""]
+});
+
+save();
+render();
+
+document.getElementById("newPatient").value="";
+}
+
+document.getElementById("search").addEventListener("keyup",function(){
+
+let value=this.value.toLowerCase();
+let rows=document.querySelectorAll("#table tbody tr");
+
+rows.forEach(row=>{
+
+let name=row.querySelector(".name").innerText.toLowerCase();
+
+row.style.display=name.includes(value)?"":"none";
+
+});
+
+});
+
+render();
+
+</script>
+
 </body>
 </html>
